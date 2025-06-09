@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Meteorológicos</title>
+    <style>
+        .tabla-contenedor {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .tabla {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard de Estación Meteorológica</h1>
+
+    <div class="tabla-contenedor">
+
+        <div class="tabla">
+            <h2>Velocidad del Viento</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Velocidad</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="velocidad : ${velocidades}">
+                        <td th:text="${velocidad.id}"></td>
+                        <td th:text="${velocidad.velocidad}"></td>
+                        <td th:text="${velocidad.fecha}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Dirección del Viento</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Dirección</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="direccion : ${direcciones}">
+                        <td th:text="${direccion.id}"></td>
+                        <td th:text="${direccion.direccion}"></td>
+                        <td th:text="${direccion.fecha}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Probabilidad de Lluvia</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Probabilidad</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="precipitacion : ${precipitaciones}">
+                        <td th:text="${precipitacion.id}"></td>
+                        <td th:text="${precipitacion.probabilidad}"></td>
+                        <td th:text="${precipitacion.fecha}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
+
