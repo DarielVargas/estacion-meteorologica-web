@@ -14,45 +14,12 @@
         .tabla {
             margin: 10px;
         }
-        table {
-            border-collapse: collapse;
-            table-layout: auto;
-        }
-        th, td {
-            padding: 4px 8px;
-            text-align: center;
-            white-space: nowrap;
-        }
-        .paginacion {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .pagina-num a {
-            margin: 0 3px;
-            text-decoration: none;
-            padding: 3px 7px;
-            border: 1px solid #aaa;
-            border-radius: 4px;
-        }
-        .pagina-activa {
-            font-weight: bold;
-            background-color: #4CAF50;
-            color: white;
-            padding: 3px 7px;
-            border-radius: 4px;
-            border: 1px solid #4CAF50;
-        }
     </style>
 </head>
 <body>
     <h1 style="text-align: center;">Estación meteorológica - grupo1</h1>
 
+    <!-- Botón recargar arriba -->
     <div style="margin: 20px 0; text-align: center;">
         <button onclick="location.reload()" style="
             padding: 10px 20px;
@@ -75,14 +42,14 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Velocidad (km/h)</th>
+                        <th>Velocidad</th>
                         <th>Fecha</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="velocidad : ${velocidades.content}">
                         <td th:text="${velocidad.id}"></td>
-                        <td th:text="${#numbers.formatInteger(velocidad.velocidad, 0)}"></td>
+                        <td th:text="${velocidad.velocidad}"></td>
                         <td th:text="${velocidad.fecha}"></td>
                     </tr>
                 </tbody>
@@ -115,59 +82,49 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Probabilidad (%)</th>
+                        <th>Probabilidad</th>
                         <th>Fecha</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="precipitacion : ${precipitaciones.content}">
                         <td th:text="${precipitacion.id}"></td>
-                        <td th:text="${#numbers.formatInteger(precipitacion.probabilidad, 0)}"></td>
+                        <td th:text="${precipitacion.probabilidad}"></td>
                         <td th:text="${precipitacion.fecha}"></td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
 
-    <!-- Paginación avanzada -->
-    <div class="paginacion">
-        <span th:text="'Página ' + (${paginaActual} + 1) + ' de ' + ${velocidades.totalPages}"></span>
+    <!-- Controles de paginación + selector de registros -->
+    <div style="text-align: center; margin-top: 30px; font-size: 18px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;">
 
-        <!-- Botón primera página -->
+        <!-- Anterior -->
         <a th:if="${paginaActual > 0}"
-           th:href="@{|/?pagina=0&tamano=${tamanoPagina}|}">&laquo;</a>
+           th:href="@{|/?pagina=${paginaActual - 1}&tamano=${tamanoPagina}|}">
+           Anterior
+        </a>
+        <span th:unless="${paginaActual > 0}" style="color: gray;">Anterior</span>
 
-        <!-- Botón anterior -->
-        <a th:if="${paginaActual > 0}"
-           th:href="@{|/?pagina=${paginaActual - 1}&tamano=${tamanoPagina}|}">&lsaquo;</a>
-        <span th:unless="${paginaActual > 0}" style="color: gray;">&lsaquo;</span>
+        <!-- Página actual -->
+        <span th:text="'Página ' + (${paginaActual} + 1)"></span>
 
-        <!-- Números de páginas -->
-        <span th:with="
-                start=${paginaActual - 2 < 0 ? 0 : paginaActual - 2},
-                end=${paginaActual + 2 >= velocidades.totalPages ? velocidades.totalPages - 1 : paginaActual + 2}">
-            <span th:each="i : ${#numbers.sequence(start, end)}" class="pagina-num">
-                <a th:if="${i != paginaActual}"
-                   th:href="@{|/?pagina=${i}&tamano=${tamanoPagina}|}"
-                   th:text="${i + 1}"></a>
-                <span th:if="${i == paginaActual}"
-                      th:text="${i + 1}"
-                      class="pagina-activa"></span>
-            </span>
-        </span>
+        <!-- Siguiente -->
+        <a th:if="${velocidades.totalPages > paginaActual + 1 
+                   or direcciones.totalPages > paginaActual + 1 
+                   or precipitaciones.totalPages > paginaActual + 1}"
+           th:href="@{|/?pagina=${paginaActual + 1}&tamano=${tamanoPagina}|}">
+           Siguiente
+        </a>
+        <span th:unless="${velocidades.totalPages > paginaActual + 1 
+                          or direcciones.totalPages > paginaActual + 1 
+                          or precipitaciones.totalPages > paginaActual + 1}"
+              style="color: gray;">Siguiente</span>
 
-        <!-- Botón siguiente -->
-        <a th:if="${paginaActual < velocidades.totalPages - 1}"
-           th:href="@{|/?pagina=${paginaActual + 1}&tamano=${tamanoPagina}|}">&rsaquo;</a>
-        <span th:unless="${paginaActual < velocidades.totalPages - 1}" style="color: gray;">&rsaquo;</span>
-
-        <!-- Botón última página -->
-        <a th:if="${paginaActual < velocidades.totalPages - 1}"
-           th:href="@{|/?pagina=${velocidades.totalPages - 1}&tamano=${tamanoPagina}|}">&raquo;</a>
-
-        <!-- Selector de tamaño -->
-        <form method="get" action="/" style="display: inline-block; margin-left: 15px;">
+        <!-- Selector al lado -->
+        <form method="get" action="/" style="display: inline-block;">
             <label for="tamano">Registros por página:</label>
             <select name="tamano" id="tamano" onchange="this.form.submit()" style="padding: 5px;">
                 <option th:value="10" th:selected="${tamanoPagina == 10}">10</option>
@@ -176,6 +133,7 @@
             </select>
             <input type="hidden" name="pagina" th:value="${paginaActual}" />
         </form>
+
     </div>
 
 </body>
