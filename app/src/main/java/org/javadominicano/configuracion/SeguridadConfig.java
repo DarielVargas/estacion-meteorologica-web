@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity // <-- ¡ESTO ES LO QUE FALTABA!
+@EnableWebSecurity
 public class SeguridadConfig {
 
     @Bean
@@ -26,7 +26,7 @@ public class SeguridadConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .defaultSuccessUrl("/?pagina=0&tamanoPagina=10", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
