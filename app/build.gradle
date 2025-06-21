@@ -13,11 +13,19 @@ repositories {
 }
 
 dependencies {
+    // Web y vistas
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // JPA y base de datos
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
+    // Seguridad
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-crypto'
+
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
