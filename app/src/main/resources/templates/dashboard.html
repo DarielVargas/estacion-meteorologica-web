@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Dashboard Meteorológico</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -87,6 +89,13 @@
             color: #1a3f78;
         }
 
+        .card span {
+            display: block;
+            margin-top: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
         .secciones {
             display: flex;
             gap: 20px;
@@ -165,7 +174,6 @@
         .tabla th {
             background-color: #f0f0f0;
         }
-
     </style>
 </head>
 <body>
@@ -197,10 +205,33 @@
     <div class="secciones">
         <div class="seccion">
             <h3>Alertas</h3>
-            <strong>Configuración</strong> <button>Verificar</button>
-            <p>Temperatura: Mayor que 20°C</p>
-            <p>Velocidad del Viento: Mayor que 10 m/s</p>
-            <p>Precipitación: Mayor que 5mm</p>
+            <form method="post" th:action="@{/configurar-alertas}">
+                <table>
+                    <thead>
+                        <tr><th>Medición</th><th>Umbral</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Temperatura &gt;</td>
+                            <td><input type="number" step="0.1" name="umbralTemperatura" th:value="${umbrales.temperatura}" required> °C</td>
+                        </tr>
+                        <tr>
+                            <td>Humedad &gt;</td>
+                            <td><input type="number" step="0.1" name="umbralHumedad" th:value="${umbrales.humedad}" required> %</td>
+                        </tr>
+                        <tr>
+                            <td>Vel. Viento &gt;</td>
+                            <td><input type="number" step="0.1" name="umbralVelocidad" th:value="${umbrales.velocidadViento}" required> km/h</td>
+                        </tr>
+                        <tr>
+                            <td>Precipitación &gt;</td>
+                            <td><input type="number" step="0.1" name="umbralPrecipitacion" th:value="${umbrales.precipitacion}" required> mm</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <button type="submit" style="padding: 8px 16px; background-color: #1a3f78; color: white; border: none; border-radius: 4px;">Guardar</button>
+            </form>
         </div>
         <div class="seccion">
             <h3>Estaciones Meteorológicas</h3>
@@ -235,46 +266,71 @@
     <div class="tablas">
         <div class="tabla">
             <h3>Velocidad del Viento</h3>
-            <table><thead><tr><th>ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
-                <tbody><tr th:each="v : ${velocidades.content}">
-                    <td th:text="${v.id}"></td><td th:text="${v.velocidad}"></td><td th:text="${v.fecha}"></td>
-                </tr></tbody>
+            <table>
+                <thead><tr><th>ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    <tr th:each="v : ${velocidades.content}">
+                        <td th:text="${v.id}"></td>
+                        <td th:text="${v.velocidad}"></td>
+                        <td th:text="${v.fecha}"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
         <div class="tabla">
             <h3>Dirección del Viento</h3>
-            <table><thead><tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
-                <tbody><tr th:each="d : ${direcciones.content}">
-                    <td th:text="${d.id}"></td><td th:text="${d.direccion}"></td><td th:text="${d.fecha}"></td>
-                </tr></tbody>
+            <table>
+                <thead><tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    <tr th:each="d : ${direcciones.content}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.direccion}"></td>
+                        <td th:text="${d.fecha}"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
         <div class="tabla">
             <h3>Precipitación</h3>
-            <table><thead><tr><th>ID</th><th>mm</th><th>Fecha</th></tr></thead>
-                <tbody><tr th:each="p : ${precipitaciones.content}">
-                    <td th:text="${p.id}"></td><td th:text="${#numbers.formatDecimal(p.probabilidad, 1, 1)}"></td><td th:text="${p.fecha}"></td>
-                </tr></tbody>
+            <table>
+                <thead><tr><th>ID</th><th>mm</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    <tr th:each="p : ${precipitaciones.content}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${#numbers.formatDecimal(p.probabilidad, 1, 1)}"></td>
+                        <td th:text="${p.fecha}"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
         <div class="tabla">
             <h3>Humedad</h3>
-            <table><thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
-                <tbody><tr th:each="h : ${humedades.content}">
-                    <td th:text="${h.id}"></td><td th:text="${h.humedad}"></td><td th:text="${h.fecha}"></td>
-                </tr></tbody>
+            <table>
+                <thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    <tr th:each="h : ${humedades.content}">
+                        <td th:text="${h.id}"></td>
+                        <td th:text="${h.humedad}"></td>
+                        <td th:text="${h.fecha}"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
         <div class="tabla">
             <h3>Temperatura</h3>
-            <table><thead><tr><th>ID</th><th>°C</th><th>Fecha</th></tr></thead>
-                <tbody><tr th:each="t : ${temperaturas.content}">
-                    <td th:text="${t.id}"></td><td th:text="${t.temperatura}"></td><td th:text="${t.fecha}"></td>
-                </tr></tbody>
+            <table>
+                <thead><tr><th>ID</th><th>°C</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    <tr th:each="t : ${temperaturas.content}">
+                        <td th:text="${t.id}"></td>
+                        <td th:text="${t.temperatura}"></td>
+                        <td th:text="${t.fecha}"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
