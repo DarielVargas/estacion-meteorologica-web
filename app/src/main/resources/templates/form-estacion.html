@@ -3,63 +3,83 @@
 <head>
     <meta charset="UTF-8" />
     <title>Formulario Estación Meteorológica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f4f6f9;
             padding: 30px;
+            display: flex;
+            justify-content: center;
         }
-        form {
+        .form-container {
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 400px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        h2 {
+            color: #1a3f78;
+            margin-bottom: 20px;
+            text-align: center;
         }
         label {
             display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            color: #1a3f78;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 600;
         }
         input[type="text"] {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
+            padding: 8px 10px;
+            margin-bottom: 15px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            font-size: 14px;
         }
-        button {
-            margin-top: 20px;
+        .btn-save {
+            width: 100%;
             background-color: #007b00;
             color: white;
-            padding: 10px 15px;
+            padding: 10px 0;
             border: none;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
         }
-        a {
-            margin-left: 10px;
-            color: #1a3f78;
-            text-decoration: none;
+        .btn-cancel {
+            width: 100%;
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1 th:text="${estacion.id == null} ? 'Nueva Estación' : 'Editar Estación'">Formulario Estación</h1>
-
-    <form th:action="@{/estaciones/guardar}" th:object="${estacion}" method="post">
+<div class="form-container">
+    <h2 th:text="${estacion.id} == null ? 'Nueva Estación' : 'Editar Estación'">Formulario Estación</h2>
+    <form th:action="@{${estacion.id} == null ? '/estaciones/nueva' : '/estaciones/editar'}" th:object="${estacion}" method="post">
         <label for="id">ID</label>
-        <input type="text" id="id" th:field="*{id}" placeholder="Ejemplo: EST003" required />
+        <input type="text" id="id" th:field="*{id}" placeholder="ID de la estación" required />
 
         <label for="nombre">Nombre</label>
         <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre de la estación" required />
 
         <label for="ubicacion">Ubicación</label>
-        <input type="text" id="ubicacion" th:field="*{ubicacion}" placeholder="Ciudad o lugar" required />
+        <input type="text" id="ubicacion" th:field="*{ubicacion}" placeholder="Ubicación de la estación" required />
 
-        <button type="submit">Guardar</button>
-        <a th:href="@{/}">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
     </form>
+
+    <form th:action="@{/}" method="get">
+        <button type="submit" class="btn-cancel">Cancelar</button>
+    </form>
+</div>
 </body>
 </html>
