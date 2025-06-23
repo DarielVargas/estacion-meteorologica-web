@@ -7,6 +7,7 @@ import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
 import org.javadominicano.visualizadorweb.entidades.Umbrales;
+import org.javadominicano.entidades.EstacionMeteorologica;
 
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
@@ -26,6 +27,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Controller
 public class VisualizadorController {
 
@@ -44,6 +49,17 @@ public class VisualizadorController {
     @Autowired
     private RepositorioDatosTemperatura repositorioTemperatura;
 
+    // Lista estática para simular base de datos de estaciones
+    private static List<EstacionMeteorologica> estaciones = new ArrayList<>();
+
+    // Inicializa la lista si está vacía
+    public VisualizadorController() {
+        if (estaciones.isEmpty()) {
+            estaciones.add(new EstacionMeteorologica("EST001", "Estación1", "Santiago"));
+            estaciones.add(new EstacionMeteorologica("EST002", "Estación2", "Mao"));
+        }
+    }
+
     // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
     @ModelAttribute("umbrales")
     public Umbrales obtenerUmbrales() {
@@ -53,6 +69,12 @@ public class VisualizadorController {
         umbrales.setVelocidadViento(10.0);
         umbrales.setPrecipitacion(5.0);
         return umbrales;
+    }
+
+    // Inyecta la lista de estaciones para Thymeleaf
+    @ModelAttribute("estaciones")
+    public List<EstacionMeteorologica> getEstaciones() {
+        return estaciones;
     }
 
     @GetMapping("/")
@@ -109,5 +131,54 @@ public class VisualizadorController {
         // Aquí puedes agregar lógica para guardar los umbrales o procesarlos
 
         return "redirect:/"; // Redirige al dashboard para que se recargue
+    }
+
+    // Eliminar estación
+    @PostMapping("/estaciones/eliminar")
+    public String eliminarEstacion(@RequestParam String id) {
+        estaciones.removeIf(est -> est.getId().equals(id));
+        return "redirect:/";
+    }
+
+    // Mostrar formulario de edición
+    @GetMapping("/estaciones/editar")
+    public String mostrarEditarEstacion(@RequestParam String id, Model model) {
+        Optional<EstacionMeteorologica> estacionOpt = estaciones.stream()
+                .filter(est -> est.getId().equals(id))
+                .findFirst();
+
+        if (estacionOpt.isPresent()) {
+            model.addAttribute("estacion", estacionOpt.get());
+            return "editarEstacion";  // Debes crear esta vista Thymeleaf
+        } else {
+            return "redirect:/";
+        }
+    }
+
+    // Guardar estación editada
+    @PostMapping("/estaciones/editar")
+    public String guardarEstacionEditada(@ModelAttribute EstacionMeteorologica estacion) {
+        for (int i = 0; i < estaciones.size(); i++) {
+            if (estaciones.get(i).getId().equals(estacion.getId())) {
+                estaciones.set(i, estacion);
+                break;
+            }
+        }
+        return "redirect:/";
+    }
+
+    // Mostrar formulario nueva estación
+    @GetMapping("/estaciones/nueva")
+    public String mostrarFormularioNuevaEstacion(Model model) {
+        EstacionMeteorologica nuevaEstacion = new EstacionMeteorologica();
+        model.addAttribute("estacion", nuevaEstacion);
+        return "form-estacion"; // Debes crear esta vista Thymeleaf para el formulario
+    }
+
+    // Guardar nueva estación
+    @PostMapping("/estaciones/nueva")
+    public String guardarNuevaEstacion(@ModelAttribute EstacionMeteorologica estacion) {
+        estaciones.add(estacion);
+        return "redirect:/";
     }
 }

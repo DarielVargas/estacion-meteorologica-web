@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Formulario Estación Meteorológica</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            padding: 30px;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #1a3f78;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #007b00;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        a {
+            margin-left: 10px;
+            color: #1a3f78;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 th:text="${estacion.id == null} ? 'Nueva Estación' : 'Editar Estación'">Formulario Estación</h1>
+
+    <form th:action="@{/estaciones/guardar}" th:object="${estacion}" method="post">
+        <label for="id">ID</label>
+        <input type="text" id="id" th:field="*{id}" placeholder="Ejemplo: EST003" required />
+
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre de la estación" required />
+
+        <label for="ubicacion">Ubicación</label>
+        <input type="text" id="ubicacion" th:field="*{ubicacion}" placeholder="Ciudad o lugar" required />
+
+        <button type="submit">Guardar</button>
+        <a th:href="@{/}">Cancelar</a>
+    </form>
+</body>
+</html>

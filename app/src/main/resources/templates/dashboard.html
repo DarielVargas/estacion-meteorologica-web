@@ -145,6 +145,16 @@
             background-color: #dc3545;
         }
 
+        .btn-add {
+            background-color: #28a745;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
         .tablas {
             display: flex;
             flex-wrap: wrap;
@@ -235,27 +245,31 @@
         </div>
         <div class="seccion">
             <h3>Estaciones Meteorológicas</h3>
+
+            <!-- Botón para añadir nueva estación -->
+            <form th:action="@{/estaciones/nueva}" method="get">
+                <button type="submit" class="btn-add">Añadir Estación</button>
+            </form>
+
             <table>
                 <thead>
                     <tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>EST001</td>
-                        <td>Estación1</td>
-                        <td>Santiago</td>
+                    <tr th:each="estacion : ${estaciones}">
+                        <td th:text="${estacion.id}">EST001</td>
+                        <td th:text="${estacion.nombre}">Estación1</td>
+                        <td th:text="${estacion.ubicacion}">Santiago</td>
                         <td>
-                            <button class="btn btn-edit">Editar</button>
-                            <button class="btn btn-delete">Eliminar</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>EST002</td>
-                        <td>Estación2</td>
-                        <td>Mao</td>
-                        <td>
-                            <button class="btn btn-edit">Editar</button>
-                            <button class="btn btn-delete">Eliminar</button>
+                            <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${estacion.id}" />
+                                <button type="submit" class="btn btn-edit">Editar</button>
+                            </form>
+                            <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" 
+                                  onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
+                                <input type="hidden" name="id" th:value="${estacion.id}" />
+                                <button type="submit" class="btn btn-delete">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
