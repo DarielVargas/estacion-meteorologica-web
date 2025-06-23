@@ -2,262 +2,297 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Estación Meteorológica</title>
+    <title>Dashboard Meteorológico</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 30%;
-        }
-
-        th, td {
-            border: 1px solid #999;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #eee;
-        }
-
-        .tabla-container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            height: 100vh;
+            background-color: #f4f6f9;
         }
 
-        .tabla {
-            margin: 15px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: green;
+        .sidebar {
+            width: 230px;
+            background-color: #1a3f78;
             color: white;
-            border: none;
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
         }
 
-        .pagination {
-            margin-top: 20px;
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
         }
 
-        .pagination a, .pagination span {
-            display: inline-block;
-            margin: 2px;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
+        .sidebar a {
+            color: white;
             text-decoration: none;
-            color: black;
-            background-color: white;
+            margin: 10px 0;
+            display: block;
+            padding: 10px;
             border-radius: 5px;
         }
 
-        .pagination a:hover {
-            background-color: #ddd;
+        .sidebar a:hover {
+            background-color: #2a4d90;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 30px;
+        }
+
+        .top-section {
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 160px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .recargar {
+            margin-bottom: 20px;
+        }
+
+        .recargar button {
+            padding: 10px 20px;
+            background-color: #007b00;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .tablas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .tabla {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tabla table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla th, .tabla td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .tabla th {
+            background-color: #f0f0f0;
+            text-align: left;
+        }
+
+        .pagination {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: black;
         }
 
         .pagination .actual {
-            background-color: green;
+            background-color: #007b00;
             color: white;
-            border: none;
-        }
-
-        .pagination-form {
-            margin-top: 10px;
-        }
-
-        .tarjetas-mediciones {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px auto;
-            flex-wrap: wrap;
-        }
-
-        .tarjeta {
-            background-color: #f0f8ff;
-            border-radius: 10px;
-            padding: 15px;
-            min-width: 150px;
-        }
-
-        .tarjeta h3 {
-            margin: 0;
-        }
-
-        .tarjeta p {
-            font-size: 1.5em;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<h1>Estación meteorológica - grupo1</h1>
-
-<!-- Tarjetas de mediciones recientes -->
-<div class="tarjetas-mediciones">
-    <div class="tarjeta">
-        <h3>Temperatura</h3>
-        <p th:text="${mediciones.temperatura + ' °C'}"></p>
-    </div>
-    <div class="tarjeta">
-        <h3>Humedad</h3>
-        <p th:text="${mediciones.humedad + ' %'}"></p>
-    </div>
-    <div class="tarjeta">
-        <h3>Vel. Viento</h3>
-        <p th:text="${mediciones.velocidadViento + ' km/h'}"></p>
-    </div>
-    <div class="tarjeta">
-        <h3>Dir. Viento</h3>
-        <p th:text="${mediciones.direccionViento}"></p>
-    </div>
-    <div class="tarjeta">
-        <h3>Precipitación</h3>
-        <p th:text="${mediciones.precipitacion + ' mm'}"></p>
-    </div>
+<div class="sidebar">
+    <h2>Menú</h2>
+    <a href="#">Dashboard</a>
+    <a href="#">Estaciones Meteorológicas</a>
+    <a href="#">Alertas</a>
+    <a href="#">Reportes</a>
 </div>
 
-<form method="get" th:action="@{/}">
-    <button type="submit">Recargar página</button>
-</form>
-
-<div class="tabla-container">
-    <div class="tabla">
-        <h2>Velocidad del Viento</h2>
-        <table>
-            <thead>
-            <tr><th>ID</th><th>Velocidad (km/h)</th><th>Fecha</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="v : ${velocidades.content}">
-                <td th:text="${v.id}"></td>
-                <td th:text="${v.velocidad}"></td>
-                <td th:text="${v.fecha}"></td>
-            </tr>
-            </tbody>
-        </table>
+<div class="content">
+    <div class="top-section">
+        <h1>Dashboard - Grupo 1</h1>
     </div>
 
-    <div class="tabla">
-        <h2>Dirección del Viento</h2>
-        <table>
-            <thead>
-            <tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="d : ${direcciones.content}">
-                <td th:text="${d.id}"></td>
-                <td th:text="${d.direccion}"></td>
-                <td th:text="${d.fecha}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="cards">
+        <div class="card">
+            <h3>Temperatura</h3>
+            <p th:text="${mediciones.temperatura + ' °C'}">--</p>
+        </div>
+        <div class="card">
+            <h3>Humedad</h3>
+            <p th:text="${mediciones.humedad + ' %'}">--</p>
+        </div>
+        <div class="card">
+            <h3>Vel. Viento</h3>
+            <p th:text="${mediciones.velocidadViento + ' km/h'}">--</p>
+        </div>
+        <div class="card">
+            <h3>Dir. Viento</h3>
+            <p th:text="${mediciones.direccionViento}">--</p>
+        </div>
+        <div class="card">
+            <h3>Precipitación</h3>
+            <p th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + ' mm'}">--</p>
+        </div>
     </div>
 
-    <div class="tabla">
-        <h2>Precipitación</h2>
-        <table>
-            <thead>
-            <tr><th>ID</th><th>Precipitación (mm)</th><th>Fecha</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="p : ${precipitaciones.content}">
-                <td th:text="${p.id}"></td>
-                <td th:text="${#numbers.formatDecimal(p.probabilidad, 1, 1)}"></td>
-                <td th:text="${p.fecha}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="recargar">
+        <form method="get" th:action="@{/}">
+            <button type="submit">Recargar página</button>
+        </form>
     </div>
 
-    <div class="tabla">
-        <h2>Humedad</h2>
-        <table>
-            <thead>
-            <tr><th>ID</th><th>Humedad (%)</th><th>Fecha</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="h : ${humedades.content}">
-                <td th:text="${h.id}"></td>
-                <td th:text="${h.humedad}"></td>
-                <td th:text="${h.fecha}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="tablas">
+        <div class="tabla">
+            <h2>Velocidad del Viento</h2>
+            <table>
+                <thead><tr><th>ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="v : ${velocidades.content}">
+                    <td th:text="${v.id}"></td>
+                    <td th:text="${v.velocidad}"></td>
+                    <td th:text="${v.fecha}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Dirección del Viento</h2>
+            <table>
+                <thead><tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="d : ${direcciones.content}">
+                    <td th:text="${d.id}"></td>
+                    <td th:text="${d.direccion}"></td>
+                    <td th:text="${d.fecha}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Precipitación</h2>
+            <table>
+                <thead><tr><th>ID</th><th>mm</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="p : ${precipitaciones.content}">
+                    <td th:text="${p.id}"></td>
+                    <td th:text="${#numbers.formatDecimal(p.probabilidad, 1, 1)}"></td>
+                    <td th:text="${p.fecha}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Humedad</h2>
+            <table>
+                <thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="h : ${humedades.content}">
+                    <td th:text="${h.id}"></td>
+                    <td th:text="${h.humedad}"></td>
+                    <td th:text="${h.fecha}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tabla">
+            <h2>Temperatura</h2>
+            <table>
+                <thead><tr><th>ID</th><th>°C</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${temperaturas.content}">
+                    <td th:text="${t.id}"></td>
+                    <td th:text="${t.temperatura}"></td>
+                    <td th:text="${t.fecha}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="tabla">
-        <h2>Temperatura</h2>
-        <table>
-            <thead>
-            <tr><th>ID</th><th>Temperatura (°C)</th><th>Fecha</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="t : ${temperaturas.content}">
-                <td th:text="${t.id}"></td>
-                <td th:text="${t.temperatura}"></td>
-                <td th:text="${t.fecha}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="pagination">
+        <span th:text="'Página ' + ${paginaActual + 1} + ' de ' + ${velocidades.totalPages}"></span>
+
+        <a th:if="${paginaActual > 0}" th:href="@{/(pagina=0, tamanoPagina=${tamanoPagina})}">&laquo;</a>
+        <a th:if="${paginaActual > 0}" th:href="@{/(pagina=${paginaActual - 1}, tamanoPagina=${tamanoPagina})}">&lt;</a>
+
+        <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
+              th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
+              th:classappend="${i == paginaActual} ? 'actual'">
+            <a th:if="${i != paginaActual}" th:href="@{/(pagina=${i}, tamanoPagina=${tamanoPagina})}" th:text="${i + 1}"></a>
+            <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
+        </span>
+
+        <a th:if="${paginaActual + 1 < velocidades.totalPages}" th:href="@{/(pagina=${paginaActual + 1}, tamanoPagina=${tamanoPagina})}">&gt;</a>
+        <a th:if="${paginaActual + 1 < velocidades.totalPages}" th:href="@{/(pagina=${velocidades.totalPages - 1}, tamanoPagina=${tamanoPagina})}">&raquo;</a>
+
+        <span style="margin-left: 10px;">Registros por página:</span>
+        <form method="get" th:action="@{/}" style="display:inline;">
+            <select name="tamanoPagina" onchange="this.form.submit()">
+                <option th:value="10" th:selected="${tamanoPagina == 10}">10</option>
+                <option th:value="20" th:selected="${tamanoPagina == 20}">20</option>
+                <option th:value="50" th:selected="${tamanoPagina == 50}">50</option>
+                <option th:value="100" th:selected="${tamanoPagina == 100}">100</option>
+            </select>
+            <input type="hidden" name="pagina" th:value="${paginaActual}" />
+        </form>
     </div>
-</div>
-
-<div class="pagination">
-    <span th:text="'Página ' + ${paginaActual + 1} + ' de ' + ${velocidades.totalPages}"></span>
-
-    <a th:if="${paginaActual > 0}"
-       th:href="@{/(
-           pagina=0,
-           tamanoPagina=${tamanoPagina}
-       )}">&laquo;</a>
-
-    <a th:if="${paginaActual > 0}"
-       th:href="@{/(
-           pagina=${paginaActual - 1},
-           tamanoPagina=${tamanoPagina}
-       )}">&lt;</a>
-
-    <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
-          th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
-          th:classappend="${i == paginaActual} ? 'actual'">
-        <a th:if="${i != paginaActual}"
-           th:href="@{/(
-               pagina=${i},
-               tamanoPagina=${tamanoPagina}
-           )}"
-           th:text="${i + 1}"></a>
-        <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
-    </span>
-
-    <a th:if="${paginaActual + 1 < velocidades.totalPages}"
-       th:href="@{/(
-           pagina=${paginaActual + 1},
-           tamanoPagina=${tamanoPagina}
-       )}">&gt;</a>
-
-    <a th:if="${paginaActual + 1 < velocidades.totalPages}"
-       th:href="@{/(
-           pagina=${velocidades.totalPages - 1},
-           tamanoPagina=${tamanoPagina}
-       )}">&raquo;</a>
-
-    <span style="margin-left: 20px;">Registros por página:</span>
-    <form method="get" th:action="@{/}" class="pagination-form" style="display:inline;">
-        <select name="tamanoPagina" onchange="this.form.submit()">
-            <option th:value="10" th:selected="${tamanoPagina == 10}">10</option>
-            <option th:value="20" th:selected="${tamanoPagina == 20}">20</option>
-            <option th:value="50" th:selected="${tamanoPagina == 50}">50</option>
-            <option th:value="100" th:selected="${tamanoPagina == 100}">100</option>
-        </select>
-        <input type="hidden" name="pagina" th:value="${paginaActual}" />
-    </form>
 </div>
 
 </body>
