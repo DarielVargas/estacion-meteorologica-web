@@ -184,6 +184,30 @@
         .tabla th {
             background-color: #f0f0f0;
         }
+
+        /* Paginación */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .pagination .actual {
+            background-color: #007b00;
+            color: white;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -348,6 +372,36 @@
             </table>
         </div>
     </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+        <span th:text="'Página ' + ${paginaActual + 1} + ' de ' + ${velocidades.totalPages}"></span>
+
+        <a th:if="${paginaActual > 0}" th:href="@{/(pagina=0, tamanoPagina=${tamanoPagina})}">&laquo;</a>
+        <a th:if="${paginaActual > 0}" th:href="@{/(pagina=${paginaActual - 1}, tamanoPagina=${tamanoPagina})}">&lt;</a>
+
+        <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
+              th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
+              th:classappend="${i == paginaActual} ? 'actual'">
+            <a th:if="${i != paginaActual}" th:href="@{/(pagina=${i}, tamanoPagina=${tamanoPagina})}" th:text="${i + 1}"></a>
+            <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
+        </span>
+
+        <a th:if="${paginaActual + 1 < velocidades.totalPages}" th:href="@{/(pagina=${paginaActual + 1}, tamanoPagina=${tamanoPagina})}">&gt;</a>
+        <a th:if="${paginaActual + 1 < velocidades.totalPages}" th:href="@{/(pagina=${velocidades.totalPages - 1}, tamanoPagina=${tamanoPagina})}">&raquo;</a>
+
+        <span style="margin-left: 10px;">Registros por página:</span>
+        <form method="get" th:action="@{/}" style="display:inline;">
+            <select name="tamanoPagina" onchange="this.form.submit()">
+                <option th:value="10" th:selected="${tamanoPagina == 10}">10</option>
+                <option th:value="20" th:selected="${tamanoPagina == 20}">20</option>
+                <option th:value="50" th:selected="${tamanoPagina == 50}">50</option>
+                <option th:value="100" th:selected="${tamanoPagina == 100}">100</option>
+            </select>
+            <input type="hidden" name="pagina" th:value="${paginaActual}" />
+        </form>
+    </div>
+
 </div>
 </body>
 </html>
