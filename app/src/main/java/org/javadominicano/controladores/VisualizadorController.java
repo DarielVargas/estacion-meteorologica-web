@@ -5,6 +5,7 @@ import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.entidades.DatosVelocidad;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
 
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
@@ -53,11 +54,31 @@ public class VisualizadorController {
         Page<DatosHumedad> humedades = repositorioHumedad.findAll(pageable);
         Page<DatosTemperatura> temperaturas = repositorioTemperatura.findAll(pageable);
 
+        // Últimas mediciones corregidas con los getters reales
+        MedicionesRecientesDTO mediciones = new MedicionesRecientesDTO();
+        mediciones.setTemperatura(
+            repositorioTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getTemperatura()
+        );
+        mediciones.setHumedad(
+            repositorioHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
+        );
+        mediciones.setVelocidadViento(
+            repositorioVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getVelocidad()
+        );
+        mediciones.setDireccionViento(
+            repositorioDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getDireccion()
+        );
+        mediciones.setPrecipitacion(
+            repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
+        );
+
+        // Enviar datos al modelo
         model.addAttribute("velocidades", velocidades);
         model.addAttribute("direcciones", direcciones);
         model.addAttribute("precipitaciones", precipitaciones);
         model.addAttribute("humedades", humedades);
         model.addAttribute("temperaturas", temperaturas);
+        model.addAttribute("mediciones", mediciones);
 
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);

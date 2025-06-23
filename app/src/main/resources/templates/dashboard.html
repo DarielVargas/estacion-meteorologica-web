@@ -70,11 +70,58 @@
         .pagination-form {
             margin-top: 10px;
         }
+
+        .tarjetas-mediciones {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px auto;
+            flex-wrap: wrap;
+        }
+
+        .tarjeta {
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+        }
+
+        .tarjeta h3 {
+            margin: 0;
+        }
+
+        .tarjeta p {
+            font-size: 1.5em;
+        }
     </style>
 </head>
 <body>
 
 <h1>Estación meteorológica - grupo1</h1>
+
+<!-- Tarjetas de mediciones recientes -->
+<div class="tarjetas-mediciones">
+    <div class="tarjeta">
+        <h3>Temperatura</h3>
+        <p th:text="${mediciones.temperatura + ' °C'}"></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Humedad</h3>
+        <p th:text="${mediciones.humedad + ' %'}"></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Vel. Viento</h3>
+        <p th:text="${mediciones.velocidadViento + ' km/h'}"></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Dir. Viento</h3>
+        <p th:text="${mediciones.direccionViento}"></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Precipitación</h3>
+        <p th:text="${mediciones.precipitacion + ' mm'}"></p>
+    </div>
+</div>
 
 <form method="get" th:action="@{/}">
     <button type="submit">Recargar página</button>
