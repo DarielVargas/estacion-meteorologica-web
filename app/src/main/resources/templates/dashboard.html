@@ -318,22 +318,21 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
 
-        <div class="seccion" style="color: red;">
-            <h3>¡Una estación no está comunicando!</h3>
-            <p>Conectados</p>
-            <canvas id="graficoActividadEstaciones"></canvas>
-        </div>
-
-        <div class="seccion">
-            <span style="color: #1e3e58; font-weight: bold; font-size: 18px;" th:text="${totalEstaciones}">3</span>
-            <span style="color: #1e3e58; font-weight: normal; margin-left: 5px; margin-right: 15px;">Total Estaciones</span>
-
-            <span style="color: #339933; font-weight: bold; font-size: 18px;" th:text="${estacionesActivas}">2</span>
-            <span style="color: #339933; font-weight: normal; margin-left: 5px;">Estaciones Activas</span>
-
-            <span style="float: right; font-size: 12px; color: #666;" th:text="${ultimaActualizacion}">Última actualización: 19/06/2025 23:55:12</span>
+            <!-- Contadores de estaciones y mensaje de estado -->
+            <div style="margin-top: 8px; font-weight: bold; font-size: 14px; color: #1a3f78; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: green;" th:text="'Estaciones Activas: ' + ${estacionesActivas}">Estaciones Activas: 0</span>
+                    <span style="color: red; margin-left: 10px;" th:text="'Estaciones Inactivas: ' + ${estacionesInactivas}">Estaciones Inactivas: 0</span>
+                </div>
+                <div>
+                    <span th:if="${estacionesInactivas == 0}" style="font-weight: bold; color: #1a3f78;">Todas las estaciones están comunicando.</span>
+                    <span th:if="${estacionesInactivas > 0}" style="font-weight: bold; color: #a00;">Hay estaciones que no están comunicando.</span>
+                </div>
+                <div style="font-size: 12px; color: #666;">
+                    <span th:text="'Última actualización: ' + ${#dates.format(ultimaFechaActualizacion, 'EEE MMM dd HH:mm:ss z yyyy')}">Última actualización: 23/06/2025 22:44:59</span>
+                </div>
+            </div>
         </div>
     </div>
 

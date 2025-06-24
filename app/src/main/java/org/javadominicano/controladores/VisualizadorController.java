@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class VisualizadorController {
@@ -108,6 +108,39 @@ public class VisualizadorController {
             repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
         );
 
+        // Fecha límite para considerar una estación activa (hace 6 horas)
+        Date ahora = new Date();
+        Date fechaLimite = new Date(ahora.getTime() - 6L * 3600 * 1000); // 6 horas en milis
+
+        int estacionesActivas = 0;
+        int estacionesInactivas = 0;
+        Date ultimaFechaActualizacion = new Date(0); // Epoch como valor inicial mínimo
+
+        List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
+
+        for (EstacionMeteorologica estacion : estaciones) {
+            // Aquí debes implementar la lógica real para obtener la última fecha de datos de cada estación,
+            // por ejemplo consultando repositorioVelocidad u otros.
+            // Por simplicidad, usamos ahora como última fecha para que funcione.
+
+            Date ultimaFechaEstacion = ahora; // <- reemplaza esta línea con la consulta real a datos de la estación
+
+            if (ultimaFechaEstacion != null) {
+                if (ultimaFechaEstacion.after(fechaLimite)) {
+                    estacionesActivas++;
+                } else {
+                    estacionesInactivas++;
+                    estacionesInactivasList.add(estacion);
+                }
+                if (ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
+                    ultimaFechaActualizacion = ultimaFechaEstacion;
+                }
+            } else {
+                estacionesInactivas++;
+                estacionesInactivasList.add(estacion);
+            }
+        }
+
         model.addAttribute("velocidades", velocidades);
         model.addAttribute("direcciones", direcciones);
         model.addAttribute("precipitaciones", precipitaciones);
@@ -116,6 +149,12 @@ public class VisualizadorController {
         model.addAttribute("mediciones", mediciones);
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);
+
+        // Nuevos atributos para la vista
+        model.addAttribute("estacionesActivas", estacionesActivas);
+        model.addAttribute("estacionesInactivas", estacionesInactivas);
+        model.addAttribute("estacionesInactivasList", estacionesInactivasList);
+        model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
 
         return "dashboard";
     }
@@ -143,12 +182,13 @@ public class VisualizadorController {
     // Mostrar formulario de edición
     @GetMapping("/estaciones/editar")
     public String mostrarEditarEstacion(@RequestParam String id, Model model) {
-        Optional<EstacionMeteorologica> estacionOpt = estaciones.stream()
+        EstacionMeteorologica estacionOpt = estaciones.stream()
                 .filter(est -> est.getId().equals(id))
-                .findFirst();
+                .findFirst()
+                .orElse(null);
 
-        if (estacionOpt.isPresent()) {
-            model.addAttribute("estacion", estacionOpt.get());
+        if (estacionOpt != null) {
+            model.addAttribute("estacion", estacionOpt);
             return "editarEstacion";  // Debes crear esta vista Thymeleaf
         } else {
             return "redirect:/";
