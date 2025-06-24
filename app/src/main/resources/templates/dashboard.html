@@ -233,6 +233,8 @@
         <a href="#">Estaciones Meteorológicas</a>
         <a href="#">Alertas</a>
         <a href="#">Reportes</a>
+        <!-- NUEVO: opción “Tablas” -->
+        <a href="#" th:href="@{/tablas}">Tablas</a>
     </nav>
     <form class="logout-form" th:action="@{/logout}" method="post" style="margin-top: 20px;">
         <button type="submit">Cerrar sesión</button>
@@ -319,7 +321,6 @@
                 </tbody>
             </table>
 
-            <!-- Contadores de estaciones y mensaje de estado -->
             <div style="margin-top: 8px; font-weight: bold; font-size: 14px; color: #1a3f78; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <span style="color: green;" th:text="'Estaciones Activas: ' + ${estacionesActivas}">Estaciones Activas: 0</span>
@@ -408,7 +409,6 @@
         </div>
     </div>
 
-    <!-- Paginación -->
     <div class="pagination">
         <span th:text="'Página ' + ${paginaActual + 1} + ' de ' + ${velocidades.totalPages}"></span>
 
