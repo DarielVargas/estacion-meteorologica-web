@@ -248,12 +248,12 @@
 <div class="sidebar">
     <h2>Menú</h2>
     <nav>
-        <a href="#">Dashboard</a>
-        <a href="#">Estaciones Meteorológicas</a>
+        <a th:href="@{/}">Dashboard</a>
+        <a th:href="@{/estaciones}">Estaciones Meteorológicas</a>
         <a href="#">Alertas</a>
         <a href="#">Reportes</a>
         <!-- NUEVO: opción "Tablas" -->
-        <a href="#" th:href="@{/tablas}">Tablas</a>
+        <a th:href="@{/tablas}">Tablas</a>
     </nav>
     <form class="logout-form" th:action="@{/logout}" method="post" style="margin-top: 20px;">
         <button type="submit">Cerrar sesión</button>
