@@ -264,7 +264,7 @@
     <div class="top-section">
         <h1>Dashboard</h1>
         <p>Monitoreo en tiempo real de estaciones meteorológicas</p>
-        <form method="get" th:action="@{/}">
+        <form method="get" th:action="@{/}"> 
             <button type="submit">Recargar página</button>
         </form>
     </div>
@@ -391,7 +391,7 @@
 </div>
 
 <script>
-// Función para generar datos de ejemplo (reemplaza con tus datos reales del servidor)
+// Función para generar datos de ejemplo (solo para fallback o demo)
 function generateSampleData(baseValue, variation) {
     const data = [];
     const labels = [];
@@ -438,12 +438,12 @@ const commonOptions = {
     }
 };
 
-// Datos para las gráficas (puedes conectar estos con tus datos del servidor)
+// Inicialización con datos de ejemplo
 const windData = generateSampleData(45, 20);
 const humidityData = generateSampleData(75, 25);
 const temperatureData = generateSampleData(32, 8);
 
-// Gráfica de Velocidad del Viento
+// Crear las gráficas con datos iniciales (de ejemplo)
 const windCtx = document.getElementById('windChart').getContext('2d');
 const windChart = new Chart(windCtx, {
     type: 'line',
@@ -478,7 +478,6 @@ const windChart = new Chart(windCtx, {
     }
 });
 
-// Gráfica de Humedad
 const humidityCtx = document.getElementById('humidityChart').getContext('2d');
 const humidityChart = new Chart(humidityCtx, {
     type: 'line',
@@ -515,7 +514,6 @@ const humidityChart = new Chart(humidityCtx, {
     }
 });
 
-// Gráfica de Temperatura
 const temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
 const temperatureChart = new Chart(temperatureCtx, {
     type: 'line',
@@ -550,51 +548,40 @@ const temperatureChart = new Chart(temperatureCtx, {
     }
 });
 
-// Función para actualizar las gráficas con datos reales
+// Función para actualizar las gráficas con datos reales desde el backend
 function updateCharts() {
-    // Aquí puedes hacer una llamada AJAX a tu servidor para obtener los datos reales
-    // Por ejemplo:
-    /*
     fetch('/api/datos-meteorologicos')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Respuesta no OK');
+            return response.json();
+        })
         .then(data => {
             // Actualizar gráfica de viento
             windChart.data.labels = data.wind.labels;
             windChart.data.datasets[0].data = data.wind.values;
             windChart.update();
-            
+
             // Actualizar gráfica de humedad
             humidityChart.data.labels = data.humidity.labels;
             humidityChart.data.datasets[0].data = data.humidity.values;
             humidityChart.update();
-            
+
             // Actualizar gráfica de temperatura
             temperatureChart.data.labels = data.temperature.labels;
             temperatureChart.data.datasets[0].data = data.temperature.values;
             temperatureChart.update();
+        })
+        .catch(error => {
+            console.error('Error al obtener datos meteorológicos:', error);
+            // Opcional: puedes dejar las gráficas con datos de ejemplo o mostrar un mensaje al usuario
         });
-    */
-    
-    // Simulación de actualización con datos aleatorios (para demo)
-    const newWindData = generateSampleData(45, 20);
-    const newHumidityData = generateSampleData(75, 25);
-    const newTemperatureData = generateSampleData(32, 8);
-    
-    windChart.data.labels = newWindData.labels;
-    windChart.data.datasets[0].data = newWindData.data;
-    windChart.update('none');
-    
-    humidityChart.data.labels = newHumidityData.labels;
-    humidityChart.data.datasets[0].data = newHumidityData.data;
-    humidityChart.update('none');
-    
-    temperatureChart.data.labels = newTemperatureData.labels;
-    temperatureChart.data.datasets[0].data = newTemperatureData.data;
-    temperatureChart.update('none');
 }
 
-// Actualizar gráficas cada 30 segundos
+// Actualizar gráficas cada 30 segundos con datos reales
 setInterval(updateCharts, 30000);
+
+// Actualizar inmediatamente al cargar la página
+updateCharts();
 </script>
 
 </body>
