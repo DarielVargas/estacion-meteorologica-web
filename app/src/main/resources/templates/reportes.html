@@ -91,7 +91,10 @@
                     <span class="report-title" th:text="${rep.titulo}"></span>
                     <span class="report-station" th:text="${rep.estacion}"></span>
                 </div>
-                <a href="#" class="download-btn">&#x2B07;</a>
+                <div>
+                    <a th:href="@{/reportes/ver/{id}(id=${rep.id})}" style="margin-right:10px;">Ver</a>
+                    <a th:href="@{/reportes/descargar/{id}(id=${rep.id})}" class="download-btn">&#x2B07;</a>
+                </div>
             </div>
         </div>
     </div>
