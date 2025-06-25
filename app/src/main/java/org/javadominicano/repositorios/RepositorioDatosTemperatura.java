@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.sql.Timestamp;
 
 public interface RepositorioDatosTemperatura extends JpaRepository<DatosTemperatura, Integer> {
 
@@ -13,4 +14,6 @@ public interface RepositorioDatosTemperatura extends JpaRepository<DatosTemperat
 
     @Query("SELECT d FROM DatosTemperatura d ORDER BY d.fecha DESC")
     List<DatosTemperatura> findTopByOrderByFechaDesc(Pageable pageable);
+
+    List<DatosTemperatura> findByFechaBetweenOrderByFechaAsc(Timestamp inicio, Timestamp fin);
 }

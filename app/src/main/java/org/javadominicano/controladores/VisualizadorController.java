@@ -50,7 +50,7 @@ public class VisualizadorController {
     private RepositorioDatosTemperatura repositorioTemperatura;
 
     // Lista estática para simular base de datos de estaciones
-    private static List<EstacionMeteorologica> estaciones = new ArrayList<>();
+    public static List<EstacionMeteorologica> estaciones = new ArrayList<>();
 
     // Inicializa la lista si está vacía
     public VisualizadorController() {

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.sql.Timestamp;
 
 public interface RepositorioDatosVelocidad extends JpaRepository<DatosVelocidad, Long> {
 
@@ -18,4 +19,6 @@ public interface RepositorioDatosVelocidad extends JpaRepository<DatosVelocidad,
     // NUEVO MÉTODO: obtener la última fecha por cada sensor
     @Query("SELECT d.sensorId, MAX(d.fecha) FROM DatosVelocidad d GROUP BY d.sensorId")
     List<Object[]> findLastFechaBySensor();
+
+    List<DatosVelocidad> findByFechaBetweenOrderByFechaAsc(Timestamp inicio, Timestamp fin);
 }

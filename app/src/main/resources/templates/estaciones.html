@@ -31,7 +31,7 @@
         <a th:href="@{/}">Dashboard</a>
         <a th:href="@{/estaciones}" class="actual">Estaciones Meteorológicas</a>
         <a href="#">Alertas</a>
-        <a href="#">Reportes</a>
+        <a th:href="@{/reportes}">Reportes</a>
         <a th:href="@{/tablas}">Tablas</a>
     </nav>
     <form class="logout-form" th:action="@{/logout}" method="post">
