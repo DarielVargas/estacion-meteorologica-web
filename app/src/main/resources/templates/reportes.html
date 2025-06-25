@@ -60,20 +60,23 @@
         <div class="report-generator">
             <form method="get" th:action="@{/reportes}">
                 <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" />
+                <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
 
                 <label for="estacion">Estación:</label>
                 <select id="estacion" name="estacion">
-                    <option value="all">Todas las estaciones</option>
-                    <option>Estación1</option>
-                    <option>Estación2</option>
+                    <option value="all" th:selected="${estacionSeleccionada=='all'}">Todas las estaciones</option>
+                    <option th:each="est : ${estaciones}"
+                            th:value="${est.nombre}"
+                            th:text="${est.nombre}"
+                            th:selected="${est.nombre==estacionSeleccionada}">
+                    </option>
                 </select>
 
                 <label for="tipo">Tipo:</label>
                 <select id="tipo" name="tipo">
-                    <option value="diario">Diario</option>
-                    <option value="semanal">Semanal</option>
-                    <option value="mensual">Mensual</option>
+                    <option value="diario" th:selected="${tipoSeleccionado=='diario'}">Diario</option>
+                    <option value="semanal" th:selected="${tipoSeleccionado=='semanal'}">Semanal</option>
+                    <option value="mensual" th:selected="${tipoSeleccionado=='mensual'}">Mensual</option>
                 </select>
 
                 <button type="submit">Generar Reporte</button>
@@ -83,26 +86,10 @@
         <div class="recent-reports">
             <h2>Reportes Recientes</h2>
 
-            <div class="report-item">
+            <div class="report-item" th:each="rep : ${reportesGenerados}">
                 <div class="report-info">
-                    <span class="report-title">Reporte Diario - 2023-12-14</span>
-                    <span class="report-station">Todas las estaciones</span>
-                </div>
-                <a href="#" class="download-btn">&#x2B07;</a>
-            </div>
-
-            <div class="report-item">
-                <div class="report-info">
-                    <span class="report-title">Reporte Semanal - 2023-12-11 a 2023-12-17</span>
-                    <span class="report-station">Estación1</span>
-                </div>
-                <a href="#" class="download-btn">&#x2B07;</a>
-            </div>
-
-            <div class="report-item">
-                <div class="report-info">
-                    <span class="report-title">Reporte Mensual - Noviembre 2023</span>
-                    <span class="report-station">Estación2</span>
+                    <span class="report-title" th:text="${rep.titulo}"></span>
+                    <span class="report-station" th:text="${rep.estacion}"></span>
                 </div>
                 <a href="#" class="download-btn">&#x2B07;</a>
             </div>
