@@ -19,11 +19,46 @@
         .content h1 { color: #1a3f78; margin-bottom: 5px; }
         .content .subtitle { color: #555; margin-bottom: 25px; }
 
-        .report-generator { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 500px; margin-bottom: 30px; }
-        .report-generator form { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
-        .report-generator label { margin-right: 8px; font-weight: bold; color: #1a3f78; }
-        .report-generator select, .report-generator input[type=date] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 160px; }
-        .report-generator button { background-color: #007bff; color: white; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; }
+        .report-generator {
+            background: #1F4171;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+        .report-generator form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            align-items: center;
+        }
+        .report-generator label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .report-generator select,
+        .report-generator input[type=date] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            color: #333;
+        }
+        .report-generator button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .report-generator .full-width {
+            grid-column: span 2;
+            text-align: right;
+        }
 
         .recent-reports { margin-top: 10px; }
         .recent-reports h2 { color: #1a3f78; margin-bottom: 10px; }
@@ -34,7 +69,7 @@
         .download-btn { color: #1a3f78; text-decoration: none; font-size: 20px; }
 
         @media(max-width: 600px) {
-            .report-generator form { flex-direction: column; align-items: stretch; }
+            .report-generator form { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -59,27 +94,35 @@
 
         <div class="report-generator">
             <form method="get" th:action="@{/reportes}">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
+                <div class="field">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
+                </div>
 
-                <label for="estacion">Estación:</label>
-                <select id="estacion" name="estacion">
-                    <option value="all" th:selected="${estacionSeleccionada=='all'}">Todas las estaciones</option>
-                    <option th:each="est : ${estaciones}"
-                            th:value="${est.nombre}"
-                            th:text="${est.nombre}"
-                            th:selected="${est.nombre==estacionSeleccionada}">
-                    </option>
-                </select>
+                <div class="field">
+                    <label for="estacion">Estación:</label>
+                    <select id="estacion" name="estacion">
+                        <option value="all" th:selected="${estacionSeleccionada=='all'}">Todas las estaciones</option>
+                        <option th:each="est : ${estaciones}"
+                                th:value="${est.nombre}"
+                                th:text="${est.nombre}"
+                                th:selected="${est.nombre==estacionSeleccionada}">
+                        </option>
+                    </select>
+                </div>
 
-                <label for="tipo">Tipo:</label>
-                <select id="tipo" name="tipo">
-                    <option value="diario" th:selected="${tipoSeleccionado=='diario'}">Diario</option>
-                    <option value="semanal" th:selected="${tipoSeleccionado=='semanal'}">Semanal</option>
-                    <option value="mensual" th:selected="${tipoSeleccionado=='mensual'}">Mensual</option>
-                </select>
+                <div class="field">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo" name="tipo">
+                        <option value="diario" th:selected="${tipoSeleccionado=='diario'}">Diario</option>
+                        <option value="semanal" th:selected="${tipoSeleccionado=='semanal'}">Semanal</option>
+                        <option value="mensual" th:selected="${tipoSeleccionado=='mensual'}">Mensual</option>
+                    </select>
+                </div>
 
-                <button type="submit">Generar Reporte</button>
+                <div class="full-width">
+                    <button type="submit">Generar Reporte</button>
+                </div>
             </form>
         </div>
 
