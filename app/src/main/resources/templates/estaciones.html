@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gestión de Estaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
+        body { display:flex; min-height:100vh; background-color:#f4f6f9; }
+        .sidebar{ width:230px;background-color:#1a3f78;color:white;padding:20px; }
+        .sidebar h2{ font-size:20px;margin-bottom:30px; }
+        .sidebar nav a{ color:white;text-decoration:none;display:block;margin:10px 0;padding:10px;border-radius:5px; }
+        .sidebar nav a:hover{ background-color:#2a4d90; }
+        .logout-form{ margin-top:20px; }
+        .logout-form button{ width:100%;background-color:#dc3545;color:white;border:none;border-radius:5px;padding:10px;cursor:pointer;font-weight:bold; }
+        .content{ flex:1;padding:30px; }
+        .seccion{ background:white;border-radius:10px;padding:20px;box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+        .seccion table{ width:100%;border-collapse:collapse; }
+        .seccion th,.seccion td{ padding:8px;border:1px solid #ddd;font-size:14px; }
+        .btn{ padding:5px 10px;border:none;border-radius:5px;font-size:13px;cursor:pointer;color:white; }
+        .btn-edit{ background-color:#007bff; }
+        .btn-delete{ background-color:#dc3545; }
+        .btn-add{ background-color:#28a745;margin-bottom:15px;padding:8px 16px;border:none;border-radius:5px;color:white;cursor:pointer; }
+        .no-stations{ text-align:center;color:#666;font-style:italic;padding:20px; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>Menú</h2>
+    <nav>
+        <a th:href="@{/}">Dashboard</a>
+        <a th:href="@{/estaciones}" class="actual">Estaciones Meteorológicas</a>
+        <a href="#">Alertas</a>
+        <a href="#">Reportes</a>
+        <a th:href="@{/tablas}">Tablas</a>
+    </nav>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">Cerrar sesión</button>
+    </form>
+</div>
+
+<div class="content">
+    <div class="seccion">
+        <h3>Estaciones Meteorológicas</h3>
+        <form th:action="@{/estaciones/nueva}" method="get">
+            <button type="submit" class="btn-add">Añadir Estación</button>
+        </form>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="estacion : ${estaciones}">
+                    <td th:text="${estacion.id}">EST001</td>
+                    <td th:text="${estacion.nombre}">Estación1</td>
+                    <td th:text="${estacion.ubicacion}">Santiago</td>
+                    <td>
+                        <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
+                            <input type="hidden" name="id" th:value="${estacion.id}" />
+                            <button type="submit" class="btn btn-edit">Editar</button>
+                        </form>
+                        <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
+                            <input type="hidden" name="id" th:value="${estacion.id}" />
+                            <button type="submit" class="btn btn-delete">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(estaciones)}">
+                    <td colspan="4" class="no-stations">No hay estaciones meteorológicas registradas</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-top:8px;font-weight:bold;font-size:14px;color:#1a3f78;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <span style="color:green;" th:text="'Estaciones Activas: ' + ${estacionesActivas}">Estaciones Activas: 0</span>
+                <span style="color:red;margin-left:10px;" th:text="'Estaciones Inactivas: ' + ${estacionesInactivas}">Estaciones Inactivas: 0</span>
+            </div>
+            <div style="font-size:12px;color:#666;">
+                <span th:text="'Última actualización: ' + ${#dates.format(ultimaFechaActualizacion, 'EEE MMM dd HH:mm:ss z yyyy')}">Última actualización: --</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
