@@ -1,4 +1,4 @@
-package com.javadominicano.configuracion;
+package org.javadominicano.configuracion;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

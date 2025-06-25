@@ -6,8 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
-    "org.javadominicano",              // Controladores, entidades, repositorios
-    "com.javadominicano.configuracion" // SeguridadConfig
+    "org.javadominicano"
 })
 public class EstacionWebApplication {
     public static void main(String[] args) {
