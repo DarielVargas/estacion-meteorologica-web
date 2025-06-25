@@ -82,6 +82,7 @@
         .report-info { display: flex; flex-direction: column; }
         .report-title { font-weight: bold; color: white; }
         .report-station { font-size: 14px; color: #e0e0e0; }
+        .view-btn { color: white; text-decoration: none; margin-right: 10px; }
         .download-btn { color: white; text-decoration: none; font-size: 20px; }
 
         @media(max-width: 600px) {
@@ -151,7 +152,7 @@
                     <span class="report-station" th:text="${rep.estacion}"></span>
                 </div>
                 <div>
-                    <a th:href="@{/reportes/ver/{id}(id=${rep.id})}" style="margin-right:10px;">Ver</a>
+                    <a th:href="@{/reportes/ver/{id}(id=${rep.id})}" class="view-btn">Ver</a>
                     <a th:href="@{/reportes/descargar/{id}(id=${rep.id})}" class="download-btn">&#x2B07;</a>
                 </div>
             </div>
