@@ -39,20 +39,31 @@ public class SeguridadConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        String rawPassword = "dariel1234";
-        String encodedPassword = passwordEncoder().encode(rawPassword);
-
-        UserDetails user = User.builder()
+        // Usuario Dariel
+        String rawPasswordDariel = "dariel1234";
+        String encodedDariel = passwordEncoder().encode(rawPasswordDariel);
+        UserDetails dariel = User.builder()
             .username("dariel")
-            .password(encodedPassword)
+            .password(encodedDariel)
+            .roles("USER")
+            .build();
+
+        // Usuario Scarlet
+        String rawPasswordScarlet = "scarlet1234";
+        String encodedScarlet = passwordEncoder().encode(rawPasswordScarlet);
+        UserDetails scarlet = User.builder()
+            .username("scarlet")
+            .password(encodedScarlet)
             .roles("USER")
             .build();
 
         // DEBUG
-        System.out.println("PRUEBA - Usuario cargado: " + user.getUsername());
-        System.out.println("PRUEBA - Contraseña en texto plano: " + rawPassword);
+        System.out.println("PRUEBA - Usuario cargado: " + dariel.getUsername());
+        System.out.println("PRUEBA - Contraseña en texto plano: " + rawPasswordDariel);
+        System.out.println("PRUEBA - Usuario cargado: " + scarlet.getUsername());
+        System.out.println("PRUEBA - Contraseña en texto plano: " + rawPasswordScarlet);
 
-        return new InMemoryUserDetailsManager(user);
+        return new InMemoryUserDetailsManager(dariel, scarlet);
     }
 
     @Bean
