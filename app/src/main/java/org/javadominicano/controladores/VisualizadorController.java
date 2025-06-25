@@ -221,4 +221,43 @@ public class VisualizadorController {
         estaciones.add(estacion);
         return "redirect:/";
     }
+
+    // Listar estaciones en página independiente
+    @GetMapping("/estaciones")
+    public String listarEstaciones(Model model) {
+        Date ahora = new Date();
+        Date fechaLimite = new Date(ahora.getTime() - 6L * 3600 * 1000);
+
+        int estacionesActivas = 0;
+        int estacionesInactivas = 0;
+        Date ultimaFechaActualizacion = new Date(0);
+        List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
+
+        for (EstacionMeteorologica estacion : estaciones) {
+            Date ultimaFechaEstacion = ahora; // reemplazar con consulta real
+
+            if (ultimaFechaEstacion != null) {
+                if (ultimaFechaEstacion.after(fechaLimite)) {
+                    estacionesActivas++;
+                } else {
+                    estacionesInactivas++;
+                    estacionesInactivasList.add(estacion);
+                }
+                if (ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
+                    ultimaFechaActualizacion = ultimaFechaEstacion;
+                }
+            } else {
+                estacionesInactivas++;
+                estacionesInactivasList.add(estacion);
+            }
+        }
+
+        model.addAttribute("estaciones", estaciones);
+        model.addAttribute("estacionesActivas", estacionesActivas);
+        model.addAttribute("estacionesInactivas", estacionesInactivas);
+        model.addAttribute("estacionesInactivasList", estacionesInactivasList);
+        model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
+
+        return "estaciones";
+    }
 }
