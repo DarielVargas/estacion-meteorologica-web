@@ -25,6 +25,9 @@
     button{ background-color:#1a3f78;color:white;border:none;border-radius:4px;padding:8px 16px;cursor:pointer; }
     label{ margin-right:8px;font-weight:bold;color:#1a3f78; }
     input[type=date]{ padding:6px;border:1px solid #ccc;border-radius:4px; }
+    .pagination{ margin-top:20px;display:flex;align-items:center;flex-wrap:wrap;gap:10px; }
+    .pagination a,.pagination span{ padding:6px 12px;background:white;border:1px solid #ccc;border-radius:4px;text-decoration:none;color:black; }
+    .pagination .actual{ background-color:#007b00;color:white;font-weight:bold; }
   </style>
 </head>
 <body>
@@ -49,6 +52,8 @@
     <form method="get" th:action="@{/reportes}" style="margin-bottom:20px;">
       <label for="fecha">Fecha:</label>
       <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
+      <input type="hidden" name="pagina" value="0" />
+      <input type="hidden" name="tamanoPagina" th:value="${tamanoPagina}" />
       <button type="submit">Generar</button>
     </form>
 
@@ -123,6 +128,42 @@
         </table>
       </div>
     </div>
+
+    <div th:if="${fecha != null}" class="pagination">
+      <span th:text="'Página ' + (${paginaActual} + 1) + ' de ' + ${velocidades.totalPages}"></span>
+
+      <a th:if="${paginaActual > 0}"
+         th:href="@{/reportes(fecha=${fecha}, pagina=0, tamanoPagina=${tamanoPagina})}">&laquo;</a>
+      <a th:if="${paginaActual > 0}"
+         th:href="@{/reportes(fecha=${fecha}, pagina=${paginaActual - 1}, tamanoPagina=${tamanoPagina})}">&lt;</a>
+
+      <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
+            th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
+            th:classappend="${i == paginaActual}? 'actual'">
+        <a th:if="${i != paginaActual}"
+           th:href="@{/reportes(fecha=${fecha}, pagina=${i}, tamanoPagina=${tamanoPagina})}"
+           th:text="${i + 1}"></a>
+        <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
+      </span>
+
+      <a th:if="${paginaActual + 1 < velocidades.totalPages}"
+         th:href="@{/reportes(fecha=${fecha}, pagina=${paginaActual + 1}, tamanoPagina=${tamanoPagina})}">&gt;</a>
+      <a th:if="${paginaActual + 1 < velocidades.totalPages}"
+         th:href="@{/reportes(fecha=${fecha}, pagina=${velocidades.totalPages - 1}, tamanoPagina=${tamanoPagina})}">&raquo;</a>
+
+      <form method="get" th:action="@{/reportes}" style="display:inline; margin-left:10px;">
+        <input type="hidden" name="fecha" th:value="${fecha}" />
+        <label>Registros por página:</label>
+        <select name="tamanoPagina" onchange="this.form.submit()">
+          <option th:value="10"  th:selected="${tamanoPagina==10}">10</option>
+          <option th:value="20"  th:selected="${tamanoPagina==20}">20</option>
+          <option th:value="50"  th:selected="${tamanoPagina==50}">50</option>
+          <option th:value="100" th:selected="${tamanoPagina==100}">100</option>
+        </select>
+        <input type="hidden" name="pagina" th:value="${paginaActual}" />
+      </form>
+    </div>
+
   </div>
 </body>
 </html>

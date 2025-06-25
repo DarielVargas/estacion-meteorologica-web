@@ -16,6 +16,9 @@ public interface RepositorioDatosDireccion extends JpaRepository<DatosDireccion,
     // Datos por rango de fechas
     List<DatosDireccion> findByFechaBetweenOrderByFechaDesc(Timestamp inicio, Timestamp fin);
 
+    // Datos por rango de fechas con paginación
+    Page<DatosDireccion> findByFechaBetween(Timestamp inicio, Timestamp fin, Pageable pageable);
+
     @Query("SELECT d FROM DatosDireccion d ORDER BY d.fecha DESC")
     List<DatosDireccion> findTopByOrderByFechaDesc(Pageable pageable);
 }

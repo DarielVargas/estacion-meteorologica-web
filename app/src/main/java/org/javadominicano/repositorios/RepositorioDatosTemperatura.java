@@ -1,6 +1,7 @@
 package org.javadominicano.visualizadorweb.repositorios;
 
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,9 @@ public interface RepositorioDatosTemperatura extends JpaRepository<DatosTemperat
 
     // Datos por rango de fechas
     List<DatosTemperatura> findByFechaBetweenOrderByFechaDesc(Timestamp inicio, Timestamp fin);
+
+    // Datos por rango de fechas con paginación
+    Page<DatosTemperatura> findByFechaBetween(Timestamp inicio, Timestamp fin, Pageable pageable);
 
     @Query("SELECT d FROM DatosTemperatura d ORDER BY d.fecha DESC")
     List<DatosTemperatura> findTopByOrderByFechaDesc(Pageable pageable);

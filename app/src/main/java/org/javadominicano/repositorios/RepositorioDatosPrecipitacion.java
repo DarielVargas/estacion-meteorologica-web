@@ -19,6 +19,9 @@ public interface RepositorioDatosPrecipitacion extends JpaRepository<DatosPrecip
     List<DatosPrecipitacion> findByFechaBetweenOrderByFechaDesc(@Param("inicio") Timestamp inicio,
                                                                 @Param("fin") Timestamp fin);
 
+    // Datos por rango de fechas con paginación
+    Page<DatosPrecipitacion> findByFechaBetween(Timestamp inicio, Timestamp fin, Pageable pageable);
+
     @Query("SELECT d FROM DatosPrecipitacion d ORDER BY d.fecha DESC")
     List<DatosPrecipitacion> findTopByOrderByFechaDesc(Pageable pageable);
 }
