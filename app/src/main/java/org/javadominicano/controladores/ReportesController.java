@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +57,30 @@ public class ReportesController {
         return estaciones;
     }
 
+    @PostMapping("/reportes")
+    public String generarReporte(
+            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam("estacion") String estacion,
+            @RequestParam("tipo") String tipo) {
+
+        String titulo = "";
+        if ("diario".equals(tipo)) {
+            titulo = "Reporte Diario - " + fecha;
+        } else if ("semanal".equals(tipo)) {
+            LocalDate finSemana = fecha.plusDays(6);
+            titulo = "Reporte Semanal - " + fecha + " a " + finSemana;
+        } else if ("mensual".equals(tipo)) {
+            String mes = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+            titulo = "Reporte Mensual - " + mes + " " + fecha.getYear();
+        }
+
+        String estacionNombre = "all".equals(estacion) ? "Todas las estaciones" : estacion;
+        ReporteGenerado rep = new ReporteGenerado(nextId++, titulo, estacionNombre, fecha, tipo);
+        reportesGenerados.add(0, rep);
+
+        return "redirect:/reportes?fecha=" + fecha + "&estacion=" + estacion + "&tipo=" + tipo;
+    }
+
     @GetMapping("/reportes")
     public String mostrarReportes(
             @RequestParam(value = "fecha", required = false)
@@ -88,22 +113,7 @@ public class ReportesController {
             temperaturas = repoTemperatura.findByFechaBetween(inicio, fin, pr);
         }
 
-        if (fecha != null && tipo != null && estacion != null) {
-            String titulo = "";
-            if ("diario".equals(tipo)) {
-                titulo = "Reporte Diario - " + fecha;
-            } else if ("semanal".equals(tipo)) {
-                LocalDate finSemana = fecha.plusDays(6);
-                titulo = "Reporte Semanal - " + fecha + " a " + finSemana;
-            } else if ("mensual".equals(tipo)) {
-                String mes = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
-                titulo = "Reporte Mensual - " + mes + " " + fecha.getYear();
-            }
 
-            String estacionNombre = "all".equals(estacion) ? "Todas las estaciones" : estacion;
-            ReporteGenerado rep = new ReporteGenerado(nextId++, titulo, estacionNombre, fecha, tipo);
-            reportesGenerados.add(0, rep);
-        }
 
         model.addAttribute("velocidades", velocidades);
         model.addAttribute("direcciones", direcciones);

@@ -93,7 +93,7 @@
         <p class="subtitle">Generación de reportes y análisis</p>
 
         <div class="report-generator">
-            <form method="get" th:action="@{/reportes}">
+            <form method="post" th:action="@{/reportes}">
                 <div class="field">
                     <label for="fecha">Fecha:</label>
                     <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
