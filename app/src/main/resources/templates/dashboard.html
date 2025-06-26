@@ -329,6 +329,18 @@
             text-align: center;
         }
 
+        .info-bar-message.success {
+            color: #28a745;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-bar-message.success .checkmark {
+            font-size: 18px;
+        }
+
         .info-bar-message.inactive {
             color: #a00;
         }
@@ -509,19 +521,20 @@
     <div class="info-bar">
         <div class="section">
             <div class="number" th:text="${#lists.size(estaciones)}">0</div>
-            <div class="label">Total</div>
+            <div class="label">Total de estaciones</div>
         </div>
         <div class="section">
             <div class="number" th:text="${estacionesActivas}">0</div>
-            <div class="label">Activas</div>
+            <div class="label">Estaciones activas</div>
         </div>
         <div class="section">
             <div class="number" th:text="${estacionesInactivas}">0</div>
-            <div class="label">Inactivas</div>
+            <div class="label">Estaciones inactivas</div>
         </div>
     </div>
-    <div th:if="${estacionesInactivas == 0}" class="info-bar-message">
-        Todas las estaciones están comunicando
+    <div th:if="${estacionesInactivas == 0}" class="info-bar-message success">
+        <span class="checkmark">&#10004;</span>
+        <strong>Todas las estaciones están comunicando</strong>
     </div>
     <div th:if="${estacionesInactivas > 0}" class="info-bar-message inactive" th:text="'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'">
         Hay una estación que no está comunicando (EST001)
