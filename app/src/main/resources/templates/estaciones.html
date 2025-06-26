@@ -5,23 +5,48 @@
     <title>Gestión de Estaciones</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
-        body { display:flex; min-height:100vh; background-color:#f4f6f9; }
-        .sidebar{ width:230px;background-color:#1a3f78;color:white;padding:20px; }
-        .sidebar h2{ font-size:20px;margin-bottom:30px; }
-        .sidebar nav a{ color:white;text-decoration:none;display:block;margin:10px 0;padding:10px;border-radius:5px; }
-        .sidebar nav a:hover{ background-color:#2a4d90; }
-        .logout-form{ margin-top:20px; }
-        .logout-form button{ width:100%;background-color:#dc3545;color:white;border:none;border-radius:5px;padding:10px;cursor:pointer;font-weight:bold; }
-        .content{ flex:1;padding:30px; }
-        .seccion{ background:white;border-radius:10px;padding:20px;box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-        .seccion table{ width:100%;border-collapse:collapse; }
-        .seccion th,.seccion td{ padding:8px;border:1px solid #ddd;font-size:14px; }
-        .btn{ padding:5px 10px;border:none;border-radius:5px;font-size:13px;cursor:pointer;color:white; }
-        .btn-edit{ background-color:#007bff; }
-        .btn-delete{ background-color:#dc3545; }
-        .btn-add{ background-color:#28a745;margin-bottom:15px;padding:8px 16px;border:none;border-radius:5px;color:white;cursor:pointer; }
-        .no-stations{ text-align:center;color:#666;font-style:italic;padding:20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: #f4f6f9; }
+        .sidebar { width: 230px; background-color: #1a3f78; color: white; padding: 20px; }
+        .sidebar h2 { font-size: 20px; margin-bottom: 30px; }
+        .sidebar nav a { color: white; text-decoration: none; display: block; margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .sidebar nav a:hover { background-color: #2a4d90; }
+        .logout-form { margin-top: 20px; }
+        .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
+
+        .content { flex: 1; padding: 30px; }
+        .estaciones-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .estaciones-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .estaciones-header h1 { color: #1a3f78; margin-bottom: 5px; }
+        .estaciones-header p { color: #555; }
+        .btn-add { background-color: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; font-size: 14px; white-space: nowrap; }
+        th { background-color: #f1f3f7; }
+
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; }
+        .badge.active { background-color: #28a745; }
+        .badge.inactive { background-color: #dc3545; }
+
+        .actions button { border: none; background: none; cursor: pointer; font-size: 16px; margin-right: 5px; }
+        .actions button.edit { color: #007bff; }
+        .actions button.delete { color: #dc3545; }
+        .actions button.signal { color: #1a3f78; }
+
+        .stats { display: flex; gap: 15px; margin-top: 20px; }
+        .stat-card { flex: 1; background-color: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-card .number { font-size: 26px; font-weight: bold; color: #1a3f78; }
+        .stat-card .label { color: #555; font-size: 14px; margin-top: 4px; }
+
+        .no-stations { text-align: center; color: #666; font-style: italic; padding: 20px; }
+
+        @media(max-width: 600px) {
+            .estaciones-header { flex-direction: column; align-items: flex-start; }
+            .estaciones-header form { margin-top: 10px; }
+            th, td { font-size: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -40,43 +65,70 @@
 </div>
 
 <div class="content">
-    <div class="seccion">
-        <h3>Estaciones Meteorológicas</h3>
-        <form th:action="@{/estaciones/nueva}" method="get">
-            <button type="submit" class="btn-add">Añadir Estación</button>
-        </form>
-        <table>
-            <thead>
-                <tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Acciones</th></tr>
-            </thead>
-            <tbody>
+    <div class="estaciones-container">
+        <div class="estaciones-header">
+            <div>
+                <h1>Estaciones Meteorológicas</h1>
+                <p>Listado y estado de las estaciones registradas</p>
+            </div>
+            <form th:action="@{/estaciones/nueva}" method="get">
+                <button type="submit" class="btn-add">Nueva Estación</button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Última Actualización</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
                 <tr th:each="estacion : ${estaciones}">
                     <td th:text="${estacion.id}">EST001</td>
                     <td th:text="${estacion.nombre}">Estación1</td>
                     <td th:text="${estacion.ubicacion}">Santiago</td>
                     <td>
+                        <span class="badge active">Activo</span>
+                        <span style="margin-left:4px;">&#x1F4F6;</span>
+                    </td>
+                    <td th:text="${#dates.format(ultimaFechaActualizacion, 'dd/MM/yyyy HH:mm')}" >01/01/2024 10:00</td>
+                    <td class="actions">
+                        <button type="button" class="signal">&#x1F4F6;</button>
                         <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
                             <input type="hidden" name="id" th:value="${estacion.id}" />
-                            <button type="submit" class="btn btn-edit">Editar</button>
+                            <button type="submit" class="edit">✏️</button>
                         </form>
                         <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                             <input type="hidden" name="id" th:value="${estacion.id}" />
-                            <button type="submit" class="btn btn-delete">Eliminar</button>
+                            <button type="submit" class="delete">🗑️</button>
                         </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(estaciones)}">
-                    <td colspan="4" class="no-stations">No hay estaciones meteorológicas registradas</td>
+                    <td colspan="6" class="no-stations">No hay estaciones meteorológicas registradas</td>
                 </tr>
-            </tbody>
-        </table>
-        <div style="margin-top:8px;font-weight:bold;font-size:14px;color:#1a3f78;display:flex;justify-content:space-between;align-items:center;">
-            <div>
-                <span style="color:green;" th:text="'Estaciones Activas: ' + ${estacionesActivas}">Estaciones Activas: 0</span>
-                <span style="color:red;margin-left:10px;" th:text="'Estaciones Inactivas: ' + ${estacionesInactivas}">Estaciones Inactivas: 0</span>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" th:text="${estaciones.size()}">0</div>
+                <div class="label">Total de Estaciones</div>
             </div>
-            <div style="font-size:12px;color:#666;">
-                <span th:text="'Última actualización: ' + ${#dates.format(ultimaFechaActualizacion, 'EEE MMM dd HH:mm:ss z yyyy')}">Última actualización: --</span>
+            <div class="stat-card">
+                <div class="number" th:text="${estacionesActivas}">0</div>
+                <div class="label">Activas</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" th:text="${estacionesInactivas}">0</div>
+                <div class="label">Inactivas</div>
             </div>
         </div>
     </div>
