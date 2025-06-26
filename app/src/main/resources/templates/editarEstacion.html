@@ -3,44 +3,79 @@
 <head>
     <meta charset="UTF-8" />
     <title>Editar Estación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
+
+        .form-container {
+            background-color: white;
+            padding: 30px 35px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            width: 420px;
+        }
+
+        h2 {
+            color: #1a3f78;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         label {
             display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #1f4dd9;
+            color: white;
+            padding: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #163fbd;
+        }
+
+        .back-link {
+            display: block;
             margin-top: 15px;
+            text-align: center;
+            color: #1a3f78;
+            text-decoration: none;
             font-weight: bold;
         }
-        input {
-            width: 300px;
-            padding: 6px;
-            margin-top: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #007bff;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        a {
-            display: inline-block;
-            margin-top: 15px;
-            color: #555;
-            text-decoration: none;
-        }
-        a:hover {
+
+        .back-link:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
+<div class="form-container">
     <h2>Editar Estación Meteorológica</h2>
     <form th:action="@{/estaciones/editar}" th:object="${estacion}" method="post">
         <label>ID</label>
@@ -55,6 +90,7 @@
         <button type="submit">Guardar Cambios</button>
     </form>
 
-    <a th:href="@{/}">Volver al Dashboard</a>
+    <a th:href="@{/}" class="back-link">Volver al Dashboard</a>
+</div>
 </body>
 </html>
