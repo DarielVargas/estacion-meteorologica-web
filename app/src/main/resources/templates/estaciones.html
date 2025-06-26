@@ -15,7 +15,16 @@
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
 
         .content { flex: 1; padding: 30px; }
-        .estaciones-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .estaciones-container {
+            background: #e7f0ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+        .estaciones-container:hover {
+            background-color: #dbe9ff;
+        }
         .estaciones-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .estaciones-header h1 { color: #1a3f78; margin-bottom: 5px; }
         .estaciones-header p { color: #555; }
