@@ -21,7 +21,8 @@ public class SeguridadConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/dashboard", "/api/datos-meteorologicos").hasAnyRole("USER", "ADMIN")
+                .anyRequest().hasRole("ADMIN")
             )
             .formLogin(form -> form
                 .loginPage("/login")
@@ -45,7 +46,7 @@ public class SeguridadConfig {
         UserDetails dariel = User.builder()
             .username("dariel")
             .password(encodedDariel)
-            .roles("USER")
+            .roles("ADMIN")
             .build();
 
         // Usuario Scarlet
