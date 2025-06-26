@@ -176,7 +176,7 @@ public class VisualizadorController {
     @PostMapping("/estaciones/eliminar")
     public String eliminarEstacion(@RequestParam String id) {
         estaciones.removeIf(est -> est.getId().equals(id));
-        return "redirect:/";
+        return "redirect:/estaciones";
     }
 
     // Mostrar formulario de edición
@@ -204,7 +204,7 @@ public class VisualizadorController {
                 break;
             }
         }
-        return "redirect:/";
+        return "redirect:/estaciones";
     }
 
     // Mostrar formulario nueva estación
@@ -219,7 +219,7 @@ public class VisualizadorController {
     @PostMapping("/estaciones/nueva")
     public String guardarNuevaEstacion(@ModelAttribute EstacionMeteorologica estacion) {
         estaciones.add(estacion);
-        return "redirect:/";
+        return "redirect:/estaciones";
     }
 
     // Listar estaciones en página independiente
