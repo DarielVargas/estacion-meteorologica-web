@@ -288,6 +288,50 @@
             font-style: italic;
             padding: 20px;
         }
+
+        /* Barra informativa de estaciones */
+        .info-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .info-bar .section {
+            flex: 1;
+            border-right: 1px solid #eee;
+            text-align: center;
+        }
+
+        .info-bar .section:last-child {
+            border-right: none;
+        }
+
+        .info-bar .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a3f78;
+        }
+
+        .info-bar .label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-bar-message {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #1a3f78;
+            text-align: center;
+        }
+
+        .info-bar-message.inactive {
+            color: #a00;
+        }
     </style>
 </head>
 <body>
@@ -432,19 +476,6 @@
                 </tbody>
             </table>
 
-            <div style="margin-top: 8px; font-weight: bold; font-size: 14px; color: #1a3f78; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <span style="color: green;" th:text="'Estaciones Activas: ' + ${estacionesActivas}">Estaciones Activas: 0</span>
-                    <span style="color: red; margin-left: 10px;" th:text="'Estaciones Inactivas: ' + ${estacionesInactivas}">Estaciones Inactivas: 0</span>
-                </div>
-                <div>
-                    <span th:if="${estacionesInactivas == 0}" style="font-weight: bold; color: #1a3f78;">Todas las estaciones están comunicando.</span>
-                    <span th:if="${estacionesInactivas > 0}" style="font-weight: bold; color: #a00;">Hay estaciones que no están comunicando.</span>
-                </div>
-                <div style="font-size: 12px; color: #666;">
-                    <span th:text="'Última actualización: ' + ${#dates.format(ultimaFechaActualizacion, 'EEE MMM dd HH:mm:ss z yyyy')}">Última actualización: mar jun 24 10:07:23 VET 2025</span>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -473,6 +504,27 @@
             </div>
             <div class="chart-info">Datos actualizados en tiempo real</div>
         </div>
+    </div>
+
+    <div class="info-bar">
+        <div class="section">
+            <div class="number" th:text="${#lists.size(estaciones)}">0</div>
+            <div class="label">Total</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${estacionesActivas}">0</div>
+            <div class="label">Activas</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${estacionesInactivas}">0</div>
+            <div class="label">Inactivas</div>
+        </div>
+    </div>
+    <div th:if="${estacionesInactivas == 0}" class="info-bar-message">
+        Todas las estaciones están comunicando
+    </div>
+    <div th:if="${estacionesInactivas > 0}" class="info-bar-message inactive" th:text="'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'">
+        Hay una estación que no está comunicando (EST001)
     </div>
 
 </div>
