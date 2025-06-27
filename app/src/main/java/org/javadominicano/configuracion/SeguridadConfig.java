@@ -33,7 +33,8 @@ public class SeguridadConfig {
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout=true")
-                .permitAll());
+                .permitAll())
+            .exceptionHandling(ex -> ex.accessDeniedPage("/acceso-denegado"));
 
         return http.build();
     }
