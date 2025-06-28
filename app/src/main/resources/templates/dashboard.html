@@ -556,8 +556,9 @@
                         <td th:text="${estacion.ubicacion}">Santiago</td>
                         <td>
                             <button type="button" class="btn btn-edit open-edit"
-                                    data-id="[[${estacion.id}]]" data-nombre="[[${estacion.nombre}]]"
-                                    data-ubicacion="[[${estacion.ubicacion}]]">Editar</button>
+                                    th:data-id="${estacion.id}"
+                                    th:data-nombre="${estacion.nombre}"
+                                    th:data-ubicacion="${estacion.ubicacion}">Editar</button>
                             <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;"
                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                                 <input type="hidden" name="id" th:value="${estacion.id}" />

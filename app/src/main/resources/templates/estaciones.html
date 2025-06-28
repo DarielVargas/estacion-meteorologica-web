@@ -196,9 +196,9 @@
                     <td th:text="${#dates.format(ultimaFechaActualizacion, 'dd/MM/yyyy HH:mm')}" >01/01/2024 10:00</td>
                     <td class="actions">
                         <button type="button" class="signal">&#x1F4F6;</button>
-                        <button type="button" class="edit open-edit" 
-                                data-id="[[${estacion.id}]]" data-nombre="[[${estacion.nombre}]]" 
-                                data-ubicacion="[[${estacion.ubicacion}]]">✏️</button>
+                        <button type="button" class="edit open-edit"
+                                th:data-id="${estacion.id}" th:data-nombre="${estacion.nombre}"
+                                th:data-ubicacion="${estacion.ubicacion}">✏️</button>
                         <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                             <input type="hidden" name="id" th:value="${estacion.id}" />
                             <button type="submit" class="delete">🗑️</button>
