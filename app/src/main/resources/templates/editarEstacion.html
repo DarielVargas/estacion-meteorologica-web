@@ -7,13 +7,21 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: rgba(0, 0, 0, 0.4);
+            margin: 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            padding: 20px;
         }
 
         .form-container {
@@ -131,6 +139,7 @@
     </style>
 </head>
 <body>
+<div class="modal-overlay">
 <div class="form-container">
     <div class="station-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
@@ -158,6 +167,7 @@
     </form>
 
     <a th:href="@{/}" class="close-btn">Cerrar</a>
+</div>
 </div>
 </body>
 </html>
