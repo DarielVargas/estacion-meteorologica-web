@@ -642,7 +642,10 @@
                 if (successNew) content.insertBefore(successNew, modal);
                 if (inactiveNew) content.insertBefore(inactiveNew, modal);
                 attachEditEvents();
-                csrfInput.value = doc.querySelector("input[name=_csrf]").value;
+                const newToken = doc.querySelector('input[name=_csrf]');
+                if (newToken && csrfInput) {
+                    csrfInput.value = newToken.value;
+                }
                 closeModal();
             })
             .catch(() => alert('Error al guardar'));
