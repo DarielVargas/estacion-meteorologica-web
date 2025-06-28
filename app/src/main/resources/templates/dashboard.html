@@ -344,6 +344,93 @@
         .info-bar-message.inactive {
             color: #a00;
         }
+
+        /* Modal overlay and form styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            animation: fadeScale 0.3s ease;
+        }
+
+        .modal .station-icon {
+            background-color: #1f4dd9;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .modal h2 {
+            color: #1f4dd9;
+            margin-bottom: 10px;
+        }
+
+        .modal label {
+            display: block;
+            margin-top: 10px;
+            text-align: left;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .modal input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+
+        .modal button.save-btn {
+            width: 100%;
+            background: linear-gradient(to right, #1f4dd9, #4f74ff);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal button.close-btn {
+            width: 100%;
+            background: #dc3545;
+            color: white;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -455,9 +542,7 @@
             <h3>Estaciones Meteorológicas</h3>
 
             <!-- Botón para añadir nueva estación -->
-            <form th:action="@{/estaciones/nueva}" method="get">
-                <button type="submit" class="btn-add">Añadir Estación</button>
-            </form>
+            <button type="button" class="btn-add" id="openNew">Añadir Estación</button>
 
             <table>
                 <thead>
@@ -470,11 +555,10 @@
                         <td th:text="${estacion.nombre}">Estación1</td>
                         <td th:text="${estacion.ubicacion}">Santiago</td>
                         <td>
-                            <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
-                                <input type="hidden" name="id" th:value="${estacion.id}" />
-                                <button type="submit" class="btn btn-edit">Editar</button>
-                            </form>
-                            <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" 
+                            <button type="button" class="btn btn-edit open-edit"
+                                    data-id="[[${estacion.id}]]" data-nombre="[[${estacion.nombre}]]"
+                                    data-ubicacion="[[${estacion.ubicacion}]]">Editar</button>
+                            <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;"
                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                                 <input type="hidden" name="id" th:value="${estacion.id}" />
                                 <button type="submit" class="btn btn-delete">Eliminar</button>
@@ -540,6 +624,28 @@
         Hay una estación que no está comunicando (EST001)
     </div>
 
+</div>
+
+<!-- Modal para crear/editar estación -->
+<div id="stationModal" class="modal-overlay">
+    <div class="modal">
+        <div class="station-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+            </svg>
+        </div>
+        <h2 id="modalTitle">Nueva Estación Meteorológica</h2>
+        <form id="stationForm" method="post" action="/estaciones/nueva">
+            <label for="modal-id">ID</label>
+            <input type="text" id="modal-id" name="id" required>
+            <label for="modal-nombre">Nombre</label>
+            <input type="text" id="modal-nombre" name="nombre" required>
+            <label for="modal-ubicacion">Ubicación</label>
+            <input type="text" id="modal-ubicacion" name="ubicacion" required>
+            <button type="submit" class="save-btn">Guardar Cambios</button>
+            <button type="button" class="close-btn" id="closeModal">Cerrar</button>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -734,6 +840,47 @@ setInterval(updateCharts, 30000);
 
 // Actualizar inmediatamente al cargar la página
 updateCharts();
+</script>
+
+<script>
+    const modal = document.getElementById('stationModal');
+    const openNewBtn = document.getElementById('openNew');
+    const closeBtn = document.getElementById('closeModal');
+    const form = document.getElementById('stationForm');
+    const title = document.getElementById('modalTitle');
+    const idInput = document.getElementById('modal-id');
+    const nombreInput = document.getElementById('modal-nombre');
+    const ubicacionInput = document.getElementById('modal-ubicacion');
+
+    if (openNewBtn) {
+        openNewBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+            title.textContent = 'Nueva Estación Meteorológica';
+            form.action = '/estaciones/nueva';
+            idInput.readOnly = false;
+            idInput.value = '';
+            nombreInput.value = '';
+            ubicacionInput.value = '';
+        });
+    }
+
+    document.querySelectorAll('.open-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.add('active');
+            title.textContent = 'Editar Estación Meteorológica';
+            form.action = '/estaciones/editar';
+            idInput.value = btn.dataset.id;
+            idInput.readOnly = true;
+            nombreInput.value = btn.dataset.nombre;
+            ubicacionInput.value = btn.dataset.ubicacion;
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    }
 </script>
 
 </body>
