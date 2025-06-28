@@ -238,7 +238,8 @@
             </svg>
         </div>
         <h2 id="modalTitle">Nueva Estación Meteorológica</h2>
-        <form id="stationForm" method="post" action="/estaciones/nueva">
+        <form id="stationForm" th:action="@{/estaciones/nueva}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <label for="modal-id">ID</label>
             <input type="text" id="modal-id" name="id" required>
             <label for="modal-nombre">Nombre</label>
