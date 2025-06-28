@@ -7,7 +7,8 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to bottom right, #cfe0ff, #1f4dd9);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -100,18 +101,21 @@
             transform: scale(0.98);
         }
 
-        .back-link {
+        .close-btn {
             display: block;
             margin-top: 10px;
             text-align: center;
-            color: #555;
+            color: #ffffff;
+            background-color: #dc3545;
+            padding: 10px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 13px;
-            transition: color 0.2s;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
 
-        .back-link:hover {
-            color: #1f4dd9;
+        .close-btn:hover {
+            background-color: #c82333;
         }
 
         @keyframes fadeScale {
@@ -153,7 +157,7 @@
         </button>
     </form>
 
-    <a th:href="@{/}" class="back-link">Volver al Dashboard</a>
+    <a th:href="@{/}" class="close-btn">Cerrar</a>
 </div>
 </body>
 </html>
