@@ -4,6 +4,8 @@ public class EstacionMeteorologica {
     private String id;
     private String nombre;
     private String ubicacion;
+    private boolean activa;
+    private java.util.Date ultimaActualizacion;
 
     // Constructor vacío (necesario para Thymeleaf)
     public EstacionMeteorologica() {
@@ -36,5 +38,21 @@ public class EstacionMeteorologica {
     }
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public java.util.Date getUltimaActualizacion() {
+        return ultimaActualizacion;
+    }
+
+    public void setUltimaActualizacion(java.util.Date ultimaActualizacion) {
+        this.ultimaActualizacion = ultimaActualizacion;
     }
 }

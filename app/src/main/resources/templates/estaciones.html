@@ -190,10 +190,11 @@
                     <td th:text="${estacion.nombre}">Estación1</td>
                     <td th:text="${estacion.ubicacion}">Santiago</td>
                     <td>
-                        <span class="badge active">Activo</span>
+                        <span th:class="'badge ' + (${estacion.activa} ? 'active' : 'inactive')"
+                              th:text="${estacion.activa} ? 'Activa' : 'Inactiva'">Activo</span>
                         <span style="margin-left:4px;">&#x1F4F6;</span>
                     </td>
-                    <td th:text="${#dates.format(ultimaFechaActualizacion, 'dd/MM/yyyy HH:mm')}" >01/01/2024 10:00</td>
+                    <td th:text="${estacion.ultimaActualizacion != null ? #dates.format(estacion.ultimaActualizacion, 'dd/MM/yyyy HH:mm') : '---'}">01/01/2024 10:00</td>
                     <td class="actions">
                         <button type="button" class="signal">&#x1F4F6;</button>
                         <button type="button" class="edit open-edit"
