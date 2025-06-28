@@ -97,11 +97,24 @@
         }
 
         .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .top-section form {
-            margin-bottom: 20px;
+        .top-section-title {
+            margin-bottom: 5px;
+            color: #1a3f78;
+        }
+
+        .top-section-subtitle {
+            color: #666;
+            font-size: 14px;
         }
 
         .top-section button {
@@ -455,10 +468,12 @@
 
 <div class="content">
     <div class="top-section">
-        <h1>Dashboard</h1>
-        <p>Monitoreo en tiempo real de estaciones meteorológicas</p>
-        <form method="get" th:action="@{/}"> 
-            <button type="submit">Recargar página</button>
+        <div>
+            <h1 class="top-section-title">Dashboard</h1>
+            <p class="top-section-subtitle">Monitoreo en tiempo real de estaciones meteorológicas</p>
+        </div>
+        <form method="get" th:action="@{/}">
+            <button type="submit">Recargar Web</button>
         </form>
     </div>
 
