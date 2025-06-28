@@ -344,6 +344,20 @@
         .info-bar-message.inactive {
             color: #a00;
         }
+
+        /* Modal styles */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal .form-container { background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 420px; text-align: center; animation: fadeScale 0.6s ease both; }
+        .modal .station-icon { background-color: #1f4dd9; border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .modal h2 { font-family: 'Poppins', sans-serif; color: #1f4dd9; margin-bottom: 5px; font-weight: 600; font-size: 24px; }
+        .modal .subtitle { font-style: italic; color: #444; margin-bottom: 20px; }
+        .modal label { display: block; margin-bottom: 6px; color: #555; font-weight: 600; }
+        .modal input[type="text"] { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; background: #fff; transition: border-color 0.2s; }
+        .modal input[type="text"]:focus { border-color: #1f4dd9; outline: none; }
+        .modal button.save-btn { width: 100%; background: linear-gradient(to right, #1f4dd9, #4f74ff); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.1s; }
+        .modal button.save-btn:active { transform: scale(0.98); }
+        .modal button.close-btn { margin-top: 10px; width: 100%; background-color: #dc3545; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -455,9 +469,7 @@
             <h3>Estaciones Meteorológicas</h3>
 
             <!-- Botón para añadir nueva estación -->
-            <form th:action="@{/estaciones/nueva}" method="get">
-                <button type="submit" class="btn-add">Añadir Estación</button>
-            </form>
+            <button type="button" class="btn-add" id="btnNueva">Añadir Estación</button>
 
             <table>
                 <thead>
@@ -465,15 +477,12 @@
                 </thead>
                 <tbody>
                     <!-- Solo datos dinámicos del servidor -->
-                    <tr th:each="estacion : ${estaciones}">
+                    <tr th:each="estacion : ${estaciones}" th:attr="data-id=${estacion.id},data-nombre=${estacion.nombre},data-ubicacion=${estacion.ubicacion}">
                         <td th:text="${estacion.id}">EST001</td>
                         <td th:text="${estacion.nombre}">Estación1</td>
                         <td th:text="${estacion.ubicacion}">Santiago</td>
                         <td>
-                            <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
-                                <input type="hidden" name="id" th:value="${estacion.id}" />
-                                <button type="submit" class="btn btn-edit">Editar</button>
-                            </form>
+                            <button type="button" class="btn btn-edit edit">Editar</button>
                             <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" 
                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                                 <input type="hidden" name="id" th:value="${estacion.id}" />
@@ -540,9 +549,99 @@
         Hay una estación que no está comunicando (EST001)
     </div>
 
+    <div id="estacionModal" class="modal">
+        <div class="form-container">
+            <div class="station-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                    <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+                </svg>
+            </div>
+            <h2 id="modalTitle">Nueva Estación Meteorológica</h2>
+            <p class="subtitle">Completa la información de la estación</p>
+            <form id="estacionForm" action="/estaciones/nueva" method="post">
+                <label for="modalId">ID</label>
+                <input type="text" id="modalId" name="id" required />
+
+                <label for="modalNombre">Nombre</label>
+                <input type="text" id="modalNombre" name="nombre" required />
+
+                <label for="modalUbicacion">Ubicación</label>
+                <input type="text" id="modalUbicacion" name="ubicacion" required />
+
+                <button type="submit" class="save-btn">Guardar Cambios</button>
+            </form>
+            <button type="button" id="modalClose" class="close-btn">Cerrar</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
+    const modal = document.getElementById('estacionModal');
+    const form = document.getElementById('estacionForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const idInput = document.getElementById('modalId');
+    const nombreInput = document.getElementById('modalNombre');
+    const ubicacionInput = document.getElementById('modalUbicacion');
+    const btnNueva = document.getElementById('btnNueva');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModalNew() {
+        modalTitle.textContent = 'Nueva Estación Meteorológica';
+        form.action = '/estaciones/nueva';
+        idInput.readOnly = false;
+        idInput.value = '';
+        nombreInput.value = '';
+        ubicacionInput.value = '';
+        modal.classList.add('active');
+    }
+
+    function openModalEdit(btn) {
+        const row = btn.closest('tr');
+        modalTitle.textContent = 'Editar Estación Meteorológica';
+        form.action = '/estaciones/editar';
+        idInput.value = row.dataset.id;
+        idInput.readOnly = true;
+        nombreInput.value = row.dataset.nombre;
+        ubicacionInput.value = row.dataset.ubicacion;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    function attachEditEvents() {
+        document.querySelectorAll('button.edit').forEach(b => {
+            b.addEventListener('click', () => openModalEdit(b));
+        });
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    btnNueva.addEventListener('click', openModalNew);
+    attachEditEvents();
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = new URLSearchParams(new FormData(form));
+        fetch(form.action, { method: 'POST', body: data })
+            .then(() => fetch('/'))
+            .then(res => res.text())
+            .then(html => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                document.querySelector('tbody').innerHTML = doc.querySelector('tbody').innerHTML;
+                document.querySelector('.info-bar').innerHTML = doc.querySelector('.info-bar').innerHTML;
+                document.querySelectorAll('.info-bar-message').forEach(n => n.remove());
+                const successNew = doc.querySelector('.info-bar-message.success');
+                const inactiveNew = doc.querySelector('.info-bar-message.inactive');
+                const content = document.querySelector('.content');
+                if (successNew) content.insertBefore(successNew, modal);
+                if (inactiveNew) content.insertBefore(inactiveNew, modal);
+                attachEditEvents();
+                closeModal();
+            })
+            .catch(() => alert('Error al guardar'));
+    });
 // Función para generar datos de ejemplo (solo para fallback o demo)
 function generateSampleData(baseValue, variation) {
     const data = [];
