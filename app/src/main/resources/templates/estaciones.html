@@ -53,6 +53,35 @@
             .estaciones-header form { margin-top: 10px; }
             th, td { font-size: 12px; }
         }
+
+        /* Modal overlay for forms */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: none;
+            border: none;
+            width: 450px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .modal-content iframe {
+            width: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -142,7 +171,46 @@
                 <div class="label">Inactivas</div>
             </div>
         </div>
+</div>
+</div>
+<div id="modalForm" class="modal-overlay">
+    <div class="modal-content">
+        <iframe id="modalFrame"></iframe>
     </div>
 </div>
+<script>
+    function closeModal() {
+        const modal = document.getElementById('modalForm');
+        const frame = document.getElementById('modalFrame');
+        modal.style.display = 'none';
+        frame.src = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('modalForm');
+        const frame = document.getElementById('modalFrame');
+
+        document.querySelectorAll('form[action$="/estaciones/nueva"]').forEach(f => {
+            f.addEventListener('submit', function(e) {
+                e.preventDefault();
+                frame.src = this.action;
+                modal.style.display = 'flex';
+            });
+        });
+
+        document.querySelectorAll('form[action$="/estaciones/editar"]').forEach(f => {
+            f.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const params = new URLSearchParams(new FormData(this));
+                frame.src = this.action + '?' + params.toString();
+                modal.style.display = 'flex';
+            });
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+    });
+</script>
 </body>
 </html>
