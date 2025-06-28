@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -197,12 +198,16 @@ public class VisualizadorController {
 
     // Guardar estación editada
     @PostMapping("/estaciones/editar")
-    public String guardarEstacionEditada(@ModelAttribute EstacionMeteorologica estacion) {
+    public String guardarEstacionEditada(@ModelAttribute EstacionMeteorologica estacion,
+                                         @RequestHeader(value = "referer", required = false) String referer) {
         for (int i = 0; i < estaciones.size(); i++) {
             if (estaciones.get(i).getId().equals(estacion.getId())) {
                 estaciones.set(i, estacion);
                 break;
             }
+        }
+        if (referer != null && (referer.contains("/dashboard") || referer.endsWith("/"))) {
+            return "redirect:/";
         }
         return "redirect:/estaciones";
     }
@@ -217,8 +222,12 @@ public class VisualizadorController {
 
     // Guardar nueva estación
     @PostMapping("/estaciones/nueva")
-    public String guardarNuevaEstacion(@ModelAttribute EstacionMeteorologica estacion) {
+    public String guardarNuevaEstacion(@ModelAttribute EstacionMeteorologica estacion,
+                                       @RequestHeader(value = "referer", required = false) String referer) {
         estaciones.add(estacion);
+        if (referer != null && (referer.contains("/dashboard") || referer.endsWith("/"))) {
+            return "redirect:/";
+        }
         return "redirect:/estaciones";
     }
 
