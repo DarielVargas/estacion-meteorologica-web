@@ -344,6 +344,24 @@
         .info-bar-message.inactive {
             color: #a00;
         }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .form-container { background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 420px; text-align: center; animation: fadeScale 0.6s ease both; position: relative; }
+        .close-btn { position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 24px; cursor: pointer; }
+        .station-icon { background-color: #1f4dd9; border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: box-shadow 0.3s ease; }
+        .station-icon:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        .subtitle { font-style: italic; color: #444; margin-bottom: 20px; }
+        .form-container label { display: block; margin-bottom: 6px; color: #555; font-weight: 600; }
+        .form-container input[type="text"] { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; background: #fff; transition: border-color 0.2s; }
+        .form-container input[type="text"]:focus { border-color: #1f4dd9; outline: none; }
+        #form-submit { width: 100%; background: linear-gradient(to right, #1f4dd9, #4f74ff); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.1s; }
+        #form-submit:active { transform: scale(0.98); }
+
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -455,9 +473,7 @@
             <h3>Estaciones Meteorológicas</h3>
 
             <!-- Botón para añadir nueva estación -->
-            <form th:action="@{/estaciones/nueva}" method="get">
-                <button type="submit" class="btn-add">Añadir Estación</button>
-            </form>
+            <button type="button" id="btnAdd" class="btn-add">Añadir Estación</button>
 
             <table>
                 <thead>
@@ -470,10 +486,8 @@
                         <td th:text="${estacion.nombre}">Estación1</td>
                         <td th:text="${estacion.ubicacion}">Santiago</td>
                         <td>
-                            <form th:action="@{/estaciones/editar}" method="get" style="display:inline;">
-                                <input type="hidden" name="id" th:value="${estacion.id}" />
-                                <button type="submit" class="btn btn-edit">Editar</button>
-                            </form>
+                            <button type="button" class="btn btn-edit edit"
+                                    th:attr="data-id=${estacion.id},data-nombre=${estacion.nombre},data-ubicacion=${estacion.ubicacion}">Editar</button>
                             <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" 
                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
                                 <input type="hidden" name="id" th:value="${estacion.id}" />
@@ -540,6 +554,31 @@
         Hay una estación que no está comunicando (EST001)
     </div>
 
+</div>
+
+<div id="form-modal" class="modal">
+    <div class="form-container">
+        <button type="button" id="modal-close" class="close-btn">&times;</button>
+        <div class="station-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+            </svg>
+        </div>
+        <h2 id="form-title">Nueva Estación Meteorológica</h2>
+        <p class="subtitle">Completa la información de la estación</p>
+        <form id="estacion-form" th:action="@{/estaciones/nueva}" method="post">
+            <label for="form-id">ID</label>
+            <input type="text" id="form-id" name="id" placeholder="ID de la estación" required />
+
+            <label for="form-nombre">Nombre</label>
+            <input type="text" id="form-nombre" name="nombre" placeholder="Nombre de la estación" required />
+
+            <label for="form-ubicacion">Ubicación</label>
+            <input type="text" id="form-ubicacion" name="ubicacion" placeholder="Ubicación de la estación" required />
+
+            <button type="submit" id="form-submit">Guardar</button>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -734,6 +773,47 @@ setInterval(updateCharts, 30000);
 
 // Actualizar inmediatamente al cargar la página
 updateCharts();
+
+const modal = document.getElementById('form-modal');
+const form = document.getElementById('estacion-form');
+const idInput = document.getElementById('form-id');
+const nombreInput = document.getElementById('form-nombre');
+const ubicacionInput = document.getElementById('form-ubicacion');
+const title = document.getElementById('form-title');
+const btnAdd = document.getElementById('btnAdd');
+const closeBtn = document.getElementById('modal-close');
+
+btnAdd.addEventListener('click', () => {
+    form.setAttribute('action', /*[[${'/estaciones/nueva'}]]*/ '/estaciones/nueva');
+    title.textContent = 'Nueva Estación Meteorológica';
+    idInput.readOnly = false;
+    idInput.value = '';
+    nombreInput.value = '';
+    ubicacionInput.value = '';
+    modal.classList.add('active');
+});
+
+document.querySelectorAll('button.edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+        form.setAttribute('action', '/estaciones/editar');
+        title.textContent = 'Editar Estación Meteorológica';
+        idInput.readOnly = true;
+        idInput.value = btn.dataset.id;
+        nombreInput.value = btn.dataset.nombre;
+        ubicacionInput.value = btn.dataset.ubicacion;
+        modal.classList.add('active');
+    });
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.classList.remove('active');
+});
+
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.remove('active');
+    }
+});
 </script>
 
 </body>
