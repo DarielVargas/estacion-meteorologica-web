@@ -132,7 +132,7 @@
             <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
         </svg>
     </div>
-    <h2>Editar Estación Meteorológica</h2>
+    <h2>Añadir Estación Meteorológica</h2>
     <p class="subtitle">Completa la información de la estación</p>
     <form th:action="@{${estacion.id} == null ? '/estaciones/nueva' : '/estaciones/editar'}" th:object="${estacion}" method="post">
         <label for="id">ID</label>
