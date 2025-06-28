@@ -163,6 +163,7 @@
         <h2 id="modalTitle">Nueva Estación Meteorológica</h2>
         <p class="subtitle">Completa la información de la estación</p>
         <form id="estacionForm" action="/estaciones/nueva" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <label for="modalId">ID</label>
             <input type="text" id="modalId" name="id" required />
 
@@ -188,6 +189,7 @@
     const btnNueva = document.getElementById('btnNueva');
     const modalClose = document.getElementById('modalClose');
 
+    const csrfInput = form.querySelector("input[name=_csrf]");
     function openModalNew() {
         modalTitle.textContent = 'Nueva Estación Meteorológica';
         form.action = '/estaciones/nueva';
@@ -234,6 +236,7 @@
                 document.querySelector('tbody').innerHTML = doc.querySelector('tbody').innerHTML;
                 document.querySelector('.stats').innerHTML = doc.querySelector('.stats').innerHTML;
                 attachEditEvents();
+                csrfInput.value = doc.querySelector("input[name=_csrf]").value;
                 closeModal();
             })
             .catch(() => alert('Error al guardar'));
