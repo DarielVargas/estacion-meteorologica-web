@@ -120,8 +120,7 @@ public class VisualizadorController {
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
 
         for (EstacionMeteorologica estacion : estaciones) {
-            Timestamp ultimaFecha = repositorioTemperatura.findUltimaFechaBySensor(estacion.getId());
-            Date ultimaFechaEstacion = ultimaFecha != null ? new Date(ultimaFecha.getTime()) : null;
+            Date ultimaFechaEstacion = obtenerUltimaFechaParaEstacion(estacion.getId());
             estacion.setUltimaActualizacion(ultimaFechaEstacion);
 
             boolean activa = false;
@@ -233,8 +232,7 @@ public class VisualizadorController {
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
 
         for (EstacionMeteorologica estacion : estaciones) {
-            Timestamp ultimaFecha = repositorioTemperatura.findUltimaFechaBySensor(estacion.getId());
-            Date ultimaFechaEstacion = ultimaFecha != null ? new Date(ultimaFecha.getTime()) : null;
+            Date ultimaFechaEstacion = obtenerUltimaFechaParaEstacion(estacion.getId());
             estacion.setUltimaActualizacion(ultimaFechaEstacion);
 
             boolean activa = false;
@@ -260,5 +258,21 @@ public class VisualizadorController {
         model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
 
         return "estaciones";
+    }
+
+    private Date obtenerUltimaFechaParaEstacion(String id) {
+        Timestamp temp = repositorioTemperatura.findUltimaFechaBySensor(id);
+        Timestamp hum = repositorioHumedad.findUltimaFechaBySensor(id);
+        Timestamp vel = repositorioVelocidad.findUltimaFechaBySensor(id);
+        Timestamp dir = repositorioDireccion.findUltimaFechaBySensor(id);
+        Timestamp pre = repositorioPrecipitacion.findUltimaFechaBySensor(id);
+
+        Timestamp ultimo = null;
+        for (Timestamp t : new Timestamp[]{temp, hum, vel, dir, pre}) {
+            if (t != null && (ultimo == null || t.after(ultimo))) {
+                ultimo = t;
+            }
+        }
+        return ultimo != null ? new Date(ultimo.getTime()) : null;
     }
 }

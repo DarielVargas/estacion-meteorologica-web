@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.sql.Timestamp;
@@ -25,4 +26,7 @@ public interface RepositorioDatosVelocidad extends JpaRepository<DatosVelocidad,
     // NUEVO MÉTODO: obtener la última fecha por cada sensor
     @Query("SELECT d.sensorId, MAX(d.fecha) FROM DatosVelocidad d GROUP BY d.sensorId")
     List<Object[]> findLastFechaBySensor();
+
+    @Query("SELECT MAX(d.fecha) FROM DatosVelocidad d WHERE d.sensorId = :sensorId")
+    Timestamp findUltimaFechaBySensor(@Param("sensorId") String sensorId);
 }
