@@ -100,7 +100,7 @@
         </div>
 
         <div class="table-responsive">
-            <table>
+            <table id="stationsTable">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -233,11 +233,10 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: data
         })
-            .then(() => fetch('/estaciones'))
             .then(res => res.text())
             .then(html => {
                 const doc = new DOMParser().parseFromString(html, 'text/html');
-                document.querySelector('tbody').innerHTML = doc.querySelector('tbody').innerHTML;
+                document.querySelector('#stationsTable tbody').innerHTML = doc.querySelector('#stationsTable tbody').innerHTML;
                 document.querySelector('.stats').innerHTML = doc.querySelector('.stats').innerHTML;
                 attachEditEvents();
                 csrfInput.value = doc.querySelector("input[name=_csrf]").value;
