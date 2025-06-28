@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
-  <title>Tablas – Dashboard Meteorológico</title>
+  <title>Mediciones – Dashboard Meteorológico</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
@@ -48,7 +48,7 @@
         <li><a th:href="@{/estaciones}"><i class="fas fa-broadcast-tower"></i><span>Estaciones Meteorológicas</span></a></li>
         <li><a th:href="@{/alertas}"><i class="fas fa-exclamation-triangle"></i><span>Alertas</span></a></li>
         <li><a th:href="@{/reportes}"><i class="fas fa-chart-line"></i><span>Reportes</span></a></li>
-        <li><a th:href="@{/tablas}" class="actual"><i class="fas fa-table"></i><span>Tablas</span></a></li>
+        <li><a th:href="@{/mediciones}" class="actual"><i class="fas fa-tachometer-alt"></i><span>Mediciones</span></a></li>
       </ul>
     </nav>
     <form class="logout-form" th:action="@{/logout}" method="post">
@@ -57,7 +57,7 @@
   </div>
 
   <div class="content">
-    <h1>Tablas de la Base de Datos</h1>
+    <h1>Mediciones de la Base de Datos</h1>
 
     <div class="tablas">
       <!-- Velocidad -->
@@ -141,25 +141,25 @@
       <span th:text="'Página ' + (${paginaActual} + 1) + ' de ' + ${velocidades.totalPages}"></span>
 
       <a th:if="${paginaActual > 0}"
-         th:href="@{/tablas(pagina=0, tamanoPagina=${tamanoPagina})}">&laquo;</a>
+         th:href="@{/mediciones(pagina=0, tamanoPagina=${tamanoPagina})}">&laquo;</a>
       <a th:if="${paginaActual > 0}"
-         th:href="@{/tablas(pagina=${paginaActual - 1}, tamanoPagina=${tamanoPagina})}">&lt;</a>
+         th:href="@{/mediciones(pagina=${paginaActual - 1}, tamanoPagina=${tamanoPagina})}">&lt;</a>
 
       <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
             th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
             th:classappend="${i == paginaActual}? 'actual'">
         <a th:if="${i != paginaActual}"
-           th:href="@{/tablas(pagina=${i}, tamanoPagina=${tamanoPagina})}"
+           th:href="@{/mediciones(pagina=${i}, tamanoPagina=${tamanoPagina})}"
            th:text="${i + 1}"></a>
         <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
       </span>
 
       <a th:if="${paginaActual + 1 < velocidades.totalPages}"
-         th:href="@{/tablas(pagina=${paginaActual + 1}, tamanoPagina=${tamanoPagina})}">&gt;</a>
+         th:href="@{/mediciones(pagina=${paginaActual + 1}, tamanoPagina=${tamanoPagina})}">&gt;</a>
       <a th:if="${paginaActual + 1 < velocidades.totalPages}"
-         th:href="@{/tablas(pagina=${velocidades.totalPages - 1}, tamanoPagina=${tamanoPagina})}">&raquo;</a>
+         th:href="@{/mediciones(pagina=${velocidades.totalPages - 1}, tamanoPagina=${tamanoPagina})}">&raquo;</a>
 
-      <form method="get" th:action="@{/tablas}" style="display:inline; margin-left:10px;">
+      <form method="get" th:action="@{/mediciones}" style="display:inline; margin-left:10px;">
         <label>Registros por página:</label>
         <select name="tamanoPagina" onchange="this.form.submit()">
           <option th:value="10"  th:selected="${tamanoPagina==10}">10</option>

@@ -18,7 +18,7 @@ import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
 
 @Controller
-public class TablasController {
+public class MedicionesController {
 
     @Autowired private RepositorioDatosVelocidad     repoVelocidad;
     @Autowired private RepositorioDatosDireccion     repoDireccion;
@@ -26,8 +26,8 @@ public class TablasController {
     @Autowired private RepositorioDatosHumedad       repoHumedad;
     @Autowired private RepositorioDatosTemperatura   repoTemperatura;
 
-    @GetMapping("/tablas")
-    public String mostrarTablas(
+    @GetMapping("/mediciones")
+    public String mostrarMediciones(
         @RequestParam(name = "pagina", defaultValue = "0") int paginaActual,
         @RequestParam(name = "tamanoPagina", defaultValue = "10") int tamanoPagina,
         Model model
@@ -49,7 +49,7 @@ public class TablasController {
         model.addAttribute("paginaActual",    paginaActual);
         model.addAttribute("tamanoPagina",    tamanoPagina);
 
-        return "tablas";
+        return "mediciones";
     }
 
 }
