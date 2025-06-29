@@ -1,6 +1,8 @@
 package org.javadominicano.entidades;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "alertas")
@@ -18,6 +20,10 @@ public class Alerta {
     private String operador = ">";
 
     private String prioridad = "Media";
+
+    @CreationTimestamp
+    @Column(name = "fecha_creacion", updatable = false)
+    private Timestamp fechaCreacion;
 
     public Long getId() {
         return id;
@@ -65,5 +71,13 @@ public class Alerta {
 
     public void setPrioridad(String prioridad) {
         this.prioridad = prioridad;
+    }
+
+    public Timestamp getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(Timestamp fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 }
