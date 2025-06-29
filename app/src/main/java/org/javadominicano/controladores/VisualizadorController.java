@@ -6,7 +6,8 @@ import org.javadominicano.entidades.DatosVelocidad;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
-import org.javadominicano.visualizadorweb.entidades.Umbrales;
+import org.javadominicano.entidades.Umbrales;
+import org.javadominicano.repositorios.RepositorioUmbrales;
 import org.javadominicano.entidades.EstacionMeteorologica;
 import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
 
@@ -53,15 +54,22 @@ public class VisualizadorController {
     @Autowired
     private RepositorioEstacionMeteorologica repositorioEstacion;
 
-    // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
+    @Autowired
+    private RepositorioUmbrales repositorioUmbrales;
+
+    // Carga los umbrales almacenados, o crea valores por defecto la primera vez
     @ModelAttribute("umbrales")
     public Umbrales obtenerUmbrales() {
-        Umbrales umbrales = new Umbrales();
-        umbrales.setTemperatura(20.0);
-        umbrales.setHumedad(60.0);
-        umbrales.setVelocidadViento(10.0);
-        umbrales.setPrecipitacion(5.0);
-        return umbrales;
+        return repositorioUmbrales.findById(1L).orElseGet(() -> {
+            Umbrales u = new Umbrales();
+            u.setId(1L);
+            u.setTemperatura(20.0);
+            u.setHumedad(60.0);
+            u.setVelocidadViento(10.0);
+            u.setPrecipitacion(5.0);
+            repositorioUmbrales.save(u);
+            return u;
+        });
     }
 
     // Inyecta la lista de estaciones para Thymeleaf
@@ -155,15 +163,9 @@ public class VisualizadorController {
 
     @PostMapping("/configurar-alertas")
     public String configurarAlertas(@ModelAttribute Umbrales umbrales, Model model) {
-        System.out.println("🔔 Nuevos umbrales configurados:");
-        System.out.println("Temperatura > " + umbrales.getTemperatura());
-        System.out.println("Humedad > " + umbrales.getHumedad());
-        System.out.println("Velocidad Viento > " + umbrales.getVelocidadViento());
-        System.out.println("Precipitación > " + umbrales.getPrecipitacion());
-
-        // Aquí puedes agregar lógica para guardar los umbrales o procesarlos
-
-        return "redirect:/"; // Redirige al dashboard para que se recargue
+        umbrales.setId(1L);
+        repositorioUmbrales.save(umbrales);
+        return "redirect:/alertas";
     }
 
     // Eliminar estación
@@ -246,5 +248,13 @@ public class VisualizadorController {
         model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
 
         return "estaciones";
+    }
+
+    // Pantalla de configuración de alertas
+    @GetMapping("/alertas")
+    public String verConfiguracionAlertas(Model model) {
+        Umbrales umbrales = obtenerUmbrales();
+        model.addAttribute("umbrales", umbrales);
+        return "alertas";
     }
 }

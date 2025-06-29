@@ -456,7 +456,7 @@
         <ul>
             <li><a th:href="@{/}"><i class="fas fa-chart-bar"></i><span>Dashboard</span></a></li>
             <li><a th:href="@{/estaciones}"><i class="fas fa-broadcast-tower"></i><span>Estaciones Meteorológicas</span></a></li>
-            <li><a href="#"><i class="fas fa-exclamation-triangle"></i><span>Alertas</span></a></li>
+            <li><a th:href="@{/alertas}"><i class="fas fa-exclamation-triangle"></i><span>Alertas</span></a></li>
             <li><a th:href="@{/reportes}"><i class="fas fa-chart-line"></i><span>Reportes</span></a></li>
             <li><a th:href="@{/tablas}"><i class="fas fa-table"></i><span>Tablas</span></a></li>
         </ul>
@@ -467,6 +467,10 @@
 </div>
 
 <div class="content">
+    <div id="alerta" style="display:none; margin-bottom:10px; padding:10px; background-color:#ffc107; color:#000; border-radius:5px; position:relative;">
+        <span id="alerta-mensaje"></span>
+        <button type="button" onclick="ocultarAlerta()" style="position:absolute; right:8px; top:5px; background:none; border:none; font-weight:bold;">&times;</button>
+    </div>
     <div class="top-section">
         <div>
             <h1 class="top-section-title">Dashboard</h1>
@@ -666,6 +670,14 @@
 </div>
 
 <script>
+/*[[*/
+const umbrales = {
+    temperatura: [[${umbrales.temperatura}]],
+    humedad: [[${umbrales.humedad}]],
+    velocidadViento: [[${umbrales.velocidadViento}]],
+    precipitacion: [[${umbrales.precipitacion}]]
+};
+/*]]*/
 // Función para generar datos de ejemplo (solo para fallback o demo)
 function generateSampleData(baseValue, variation) {
     const data = [];
@@ -845,11 +857,41 @@ function updateCharts() {
             temperatureChart.data.labels = data.temperature.labels;
             temperatureChart.data.datasets[0].data = data.temperature.values;
             temperatureChart.update();
+
+            verificarUmbrales(data);
         })
         .catch(error => {
             console.error('Error al obtener datos meteorológicos:', error);
             // Opcional: puedes dejar las gráficas con datos de ejemplo o mostrar un mensaje al usuario
         });
+}
+
+function verificarUmbrales(data) {
+    const ultimaVelocidad = data.wind.values[data.wind.values.length - 1];
+    const ultimaHumedad = data.humidity.values[data.humidity.values.length - 1];
+    const ultimaTemp = data.temperature.values[data.temperature.values.length - 1];
+
+    if (ultimaTemp > umbrales.temperatura) {
+        mostrarAlerta('Temperatura fuera de rango');
+    } else if (ultimaHumedad > umbrales.humedad) {
+        mostrarAlerta('Humedad fuera de rango');
+    } else if (ultimaVelocidad > umbrales.velocidadViento) {
+        mostrarAlerta('Velocidad de viento fuera de rango');
+    }
+}
+
+function mostrarAlerta(mensaje) {
+    const cont = document.getElementById('alerta');
+    const span = document.getElementById('alerta-mensaje');
+    span.textContent = mensaje;
+    cont.style.display = 'block';
+    setTimeout(() => {
+        cont.style.display = 'none';
+    }, 5000);
+}
+
+function ocultarAlerta() {
+    document.getElementById('alerta').style.display = 'none';
 }
 
 // Actualizar gráficas cada 30 segundos con datos reales
