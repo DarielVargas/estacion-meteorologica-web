@@ -82,7 +82,7 @@ public class AlertasController {
     }
 
     @PostMapping("/alertas/eliminar-todas")
-    public String eliminarTodas() {
+    public String eliminarTodasLasAlertas() {
         repoAlerta.deleteAll();
         return "redirect:/alertas";
     }

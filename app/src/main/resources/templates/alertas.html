@@ -20,7 +20,6 @@
         .logout-form { margin-top: 20px; }
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; }
-        /* Espacio suficiente para evitar que una tarjeta tape a la siguiente */
         .cards { display: flex; flex-wrap: wrap; gap: 60px; justify-content: flex-start; }
         .alert-card {
             background: white;
@@ -63,42 +62,54 @@
             margin-bottom: 40px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
         .active-alerts-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+        }
+        .active-alerts-header h2 {
+            font-size: 20px;
+            font-weight: bold;
             color: #1a3f78;
         }
-        .alert-header,
+        .btn-delete-all {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
         .active-alert {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 20px;
             padding: 12px 16px;
-        }
-        .alert-header {
-            font-weight: bold;
-            background-color: #f0f2f5;
-            border-radius: 6px;
-        }
-        .active-alert {
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            background-color: #ffffff;
+            background-color: #F0FFF0; /* Color verde claro */
         }
         .active-alert.high { border-left: 4px solid #dc3545; }
         .active-alert.medium { border-left: 4px solid #ffc107; }
         .active-alert.low { border-left: 4px solid #28a745; }
-        .active-alert .info {
+        .alert-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .alert-details .info {
             font-weight: bold;
             color: #1a3f78;
         }
-        .active-alert .fecha { font-size: 14px; color: #666; }
-        .active-alert .acciones { display: flex; gap: 6px; }
+        .alert-details .fecha {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
         .active-alert .acciones form { display: inline; }
         .btn-toggle {
             background-color: #007bff;
@@ -187,29 +198,24 @@
     <div class="active-alerts" th:if="${alertasActivas != null}">
         <div class="active-alerts-header">
             <h2>Alertas Activas (<span th:text="${alertasActivas.size()}"></span>)</h2>
-            <form th:action="@{/alertas/eliminar-todas}" method="post" onsubmit="return confirm('¿Eliminar todas las alertas?');">
-                <button type="submit" class="btn-delete">Eliminar todas las alertas</button>
+            <form th:action="@{/alertas/eliminar-todas}" method="post">
+                <button type="submit" class="btn-delete-all">Eliminar todas</button>
             </form>
         </div>
-        <div class="alert-header">
-            <div>Medición</div>
-            <div>Fecha de actualización</div>
-            <div>Acciones</div>
-        </div>
         <div th:each="aa : ${alertasActivas}" th:classappend=" ${aa.alerta.prioridad.toLowerCase()}" class="active-alert">
-            <div class="info" th:text="${aa.alerta.nombre + ': ' + #numbers.formatDecimal(aa.valorActual,1,1) + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' mm') + ' (Umbral: ' + aa.alerta.umbral + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' mm') + ')'}"></div>
-            <div class="fecha" th:text="${#temporals.format(aa.fecha.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
-            <div class="acciones">
-                <form th:action="@{/alertas/guardar}" method="post">
-                    <input type="hidden" name="id" th:value="${aa.alerta.id}" />
-                    <input type="hidden" name="nombre" th:value="${aa.alerta.nombre}" />
-                    <input type="hidden" name="operador" th:value="${aa.alerta.operador}" />
-                    <input type="hidden" name="umbral" th:value="${aa.alerta.umbral}" />
-                    <input type="hidden" name="prioridad" th:value="${aa.alerta.prioridad}" />
-                    <input type="hidden" name="activa" th:value="${!aa.alerta.activa}" />
-                    <button type="submit" class="btn-toggle" th:text="${aa.alerta.activa ? 'Desactivar' : 'Activar'}"></button>
-                </form>
+            <div class="alert-details">
+                <div class="info" th:text="${aa.alerta.nombre + ': ' + #numbers.formatDecimal(aa.valorActual,1,1) + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' mm') + ' (Umbral: ' + aa.alerta.umbral + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' mm') + ')'}"></div>
+                <div class="fecha" th:text="${#temporals.format(aa.fecha.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
+            <form class="acciones" th:action="@{/alertas/guardar}" method="post">
+                <input type="hidden" name="id" th:value="${aa.alerta.id}" />
+                <input type="hidden" name="nombre" th:value="${aa.alerta.nombre}" />
+                <input type="hidden" name="operador" th:value="${aa.alerta.operador}" />
+                <input type="hidden" name="umbral" th:value="${aa.alerta.umbral}" />
+                <input type="hidden" name="prioridad" th:value="${aa.alerta.prioridad}" />
+                <input type="hidden" name="activa" th:value="${!aa.alerta.activa}" />
+                <button type="submit" class="btn-toggle">Desactivar</button>
+            </form>
         </div>
     </div>
 </div>
