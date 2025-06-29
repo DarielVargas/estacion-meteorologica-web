@@ -85,8 +85,16 @@ public class AlertasController {
         return "redirect:/alertas";
     }
 
-    @PostMapping("/alertas/eliminar-todas")
-    public String eliminarTodasLasAlertas() {
+    @PostMapping("/alertas/eliminar-activas")
+    public String eliminarAlertasActivas(Model model) {
+        model.addAttribute("alertas", repoAlerta.findAll());
+        model.addAttribute("nuevaAlerta", new Alerta());
+        model.addAttribute("alertasActivas", new ArrayList<AlertaActivaDTO>());
+        return "alertas";
+    }
+
+    @PostMapping("/alertas/eliminar-configuradas")
+    public String eliminarAlertasConfiguradas() {
         repoAlerta.deleteAll();
         return "redirect:/alertas";
     }
