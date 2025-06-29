@@ -219,20 +219,6 @@
 <div class="content">
     <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
     <div th:replace="fragments/alertasActivas :: alertas"></div>
-    <div class="summary-bar">
-        <div class="section">
-            <div class="number" th:text="${alertas.size()}">0</div>
-            <div class="label">Alertas Configuradas</div>
-        </div>
-        <div class="section">
-            <div class="number" th:text="${alertasActivas.size()}">0</div>
-            <div class="label">Alertas Activas</div>
-        </div>
-        <div class="section">
-            <div class="number" th:text="${alertasPendientes}">0</div>
-            <div class="label">Alertas Pendientes</div>
-        </div>
-    </div>
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <label for="temp">Temperatura &gt;</label>
@@ -306,6 +292,20 @@
                 <input type="hidden" name="activa" th:value="${!a.activa}" />
                 <button type="submit" class="btn-toggle" th:text="${a.activa ? 'Desactivar' : 'Activar'}"></button>
             </form>
+        </div>
+    </div>
+    <div class="summary-bar">
+        <div class="section">
+            <div class="number" th:text="${alertas.size()}">0</div>
+            <div class="label">Alertas Configuradas</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${alertasActivas.size()}">0</div>
+            <div class="label">Alertas Activas</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${alertasPendientes}">0</div>
+            <div class="label">Alertas Pendientes</div>
         </div>
     </div>
 </div>
