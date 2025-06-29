@@ -153,7 +153,8 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
         .threshold-card label { font-weight: bold; margin-bottom: 8px; color: white; }
-        .threshold-card input {
+        .threshold-card .title-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+        .threshold-card input[type="number"] {
             padding: 6px;
             border: 1px solid rgba(255,255,255,0.7);
             border-radius: 4px;
@@ -161,6 +162,7 @@
             width: 100%;
             margin-bottom: 4px;
         }
+        .threshold-card input[type="checkbox"] { width:auto; margin:0; }
         .threshold-card span { margin-top: 4px; color: white; }
 
         /* Barra resumen de alertas */
@@ -221,22 +223,34 @@
     <div th:replace="fragments/alertasActivas :: alertas"></div>
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
-            <label for="temp">Temperatura &gt;</label>
+            <div class="title-row">
+                <input type="checkbox" id="chk-temp" name="chkTemp" checked />
+                <label for="temp">Temperatura &gt;</label>
+            </div>
             <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
             <span>°C</span>
         </div>
         <div class="threshold-card">
-            <label for="hum">Humedad &gt;</label>
+            <div class="title-row">
+                <input type="checkbox" id="chk-hum" name="chkHum" checked />
+                <label for="hum">Humedad &gt;</label>
+            </div>
             <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
             <span>%</span>
         </div>
         <div class="threshold-card">
-            <label for="vel">Vel. Viento &gt;</label>
+            <div class="title-row">
+                <input type="checkbox" id="chk-vel" name="chkVel" checked />
+                <label for="vel">Vel. Viento &gt;</label>
+            </div>
             <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
             <span>km/h</span>
         </div>
         <div class="threshold-card">
-            <label for="pre">Precipitación &gt;</label>
+            <div class="title-row">
+                <input type="checkbox" id="chk-pre" name="chkPre" checked />
+                <label for="pre">Precipitación &gt;</label>
+            </div>
             <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
         </div>
@@ -277,7 +291,7 @@
         <div th:each="a : ${alertas}" th:classappend=" ${a.prioridad.toLowerCase()}" class="configured-alert">
             <div class="alert-details">
                 <div class="info"
-                     th:text="${a.nombre == 'Temperatura' ? 'Temperatura ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' \u00B0C' :
+                     th:text="${a.nombre == 'Temperatura' ? 'Temperatura ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' °C' :
                                  a.nombre == 'Humedad' ? 'Humedad ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' %' :
                                  a.nombre == 'VelocidadViento' ? 'Velocidad del viento ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' km/h' :
                                  'Precipitación ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' mm'}"></div>
