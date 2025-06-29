@@ -162,6 +162,39 @@
             margin-bottom: 4px;
         }
         .threshold-card span { margin-top: 4px; color: white; }
+
+        /* Barra resumen de alertas */
+        .summary-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .summary-bar .section {
+            flex: 1;
+            text-align: center;
+            border-right: 1px solid #eee;
+        }
+
+        .summary-bar .section:last-child {
+            border-right: none;
+        }
+
+        .summary-bar .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a3f78;
+        }
+
+        .summary-bar .label {
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -186,6 +219,20 @@
 <div class="content">
     <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
     <div th:replace="fragments/alertasActivas :: alertas"></div>
+    <div class="summary-bar">
+        <div class="section">
+            <div class="number" th:text="${alertas.size()}">0</div>
+            <div class="label">Alertas Configuradas</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${alertasActivas.size()}">0</div>
+            <div class="label">Alertas Activas</div>
+        </div>
+        <div class="section">
+            <div class="number" th:text="${alertasPendientes}">0</div>
+            <div class="label">Alertas Pendientes</div>
+        </div>
+    </div>
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <label for="temp">Temperatura &gt;</label>

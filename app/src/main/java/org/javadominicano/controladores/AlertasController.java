@@ -69,6 +69,7 @@ public class AlertasController {
 
         List<AlertaActivaDTO> activas = alertasService.obtenerAlertasActivas();
         model.addAttribute("alertasActivas", activas);
+        model.addAttribute("alertasPendientes", repoAlerta.countByActiva(false));
 
         return "alertas";
     }
@@ -90,6 +91,7 @@ public class AlertasController {
         model.addAttribute("alertas", repoAlerta.findAll());
         model.addAttribute("nuevaAlerta", new Alerta());
         model.addAttribute("alertasActivas", new ArrayList<AlertaActivaDTO>());
+        model.addAttribute("alertasPendientes", repoAlerta.countByActiva(false));
         return "alertas";
     }
 
