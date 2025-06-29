@@ -277,10 +277,10 @@
         <div th:each="a : ${alertas}" th:classappend=" ${a.prioridad.toLowerCase()}" class="configured-alert">
             <div class="alert-details">
                 <div class="info"
-                     th:text="${a.nombre == 'Temperatura' ? 'Umbral de temperatura superado' :
-                                 a.nombre == 'Humedad' ? 'Umbral de humedad superado' :
-                                 a.nombre == 'VelocidadViento' ? 'Umbral de velocidad de viento superado' :
-                                 'Umbral de precipitación superado'}"></div>
+                     th:text="${a.nombre == 'Temperatura' ? 'Temperatura ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' \u00B0C' :
+                                 a.nombre == 'Humedad' ? 'Humedad ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' %' :
+                                 a.nombre == 'VelocidadViento' ? 'Velocidad del viento ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' km/h' :
+                                 'Precipitación ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' mm'}"></div>
                 <div class="fecha" th:text="${#temporals.format(a.fechaCreacion.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
             <form class="acciones" th:action="@{/alertas/guardar}" method="post">
