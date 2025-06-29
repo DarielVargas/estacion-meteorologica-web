@@ -100,25 +100,32 @@
         /* Estilos para la configuración de umbrales */
         .thresholds { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
         .threshold-card {
-            background:white;
-            border-radius:8px;
-            box-shadow:0 2px 4px rgba(0,0,0,0.1);
-            padding:20px;
-            width:200px;
-            text-align:center;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
+            background: linear-gradient(135deg, #1e3a72 0%, #2d4a85 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .threshold-card label { font-weight:bold; margin-bottom:8px; }
+        .threshold-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        .threshold-card label { font-weight: bold; margin-bottom: 8px; color: white; }
         .threshold-card input {
-            padding:6px;
-            border:1px solid #ccc;
-            border-radius:4px;
-            text-align:center;
-            width:100%;
+            padding: 6px;
+            border: 1px solid rgba(255,255,255,0.7);
+            border-radius: 4px;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 4px;
         }
-        .threshold-card span { margin-top:4px; color:#555; }
+        .threshold-card span { margin-top: 4px; color: white; }
     </style>
 </head>
 <body>
