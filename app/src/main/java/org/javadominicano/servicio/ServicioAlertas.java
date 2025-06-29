@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ServicioAlertas {
@@ -35,6 +38,8 @@ public class ServicioAlertas {
     @Autowired
     private RepositorioDatosPrecipitacion repoPrecipitacion;
 
+    private final Map<String, Timestamp> ultimaNotificacion = new HashMap<>();
+
     public List<String> obtenerAlertasActivasDescripcion() {
         List<String> lista = new ArrayList<>();
 
@@ -43,17 +48,21 @@ public class ServicioAlertas {
         DatosVelocidad vel = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
         DatosPrecipitacion pre = repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
 
-        agregarAlerta(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura());
-        agregarAlerta(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad());
-        agregarAlerta(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad());
-        agregarAlerta(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad());
+        agregarAlerta(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
+        agregarAlerta(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
+        agregarAlerta(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
+        agregarAlerta(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
 
         return lista;
     }
 
-    private void agregarAlerta(List<String> lista, Alerta alerta, Double valor) {
+    private void agregarAlerta(List<String> lista, Alerta alerta, Double valor, Timestamp fecha) {
         if (chequearAlerta(alerta, valor)) {
-            lista.add(descripcion(alerta));
+            Timestamp last = ultimaNotificacion.get(alerta.getNombre());
+            if (last == null || fecha.after(last)) {
+                lista.add(descripcion(alerta));
+                ultimaNotificacion.put(alerta.getNombre(), fecha);
+            }
         }
     }
 
