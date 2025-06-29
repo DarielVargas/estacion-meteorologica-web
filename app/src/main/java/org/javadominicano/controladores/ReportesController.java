@@ -23,6 +23,7 @@ import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
 import org.javadominicano.dto.ReporteGenerado;
 import org.javadominicano.entidades.EstacionMeteorologica;
+import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -40,21 +41,14 @@ public class ReportesController {
     @Autowired private RepositorioDatosPrecipitacion repoPrecipitacion;
     @Autowired private RepositorioDatosHumedad repoHumedad;
     @Autowired private RepositorioDatosTemperatura repoTemperatura;
+    @Autowired private RepositorioEstacionMeteorologica repoEstacion;
 
-    private static List<EstacionMeteorologica> estaciones = new ArrayList<>();
     private static List<ReporteGenerado> reportesGenerados = new ArrayList<>();
     private static int nextId = 1;
 
-    public ReportesController() {
-        if (estaciones.isEmpty()) {
-            estaciones.add(new EstacionMeteorologica("EST001", "Estación1", "Santiago"));
-            estaciones.add(new EstacionMeteorologica("EST002", "Estación2", "Mao"));
-        }
-    }
-
     @ModelAttribute("estaciones")
     public List<EstacionMeteorologica> getEstaciones() {
-        return estaciones;
+        return repoEstacion.findAll();
     }
 
     @PostMapping("/reportes")
