@@ -20,7 +20,8 @@
         .logout-form { margin-top: 20px; }
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; }
-        .cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start; }
+        /* Espacio suficiente para evitar que una tarjeta tape a la siguiente */
+        .cards { display: flex; flex-wrap: wrap; gap: 60px; justify-content: flex-start; }
         .alert-card {
             background: white;
             border-radius: 8px;
@@ -80,8 +81,11 @@
         <div class="alert-card" th:each="alerta : ${alertas}" th:classappend="${alerta.prioridad.toLowerCase()}">
             <form th:action="@{/alertas/guardar}" method="post">
                 <input type="hidden" name="id" th:value="${alerta.id}" />
+                <input type="hidden" name="nombre" th:value="${alerta.nombre}" />
                 <label class="switch">
-                    <input type="checkbox" name="activa" th:checked="${alerta.activa}" disabled />
+                    <!-- Siempre enviar un valor para el campo activa -->
+                    <input type="hidden" name="activa" value="false" />
+                    <input type="checkbox" name="activa" value="true" th:checked="${alerta.activa}" onchange="this.form.submit()" />
                     <span></span>
                 </label>
                 <h2 th:text="${alerta.nombre}">Alerta</h2>
