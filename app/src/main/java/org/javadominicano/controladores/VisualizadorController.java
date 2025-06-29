@@ -29,6 +29,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+
+import java.beans.PropertyEditorSupport;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,6 +61,22 @@ public class VisualizadorController {
 
     @Autowired
     private RepositorioAlerta repoAlerta;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        PropertyEditorSupport editor = new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isBlank()) {
+                    setValue(0.0);
+                } else {
+                    setValue(Double.parseDouble(text.replace(',', '.')));
+                }
+            }
+        };
+        binder.registerCustomEditor(Double.class, editor);
+        binder.registerCustomEditor(double.class, editor);
+    }
 
     // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
     @ModelAttribute("umbrales")

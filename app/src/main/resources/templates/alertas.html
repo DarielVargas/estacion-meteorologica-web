@@ -189,22 +189,22 @@
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <label for="temp">Temperatura &gt;</label>
-            <input id="temp" type="number" step="0.1" name="umbralTemperatura" th:value="${umbrales.temperatura}" required />
+            <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
             <span>°C</span>
         </div>
         <div class="threshold-card">
             <label for="hum">Humedad &gt;</label>
-            <input id="hum" type="number" step="0.1" name="umbralHumedad" th:value="${umbrales.humedad}" required />
+            <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
             <span>%</span>
         </div>
         <div class="threshold-card">
             <label for="vel">Vel. Viento &gt;</label>
-            <input id="vel" type="number" step="0.1" name="umbralVelocidad" th:value="${umbrales.velocidadViento}" required />
+            <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
             <span>km/h</span>
         </div>
         <div class="threshold-card">
             <label for="pre">Precipitación &gt;</label>
-            <input id="pre" type="number" step="0.1" name="umbralPrecipitacion" th:value="${umbrales.precipitacion}" required />
+            <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
         </div>
         <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
