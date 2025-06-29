@@ -80,6 +80,7 @@
         <div class="alert-card" th:each="alerta : ${alertas}" th:classappend="${alerta.prioridad.toLowerCase()}">
             <form th:action="@{/alertas/guardar}" method="post">
                 <input type="hidden" name="id" th:value="${alerta.id}" />
+                <input type="hidden" name="nombre" th:value="${alerta.nombre}" />
                 <label class="switch">
                     <input type="checkbox" name="activa" th:checked="${alerta.activa}" onchange="this.form.submit()" />
                     <span></span>
