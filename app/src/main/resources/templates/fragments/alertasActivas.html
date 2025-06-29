@@ -1,0 +1,40 @@
+<div th:fragment="alerts">
+    <style>
+        .global-alerts {
+            margin-bottom: 15px;
+        }
+        .global-alerts .alert-card {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .global-alerts .alert-card button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <div th:if="${alertasActivas != null && !alertasActivas.isEmpty()}" class="global-alerts" id="globalAlertContainer">
+        <div th:each="a : ${alertasActivas}" class="alert-card">
+            <span th:text="${a}">Alerta</span>
+            <button type="button" class="close-alert">&times;</button>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        document.querySelectorAll('.alert-card').forEach(card => {
+            const btn = card.querySelector('.close-alert');
+            if (btn) {
+                btn.addEventListener('click', () => card.remove());
+            }
+            setTimeout(() => card.remove(), 7000);
+        });
+    </script>
+</div>

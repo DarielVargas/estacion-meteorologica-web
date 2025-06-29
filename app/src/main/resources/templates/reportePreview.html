@@ -47,6 +47,7 @@
         </form>
     </div>
     <div class="content">
+        <div th:replace="fragments/alertasActivas :: alerts"></div>
         <h1 th:text="${reporte.titulo}"></h1>
         <p th:text="${reporte.estacion}"></p>
         <div class="tablas">

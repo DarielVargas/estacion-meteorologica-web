@@ -10,6 +10,7 @@ import org.javadominicano.visualizadorweb.entidades.Umbrales;
 import org.javadominicano.entidades.Alerta;
 import org.javadominicano.entidades.EstacionMeteorologica;
 import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
+import org.javadominicano.servicio.ServicioAlertas;
 
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
@@ -57,6 +58,9 @@ public class VisualizadorController {
 
     @Autowired
     private RepositorioAlerta repoAlerta;
+
+    @Autowired
+    private ServicioAlertas servicioAlertas;
 
     // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
     @ModelAttribute("umbrales")
@@ -217,7 +221,7 @@ public class VisualizadorController {
     }
 
     private String formatoAlerta(Alerta a) {
-        return a.getNombre() + " " + a.getOperador() + " " + a.getUmbral();
+        return servicioAlertas.descripcion(a);
     }
 
     // Eliminar estación

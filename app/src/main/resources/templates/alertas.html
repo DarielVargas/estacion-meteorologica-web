@@ -205,6 +205,7 @@
     </form>
 </div>
 <div class="content">
+    <div th:replace="fragments/alertasActivas :: alerts"></div>
     <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
@@ -260,7 +261,7 @@
         </div>
         <div th:each="a : ${alertas}" th:classappend=" ${a.prioridad.toLowerCase()}" class="configured-alert">
             <div class="alert-details">
-                <div class="info" th:text="${a.nombre + ' - ' + (a.operador == '>' ? 'Mayor que ' : 'Menor que ') + a.umbral + (a.nombre == 'Temperatura' ? '°C' : a.nombre == 'Humedad' ? '%' : a.nombre == 'VelocidadViento' ? ' km/h' : ' mm')}"></div>
+                <div class="info" th:text="${a.nombre == 'Temperatura' ? 'Umbral de temperatura superado' : a.nombre == 'Humedad' ? 'Umbral de humedad superado' : a.nombre == 'VelocidadViento' ? 'Umbral de velocidad de viento superado' : 'Umbral de precipitación superado'}"></div>
                 <div class="fecha" th:text="${#temporals.format(a.fechaCreacion.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
             <form class="acciones" th:action="@{/alertas/guardar}" method="post">

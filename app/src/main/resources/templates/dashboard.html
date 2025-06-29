@@ -497,12 +497,7 @@
         </form>
     </div>
 
-    <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card">
-            <span th:text="${a}">Alerta</span>
-            <button type="button" class="close-alert">&times;</button>
-        </div>
-    </div>
+    <div th:replace="fragments/alertasActivas :: alerts"></div>
 
     <div class="cards">
         <div class="card">
