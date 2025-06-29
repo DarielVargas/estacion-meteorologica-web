@@ -81,6 +81,12 @@ public class AlertasController {
         return "redirect:/alertas";
     }
 
+    @PostMapping("/alertas/eliminar-todas")
+    public String eliminarTodasLasAlertas() {
+        repoAlerta.deleteAll();
+        return "redirect:/alertas";
+    }
+
     private List<AlertaActivaDTO> obtenerAlertasActivas() {
         List<AlertaActivaDTO> lista = new ArrayList<>();
 
