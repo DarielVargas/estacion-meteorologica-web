@@ -147,24 +147,20 @@ public class VisualizadorController {
 
         List<String> alertasActivas = new ArrayList<>();
         Alerta alTemp = repoAlerta.findByNombre("Temperatura");
-        if (alTemp != null && mediciones.getTemperatura() != null &&
-                mediciones.getTemperatura() > alTemp.getUmbral()) {
-            alertasActivas.add("Temperatura supera " + alTemp.getUmbral());
+        if (chequearAlerta(alTemp, mediciones.getTemperatura())) {
+            alertasActivas.add(formatoAlerta(alTemp));
         }
         Alerta alHum = repoAlerta.findByNombre("Humedad");
-        if (alHum != null && mediciones.getHumedad() != null &&
-                mediciones.getHumedad() > alHum.getUmbral()) {
-            alertasActivas.add("Humedad supera " + alHum.getUmbral());
+        if (chequearAlerta(alHum, mediciones.getHumedad())) {
+            alertasActivas.add(formatoAlerta(alHum));
         }
         Alerta alVel = repoAlerta.findByNombre("VelocidadViento");
-        if (alVel != null && mediciones.getVelocidadViento() != null &&
-                mediciones.getVelocidadViento() > alVel.getUmbral()) {
-            alertasActivas.add("Velocidad Viento supera " + alVel.getUmbral());
+        if (chequearAlerta(alVel, mediciones.getVelocidadViento())) {
+            alertasActivas.add(formatoAlerta(alVel));
         }
         Alerta alPre = repoAlerta.findByNombre("Precipitacion");
-        if (alPre != null && mediciones.getPrecipitacion() != null &&
-                mediciones.getPrecipitacion() > alPre.getUmbral()) {
-            alertasActivas.add("Precipitacion supera " + alPre.getUmbral());
+        if (chequearAlerta(alPre, mediciones.getPrecipitacion())) {
+            alertasActivas.add(formatoAlerta(alPre));
         }
 
         model.addAttribute("velocidades", velocidades);
@@ -201,9 +197,27 @@ public class VisualizadorController {
         if (a == null) {
             a = new Alerta();
             a.setNombre(nombre);
+            a.setOperador(">");
+            a.setPrioridad("Media");
+            a.setActiva(true);
         }
         a.setUmbral(umbral);
         repoAlerta.save(a);
+    }
+
+    private boolean chequearAlerta(Alerta alerta, Double valor) {
+        if (alerta == null || valor == null || !alerta.isActiva()) {
+            return false;
+        }
+        if (">".equals(alerta.getOperador())) {
+            return valor > alerta.getUmbral();
+        } else {
+            return valor < alerta.getUmbral();
+        }
+    }
+
+    private String formatoAlerta(Alerta a) {
+        return a.getNombre() + " " + a.getOperador() + " " + a.getUmbral();
     }
 
     // Eliminar estación

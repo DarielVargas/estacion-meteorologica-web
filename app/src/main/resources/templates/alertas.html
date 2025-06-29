@@ -20,14 +20,23 @@
         .logout-form { margin-top: 20px; }
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border: 1px solid #ddd; font-size: 14px; }
-        th { background-color: #f1f3f7; }
-        form.inline { display: inline; }
+        .cards { display: flex; flex-wrap: wrap; gap: 20px; }
+        .alert-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 260px; position: relative; }
+        .alert-card.high { border-top: 4px solid #dc3545; }
+        .alert-card.medium { border-top: 4px solid #ffc107; }
+        .alert-card.low { border-top: 4px solid #28a745; }
+        .alert-card h2 { margin-bottom: 10px; font-size: 18px; color: #1a3f78; }
+        .alert-card form { display: flex; flex-direction: column; gap: 10px; }
+        .switch { position: absolute; top: 20px; right: 20px; }
+        .switch input { display:none; }
+        .switch span { width: 40px; height: 20px; background:#ccc; display:inline-block; border-radius: 20px; position:relative; cursor:pointer; }
+        .switch span::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:white; border-radius:50%; transition:.2s; }
+        .switch input:checked + span { background:#28a745; }
+        .switch input:checked + span::after { transform: translateX(20px); }
+        .row { display:flex; align-items:center; gap:5px; }
         .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
         .btn-edit { background-color: #007bff; color: white; }
         .btn-delete { background-color: #dc3545; color: white; }
-        .btn-add { background-color: #28a745; color: white; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -50,33 +59,39 @@
     </form>
 </div>
 <div class="content">
-    <h1>Alertas</h1>
-    <form th:action="@{/alertas/nueva}" method="post" style="margin-bottom: 20px;">
-        <input type="text" name="nombre" placeholder="Nombre" required />
-        <input type="number" step="0.1" name="umbral" placeholder="Umbral" required />
-        <button type="submit" class="btn btn-add">Agregar</button>
-    </form>
-    <table>
-        <thead>
-            <tr><th>Nombre</th><th>Umbral</th><th>Acciones</th></tr>
-        </thead>
-        <tbody>
-            <tr th:each="alerta : ${alertas}">
-                <form th:action="@{/alertas/editar}" method="post">
-                    <input type="hidden" name="id" th:value="${alerta.id}" />
-                    <td><input type="text" name="nombre" th:value="${alerta.nombre}" required /></td>
-                    <td><input type="number" step="0.1" name="umbral" th:value="${alerta.umbral}" required /></td>
-                    <td>
-                        <button type="submit" class="btn btn-edit">Guardar</button>
-                </form>
-                <form th:action="@{/alertas/eliminar}" method="post" class="inline" onsubmit="return confirm('¿Eliminar alerta?');">
-                    <input type="hidden" name="id" th:value="${alerta.id}" />
-                    <button type="submit" class="btn btn-delete">Eliminar</button>
-                </form>
-                    </td>
-            </tr>
-        </tbody>
-    </table>
+    <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
+    <div class="cards">
+        <div class="alert-card" th:each="alerta : ${alertas}" th:classappend="${alerta.prioridad.toLowerCase()}">
+            <form th:action="@{/alertas/guardar}" method="post">
+                <input type="hidden" name="id" th:value="${alerta.id}" />
+                <label class="switch">
+                    <input type="checkbox" name="activa" th:checked="${alerta.activa}" />
+                    <span></span>
+                </label>
+                <h2 th:text="${alerta.nombre}">Alerta</h2>
+                <div class="row">
+                    <select name="operador" th:value="${alerta.operador}">
+                        <option value=">">Mayor que</option>
+                        <option value="<">Menor que</option>
+                    </select>
+                    <input type="number" step="0.1" name="umbral" th:value="${alerta.umbral}" required />
+                    <span th:text="${alerta.nombre == 'Temperatura' ? '°C' : alerta.nombre == 'Humedad' ? '%' : alerta.nombre == 'VelocidadViento' ? 'km/h' : 'mm'}"></span>
+                </div>
+                <select name="prioridad" th:value="${alerta.prioridad}">
+                    <option value="Alta">Alta</option>
+                    <option value="Media">Media</option>
+                    <option value="Baja">Baja</option>
+                </select>
+                <div class="row">
+                    <button type="submit" class="btn btn-edit">Guardar</button>
+                    <button type="submit" form="del__${alerta.id}" class="btn btn-delete">Eliminar</button>
+                </div>
+            </form>
+            <form th:id="'del__' + ${alerta.id}" th:action="@{/alertas/eliminar}" method="post" onsubmit="return confirm('¿Eliminar alerta?');">
+                <input type="hidden" name="id" th:value="${alerta.id}" />
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>

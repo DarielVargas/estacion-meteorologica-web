@@ -13,6 +13,12 @@ public class Alerta {
 
     private double umbral;
 
+    private boolean activa = true;
+
+    private String operador = ">";
+
+    private String prioridad = "Media";
+
     public Long getId() {
         return id;
     }
@@ -35,5 +41,29 @@ public class Alerta {
 
     public void setUmbral(double umbral) {
         this.umbral = umbral;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public String getOperador() {
+        return operador;
+    }
+
+    public void setOperador(String operador) {
+        this.operador = operador;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
     }
 }

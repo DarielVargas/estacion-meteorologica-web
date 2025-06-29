@@ -19,17 +19,12 @@ public class AlertasController {
     @GetMapping("/alertas")
     public String listarAlertas(Model model) {
         model.addAttribute("alertas", repoAlerta.findAll());
+        model.addAttribute("nuevaAlerta", new Alerta());
         return "alertas";
     }
 
-    @PostMapping("/alertas/nueva")
-    public String nuevaAlerta(@ModelAttribute Alerta alerta) {
-        repoAlerta.save(alerta);
-        return "redirect:/alertas";
-    }
-
-    @PostMapping("/alertas/editar")
-    public String editarAlerta(@ModelAttribute Alerta alerta) {
+    @PostMapping("/alertas/guardar")
+    public String guardarAlerta(@ModelAttribute Alerta alerta) {
         repoAlerta.save(alerta);
         return "redirect:/alertas";
     }
