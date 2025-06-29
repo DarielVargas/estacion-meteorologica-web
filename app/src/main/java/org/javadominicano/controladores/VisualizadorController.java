@@ -10,7 +10,6 @@ import org.javadominicano.visualizadorweb.entidades.Umbrales;
 import org.javadominicano.entidades.Alerta;
 import org.javadominicano.entidades.EstacionMeteorologica;
 import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
-import org.javadominicano.servicio.ServicioAlertas;
 
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
@@ -58,9 +57,6 @@ public class VisualizadorController {
 
     @Autowired
     private RepositorioAlerta repoAlerta;
-
-    @Autowired
-    private ServicioAlertas servicioAlertas;
 
     // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
     @ModelAttribute("umbrales")
@@ -149,23 +145,6 @@ public class VisualizadorController {
             }
         }
 
-        List<String> alertasActivas = new ArrayList<>();
-        Alerta alTemp = repoAlerta.findByNombre("Temperatura");
-        if (chequearAlerta(alTemp, mediciones.getTemperatura())) {
-            alertasActivas.add(formatoAlerta(alTemp));
-        }
-        Alerta alHum = repoAlerta.findByNombre("Humedad");
-        if (chequearAlerta(alHum, mediciones.getHumedad())) {
-            alertasActivas.add(formatoAlerta(alHum));
-        }
-        Alerta alVel = repoAlerta.findByNombre("VelocidadViento");
-        if (chequearAlerta(alVel, mediciones.getVelocidadViento())) {
-            alertasActivas.add(formatoAlerta(alVel));
-        }
-        Alerta alPre = repoAlerta.findByNombre("Precipitacion");
-        if (chequearAlerta(alPre, mediciones.getPrecipitacion())) {
-            alertasActivas.add(formatoAlerta(alPre));
-        }
 
         model.addAttribute("velocidades", velocidades);
         model.addAttribute("direcciones", direcciones);
@@ -175,7 +154,6 @@ public class VisualizadorController {
         model.addAttribute("mediciones", mediciones);
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);
-        model.addAttribute("alertasActivas", alertasActivas);
 
         // Nuevos atributos para la vista
         model.addAttribute("estacionesActivas", estacionesActivas);
@@ -209,20 +187,6 @@ public class VisualizadorController {
         repoAlerta.save(a);
     }
 
-    private boolean chequearAlerta(Alerta alerta, Double valor) {
-        if (alerta == null || valor == null || !alerta.isActiva()) {
-            return false;
-        }
-        if (">".equals(alerta.getOperador())) {
-            return valor > alerta.getUmbral();
-        } else {
-            return valor < alerta.getUmbral();
-        }
-    }
-
-    private String formatoAlerta(Alerta a) {
-        return servicioAlertas.descripcion(a);
-    }
 
     // Eliminar estación
     @PostMapping("/estaciones/eliminar")
