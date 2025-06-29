@@ -1,8 +1,21 @@
 package org.javadominicano.entidades;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "estaciones")
 public class EstacionMeteorologica {
+    @Id
+    @Column(name = "id")
     private String id;
+
+    @Column(name = "nombre")
     private String nombre;
+
+    @Column(name = "ubicacion")
     private String ubicacion;
 
     // Constructor vacío (necesario para Thymeleaf)

@@ -8,6 +8,7 @@ import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
 import org.javadominicano.visualizadorweb.entidades.Umbrales;
 import org.javadominicano.entidades.EstacionMeteorologica;
+import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
 
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
@@ -49,16 +50,8 @@ public class VisualizadorController {
     @Autowired
     private RepositorioDatosTemperatura repositorioTemperatura;
 
-    // Lista estática para simular base de datos de estaciones
-    private static List<EstacionMeteorologica> estaciones = new ArrayList<>();
-
-    // Inicializa la lista si está vacía
-    public VisualizadorController() {
-        if (estaciones.isEmpty()) {
-            estaciones.add(new EstacionMeteorologica("EST001", "Estación1", "Santiago"));
-            estaciones.add(new EstacionMeteorologica("EST002", "Estación2", "Mao"));
-        }
-    }
+    @Autowired
+    private RepositorioEstacionMeteorologica repositorioEstacion;
 
     // Inyecta el objeto umbrales para Thymeleaf con valores por defecto
     @ModelAttribute("umbrales")
@@ -74,7 +67,7 @@ public class VisualizadorController {
     // Inyecta la lista de estaciones para Thymeleaf
     @ModelAttribute("estaciones")
     public List<EstacionMeteorologica> getEstaciones() {
-        return estaciones;
+        return repositorioEstacion.findAll();
     }
 
     @GetMapping("/")
@@ -112,13 +105,14 @@ public class VisualizadorController {
         Date ahora = new Date();
         Date fechaLimite = new Date(ahora.getTime() - 6L * 3600 * 1000); // 6 horas en milis
 
+        List<EstacionMeteorologica> todasEstaciones = repositorioEstacion.findAll();
         int estacionesActivas = 0;
         int estacionesInactivas = 0;
         Date ultimaFechaActualizacion = new Date(0); // Epoch como valor inicial mínimo
 
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
 
-        for (EstacionMeteorologica estacion : estaciones) {
+        for (EstacionMeteorologica estacion : todasEstaciones) {
             // Aquí debes implementar la lógica real para obtener la última fecha de datos de cada estación,
             // por ejemplo consultando repositorioVelocidad u otros.
             // Por simplicidad, usamos ahora como última fecha para que funcione.
@@ -175,17 +169,14 @@ public class VisualizadorController {
     // Eliminar estación
     @PostMapping("/estaciones/eliminar")
     public String eliminarEstacion(@RequestParam String id) {
-        estaciones.removeIf(est -> est.getId().equals(id));
+        repositorioEstacion.deleteById(id);
         return "redirect:/estaciones";
     }
 
     // Mostrar formulario de edición
     @GetMapping("/estaciones/editar")
     public String mostrarEditarEstacion(@RequestParam String id, Model model) {
-        EstacionMeteorologica estacionOpt = estaciones.stream()
-                .filter(est -> est.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        EstacionMeteorologica estacionOpt = repositorioEstacion.findById(id).orElse(null);
 
         if (estacionOpt != null) {
             model.addAttribute("estacion", estacionOpt);
@@ -198,12 +189,7 @@ public class VisualizadorController {
     // Guardar estación editada
     @PostMapping("/estaciones/editar")
     public String guardarEstacionEditada(@ModelAttribute EstacionMeteorologica estacion) {
-        for (int i = 0; i < estaciones.size(); i++) {
-            if (estaciones.get(i).getId().equals(estacion.getId())) {
-                estaciones.set(i, estacion);
-                break;
-            }
-        }
+        repositorioEstacion.save(estacion);
         return "redirect:/estaciones";
     }
 
@@ -218,7 +204,7 @@ public class VisualizadorController {
     // Guardar nueva estación
     @PostMapping("/estaciones/nueva")
     public String guardarNuevaEstacion(@ModelAttribute EstacionMeteorologica estacion) {
-        estaciones.add(estacion);
+        repositorioEstacion.save(estacion);
         return "redirect:/estaciones";
     }
 
@@ -231,9 +217,10 @@ public class VisualizadorController {
         int estacionesActivas = 0;
         int estacionesInactivas = 0;
         Date ultimaFechaActualizacion = new Date(0);
+        List<EstacionMeteorologica> todasEstaciones = repositorioEstacion.findAll();
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
 
-        for (EstacionMeteorologica estacion : estaciones) {
+        for (EstacionMeteorologica estacion : todasEstaciones) {
             Date ultimaFechaEstacion = ahora; // reemplazar con consulta real
 
             if (ultimaFechaEstacion != null) {
@@ -252,7 +239,7 @@ public class VisualizadorController {
             }
         }
 
-        model.addAttribute("estaciones", estaciones);
+        model.addAttribute("estaciones", todasEstaciones);
         model.addAttribute("estacionesActivas", estacionesActivas);
         model.addAttribute("estacionesInactivas", estacionesInactivas);
         model.addAttribute("estacionesInactivasList", estacionesInactivasList);
