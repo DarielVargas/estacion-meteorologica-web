@@ -29,6 +29,7 @@
             width: 260px;
             height: 260px;
             display: flex;
+            flex-direction: column;
             position: relative;
         }
         .alert-card.high { border-top: 4px solid #dc3545; }
@@ -99,7 +100,7 @@
                 </select>
                 <div class="row buttons">
                     <button type="submit" class="btn btn-edit">Guardar</button>
-                    <button type="submit" form="del__${alerta.id}" class="btn btn-delete">Eliminar</button>
+                    <button type="submit" th:attr="form='del__' + ${alerta.id}" class="btn btn-delete">Eliminar</button>
                 </div>
             </form>
             <form th:id="'del__' + ${alerta.id}" th:action="@{/alertas/eliminar}" method="post" onsubmit="return confirm('¿Eliminar alerta?');">
