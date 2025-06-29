@@ -23,7 +23,10 @@
     <div th:if="${alertasActivas != null}" id="alertContainer">
         <div th:each="a : ${alertasActivas}" class="alert-card"
              th:attr="data-key=${'alert_'+ a.alerta.id +'_'+ a.fecha.time}">
-            <span th:text="${a.alerta.nombre + ' ' + a.alerta.operador + ' ' + a.alerta.umbral}">Alerta</span>
+            <span th:text="${a.alerta.nombre == 'Temperatura' ? 'Umbral de temperatura superado' :
+                             a.alerta.nombre == 'Humedad' ? 'Umbral de humedad superado' :
+                             a.alerta.nombre == 'VelocidadViento' ? 'Umbral de velocidad de viento superado' :
+                             'Umbral de precipitación superado'}">Alerta</span>
             <button type="button" class="close-alert">&times;</button>
         </div>
     </div>
