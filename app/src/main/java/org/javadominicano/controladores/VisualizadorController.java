@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.javadominicano.dto.AlertaActivaDTO;
+
 @Controller
 public class VisualizadorController {
 
@@ -145,22 +147,27 @@ public class VisualizadorController {
             }
         }
 
-        List<String> alertasActivas = new ArrayList<>();
+        List<AlertaActivaDTO> alertasActivas = new ArrayList<>();
+        Date ahoraAlertas = new Date();
+
         Alerta alTemp = repoAlerta.findByNombre("Temperatura");
         if (chequearAlerta(alTemp, mediciones.getTemperatura())) {
-            alertasActivas.add(formatoAlerta(alTemp));
+            alertasActivas.add(crearDTO(alTemp, mediciones.getTemperatura(), ahoraAlertas));
         }
+
         Alerta alHum = repoAlerta.findByNombre("Humedad");
         if (chequearAlerta(alHum, mediciones.getHumedad())) {
-            alertasActivas.add(formatoAlerta(alHum));
+            alertasActivas.add(crearDTO(alHum, mediciones.getHumedad(), ahoraAlertas));
         }
+
         Alerta alVel = repoAlerta.findByNombre("VelocidadViento");
         if (chequearAlerta(alVel, mediciones.getVelocidadViento())) {
-            alertasActivas.add(formatoAlerta(alVel));
+            alertasActivas.add(crearDTO(alVel, mediciones.getVelocidadViento(), ahoraAlertas));
         }
+
         Alerta alPre = repoAlerta.findByNombre("Precipitacion");
         if (chequearAlerta(alPre, mediciones.getPrecipitacion())) {
-            alertasActivas.add(formatoAlerta(alPre));
+            alertasActivas.add(crearDTO(alPre, mediciones.getPrecipitacion(), ahoraAlertas));
         }
 
         model.addAttribute("velocidades", velocidades);
@@ -172,6 +179,7 @@ public class VisualizadorController {
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);
         model.addAttribute("alertasActivas", alertasActivas);
+        model.addAttribute("totalAlertasActivas", alertasActivas.size());
 
         // Nuevos atributos para la vista
         model.addAttribute("estacionesActivas", estacionesActivas);
@@ -218,6 +226,19 @@ public class VisualizadorController {
 
     private String formatoAlerta(Alerta a) {
         return a.getNombre() + " " + a.getOperador() + " " + a.getUmbral();
+    }
+
+    private AlertaActivaDTO crearDTO(Alerta a, Double valor, Date fecha) {
+        AlertaActivaDTO dto = new AlertaActivaDTO();
+        dto.setId(a.getId());
+        dto.setNombre(a.getNombre());
+        dto.setValorActual(valor != null ? valor : 0);
+        dto.setUmbral(a.getUmbral());
+        dto.setOperador(a.getOperador());
+        dto.setPrioridad(a.getPrioridad());
+        dto.setActiva(a.isActiva());
+        dto.setFechaActivacion(fecha);
+        return dto;
     }
 
     // Eliminar estación

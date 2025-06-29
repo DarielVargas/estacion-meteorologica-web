@@ -234,25 +234,44 @@
             cursor: pointer;
         }
 
-        .alert-card {
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            position: relative;
+        .alert-box {
+            background: #fff5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .alert-card button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
+        .alert-box h2 {
+            margin-bottom: 15px;
+            color: #1a3f78;
         }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+            color: #333;
+            background-color: #ffe8e8;
+        }
+
+        .alert-card.alta { background-color: #f8d7da; }
+        .alert-card.media { background-color: #fff3cd; }
+        .alert-card.baja { background-color: #e2f0d9; }
+
+        .alert-info strong { display:block; font-size:16px; color:#1a3f78; }
+        .alert-info span { display:block; margin-top:4px; }
+        .alert-info small { color:#666; }
+
+        .alert-actions { display:flex; gap:10px; }
 
         /* Nuevos estilos para las gráficas */
         .graficas {
@@ -497,10 +516,31 @@
         </form>
     </div>
 
-    <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card">
-            <span th:text="${a}">Alerta</span>
-            <button type="button" class="close-alert">&times;</button>
+    <div th:if="${alertasActivas != null}" id="alertContainer" class="alert-box">
+        <h2>Alertas Activas (<span th:text="${totalAlertasActivas}">0</span>)</h2>
+        <div class="alert-list">
+            <div th:each="a : ${alertasActivas}" th:class="'alert-card ' + ${a.prioridad.toLowerCase()}">
+                <div class="alert-info">
+                    <strong th:text="${a.nombre}">Medicion</strong>
+                    <span th:text="${a.valorActual} + ' (' + a.operador + ' ' + a.umbral + ')'">valor</span>
+                    <small th:text="${#dates.format(a.fechaActivacion, 'dd/MM/yyyy HH:mm')}" class="alert-date">fecha</small>
+                </div>
+                <div class="alert-actions">
+                    <form th:action="@{/alertas/guardar}" method="post">
+                        <input type="hidden" name="id" th:value="${a.id}" />
+                        <input type="hidden" name="nombre" th:value="${a.nombre}" />
+                        <input type="hidden" name="umbral" th:value="${a.umbral}" />
+                        <input type="hidden" name="operador" th:value="${a.operador}" />
+                        <input type="hidden" name="prioridad" th:value="${a.prioridad}" />
+                        <input type="hidden" name="activa" th:value="${!a.activa}" />
+                        <button type="submit" class="btn btn-edit" th:text="${a.activa ? 'Desactivar' : 'Activar'}"></button>
+                    </form>
+                    <form th:action="@{/alertas/eliminar}" method="post" onsubmit="return confirm('¿Eliminar alerta?');">
+                        <input type="hidden" name="id" th:value="${a.id}" />
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -921,13 +961,7 @@ updateCharts();
         });
     }
 
-    document.querySelectorAll('.alert-card').forEach(card => {
-        const btn = card.querySelector('.close-alert');
-        if (btn) {
-            btn.addEventListener('click', () => card.remove());
-        }
-        setTimeout(() => card.remove(), 7000);
-    });
+    // Interacciones futuras para tarjetas de alerta
 </script>
 
 </body>
