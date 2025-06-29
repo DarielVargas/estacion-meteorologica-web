@@ -145,23 +145,6 @@ public class VisualizadorController {
             }
         }
 
-        List<String> alertasActivas = new ArrayList<>();
-        Alerta alTemp = repoAlerta.findByNombre("Temperatura");
-        if (chequearAlerta(alTemp, mediciones.getTemperatura())) {
-            alertasActivas.add(formatoAlerta(alTemp));
-        }
-        Alerta alHum = repoAlerta.findByNombre("Humedad");
-        if (chequearAlerta(alHum, mediciones.getHumedad())) {
-            alertasActivas.add(formatoAlerta(alHum));
-        }
-        Alerta alVel = repoAlerta.findByNombre("VelocidadViento");
-        if (chequearAlerta(alVel, mediciones.getVelocidadViento())) {
-            alertasActivas.add(formatoAlerta(alVel));
-        }
-        Alerta alPre = repoAlerta.findByNombre("Precipitacion");
-        if (chequearAlerta(alPre, mediciones.getPrecipitacion())) {
-            alertasActivas.add(formatoAlerta(alPre));
-        }
 
         model.addAttribute("velocidades", velocidades);
         model.addAttribute("direcciones", direcciones);
@@ -171,7 +154,6 @@ public class VisualizadorController {
         model.addAttribute("mediciones", mediciones);
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);
-        model.addAttribute("alertasActivas", alertasActivas);
 
         // Nuevos atributos para la vista
         model.addAttribute("estacionesActivas", estacionesActivas);

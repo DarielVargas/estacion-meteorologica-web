@@ -234,16 +234,17 @@
             cursor: pointer;
         }
 
-        .alert-card {
+        .alert-toast {
             background-color: #dc3545;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 18px;
             border-radius: 5px;
             margin-bottom: 10px;
             position: relative;
+            font-size: 1.2em;
         }
 
-        .alert-card button {
+        .alert-toast button {
             position: absolute;
             top: 5px;
             right: 5px;
@@ -498,7 +499,7 @@
     </div>
 
     <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card">
+        <div th:each="a : ${alertasActivas}" class="alert-toast">
             <span th:text="${a}">Alerta</span>
             <button type="button" class="close-alert">&times;</button>
         </div>
@@ -921,7 +922,7 @@ updateCharts();
         });
     }
 
-    document.querySelectorAll('.alert-card').forEach(card => {
+    document.querySelectorAll('.alert-toast').forEach(card => {
         const btn = card.querySelector('.close-alert');
         if (btn) {
             btn.addEventListener('click', () => card.remove());
