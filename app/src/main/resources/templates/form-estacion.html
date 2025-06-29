@@ -133,6 +133,7 @@
         </svg>
     </div>
     <h2>Añadir Estación Meteorológica</h2>
+    <div th:replace="fragments/alertasActivas :: alertas"></div>
     <p class="subtitle">Completa la información de la estación</p>
     <form th:action="@{${estacion.id} == null ? '/estaciones/nueva' : '/estaciones/editar'}" th:object="${estacion}" method="post">
         <label for="id">ID</label>

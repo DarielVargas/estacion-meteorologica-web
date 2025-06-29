@@ -206,6 +206,7 @@
 </div>
 <div class="content">
     <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
+    <div th:replace="fragments/alertasActivas :: alertas"></div>
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <label for="temp">Temperatura &gt;</label>

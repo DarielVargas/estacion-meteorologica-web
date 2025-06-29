@@ -1,0 +1,57 @@
+<div th:fragment="alertas">
+    <style>
+        .alert-card {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .alert-card button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+
+    <div th:if="${alertasActivasTexto != null}" id="alertContainer">
+        <div th:each="a : ${alertasActivasTexto}" class="alert-card">
+            <span th:text="${a}">Alerta</span>
+            <button type="button" class="close-alert">&times;</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.querySelectorAll('#alertContainer .alert-card').forEach(function(card) {
+        var text = card.querySelector('span').textContent;
+        var key = 'alert_expire_' + text;
+        var now = Date.now();
+        var stored = localStorage.getItem(key);
+        if (stored && now > parseInt(stored)) {
+            card.remove();
+            return;
+        }
+        var expire = stored ? parseInt(stored) : now + 7000;
+        localStorage.setItem(key, expire);
+        var btn = card.querySelector('.close-alert');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                localStorage.setItem(key, now);
+                card.remove();
+            });
+        }
+        setTimeout(function() {
+            card.remove();
+            localStorage.setItem(key, now);
+        }, expire - now);
+    });
+    /*]]>*/
+    </script>
+</div>
