@@ -13,6 +13,9 @@ public class DatosDireccion {
 
     private String sensorId;
 
+    @Column(name = "estacion_id")
+    private String estacionId;
+
     private String direccion;
 
     private Timestamp fecha;
@@ -33,6 +36,14 @@ public class DatosDireccion {
 
     public void setSensorId(String sensorId) {
         this.sensorId = sensorId;
+    }
+
+    public String getEstacionId() {
+        return estacionId;
+    }
+
+    public void setEstacionId(String estacionId) {
+        this.estacionId = estacionId;
     }
 
     public String getDireccion() {

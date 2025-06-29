@@ -13,6 +13,9 @@ public class DatosVelocidad {
 
     private String sensorId;
 
+    @Column(name = "estacion_id")
+    private String estacionId;
+
     private double velocidad;
 
     private Timestamp fecha;
@@ -33,6 +36,14 @@ public class DatosVelocidad {
 
     public void setSensorId(String sensorId) {
         this.sensorId = sensorId;
+    }
+
+    public String getEstacionId() {
+        return estacionId;
+    }
+
+    public void setEstacionId(String estacionId) {
+        this.estacionId = estacionId;
     }
 
     public double getVelocidad() {

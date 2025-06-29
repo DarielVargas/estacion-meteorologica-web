@@ -64,10 +64,11 @@
       <div class="tabla">
         <h3>Velocidad del Viento</h3>
         <table>
-          <thead><tr><th>ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
           <tbody>
             <tr th:each="v : ${velocidades.content}">
               <td th:text="${v.id}"></td>
+              <td th:text="${v.estacionId}"></td>
               <td th:text="${v.velocidad}"></td>
               <td th:text="${v.fecha}"></td>
             </tr>
@@ -79,10 +80,11 @@
       <div class="tabla">
         <h3>Dirección del Viento</h3>
         <table>
-          <thead><tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
           <tbody>
             <tr th:each="d : ${direcciones.content}">
               <td th:text="${d.id}"></td>
+              <td th:text="${d.estacionId}"></td>
               <td th:text="${d.direccion}"></td>
               <td th:text="${d.fecha}"></td>
             </tr>
@@ -94,10 +96,11 @@
       <div class="tabla">
         <h3>Precipitación</h3>
         <table>
-          <thead><tr><th>ID</th><th>mm</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>mm</th><th>Fecha</th></tr></thead>
           <tbody>
             <tr th:each="p : ${precipitaciones.content}">
               <td th:text="${p.id}"></td>
+              <td th:text="${p.estacionId}"></td>
               <td th:text="${#numbers.formatDecimal(p.probabilidad,1,1)}"></td>
               <td th:text="${p.fecha}"></td>
             </tr>
@@ -109,10 +112,11 @@
       <div class="tabla">
         <h3>Humedad</h3>
         <table>
-          <thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>%</th><th>Fecha</th></tr></thead>
           <tbody>
             <tr th:each="h : ${humedades.content}">
               <td th:text="${h.id}"></td>
+              <td th:text="${h.estacionId}"></td>
               <td th:text="${h.humedad}"></td>
               <td th:text="${h.fecha}"></td>
             </tr>
@@ -124,10 +128,11 @@
       <div class="tabla">
         <h3>Temperatura</h3>
         <table>
-          <thead><tr><th>ID</th><th>°C</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>°C</th><th>Fecha</th></tr></thead>
           <tbody>
             <tr th:each="t : ${temperaturas.content}">
               <td th:text="${t.id}"></td>
+              <td th:text="${t.estacionId}"></td>
               <td th:text="${t.temperatura}"></td>
               <td th:text="${t.fecha}"></td>
             </tr>
