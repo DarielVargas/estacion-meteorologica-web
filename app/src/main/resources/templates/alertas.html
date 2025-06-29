@@ -213,7 +213,7 @@
     <div class="active-alerts" th:if="${alertasActivas != null}">
         <div class="active-alerts-header">
             <h2>Alertas Activas (<span th:text="${alertasActivas.size()}"></span>)</h2>
-            <form th:action="@{/alertas/eliminar-todas}" method="post">
+            <form th:action="@{/alertas/eliminar-activas}" method="post">
                 <button type="submit" class="btn-delete-all">Eliminar todas</button>
             </form>
         </div>
@@ -237,6 +237,9 @@
     <div class="configured-alerts" th:if="${alertas != null}">
         <div class="configured-alerts-header">
             <h2>Alertas Configuradas (<span th:text="${alertas.size()}"></span>)</h2>
+            <form th:action="@{/alertas/eliminar-configuradas}" method="post">
+                <button type="submit" class="btn-delete-all">Eliminar todas</button>
+            </form>
         </div>
         <div th:each="a : ${alertas}" th:classappend=" ${a.prioridad.toLowerCase()}" class="configured-alert">
             <div class="alert-details">
