@@ -166,12 +166,6 @@ public class VisualizadorController {
         return "redirect:/"; // Redirige al dashboard para que se recargue
     }
 
-    // Eliminar estación
-    @PostMapping("/estaciones/eliminar")
-    public String eliminarEstacion(@RequestParam String id) {
-        repositorioEstacion.deleteById(id);
-        return "redirect:/estaciones";
-    }
 
     // Mostrar formulario de edición
     @GetMapping("/estaciones/editar")
