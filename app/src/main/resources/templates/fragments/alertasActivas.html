@@ -36,14 +36,15 @@
             card.remove();
             return;
         }
-        localStorage.setItem(key, 'shown');
         var btn = card.querySelector('.close-alert');
+        var markAsShown = function() {
+            localStorage.setItem(key, 'shown');
+            card.remove();
+        };
         if (btn) {
-            btn.addEventListener('click', function() {
-                card.remove();
-            });
+            btn.addEventListener('click', markAsShown);
         }
-        setTimeout(function() { card.remove(); }, 7000);
+        setTimeout(markAsShown, 7000);
     });
     /*]]>*/
     </script>
