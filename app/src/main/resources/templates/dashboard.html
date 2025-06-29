@@ -234,25 +234,44 @@
             cursor: pointer;
         }
 
-        .alert-card {
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            position: relative;
+
+        .alert-section {
+            margin-bottom: 20px;
         }
 
-        .alert-card button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
+        .alert-section h2 {
+            margin-bottom: 10px;
+            color: #1a3f78;
         }
+
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        .alert-item.red { border-left-color: #dc3545; }
+        .alert-item .alert-info { display: flex; align-items: center; gap: 10px; }
+        .alert-item .alert-icon { width: 20px; height: 20px; fill: #dc3545; }
+        .alert-item.yellow .alert-icon { fill: #ffc107; }
+        .alert-item .alert-data p { margin: 0; font-weight: bold; }
+        .alert-item .alert-data span { font-size: 12px; color: #666; }
+        .alert-actions form { display: inline-block; margin-left: 5px; }
+        .alert-actions button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .alert-actions .toggle { background-color: #007bff; }
+        .alert-actions .delete { background-color: #dc3545; }
 
         /* Nuevos estilos para las gráficas */
         .graficas {
@@ -497,10 +516,42 @@
         </form>
     </div>
 
-    <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card">
-            <span th:text="${a}">Alerta</span>
-            <button type="button" class="close-alert">&times;</button>
+    <div th:if="${alertasActivas != null}" class="alert-section">
+        <h2>Alertas Activas (<span th:text="${alertasActivas.size()}">0</span>)</h2>
+        <div th:each="a : ${alertasActivas}"
+             th:class="${'alert-item ' + (a.prioridad == 'Alta' ? 'red' : 'yellow')}">
+            <div class="alert-info">
+                <svg class="alert-icon" viewBox="0 0 24 24">
+                    <path d="M1 21h22L12 2 1 21z" />
+                    <path d="M12 16v2" />
+                    <path d="M12 10v4" />
+                </svg>
+                <div class="alert-data">
+                    <p th:text="${a.nombre} + ': ' +
+                        #numbers.formatDecimal(a.valorActual,1,1) +
+                        (a.nombre=='Temperatura' ? '°C' : a.nombre=='Humedad' ? '%' : a.nombre=='VelocidadViento' ? ' km/h' : ' mm') +
+                        ' (Umbral: ' + #numbers.formatDecimal(a.umbral,1,1) +
+                        (a.nombre=='Temperatura' ? '°C' : a.nombre=='Humedad' ? '%' : a.nombre=='VelocidadViento' ? ' km/h' : ' mm') + ')'">
+                        Info
+                    </p>
+                    <span th:text="${#dates.format(a.fecha,'dd/MM/yyyy HH:mm')}">fecha</span>
+                </div>
+            </div>
+            <div class="alert-actions">
+                <form th:action="@{/alertas/guardar}" method="post">
+                    <input type="hidden" name="id" th:value="${a.id}" />
+                    <input type="hidden" name="nombre" th:value="${a.nombre}" />
+                    <input type="hidden" name="operador" th:value="${a.operador}" />
+                    <input type="hidden" name="umbral" th:value="${a.umbral}" />
+                    <input type="hidden" name="prioridad" th:value="${a.prioridad}" />
+                    <input type="hidden" name="activa" th:value="${!a.activa}" />
+                    <button type="submit" class="toggle" th:text="${a.activa ? 'Desactivar' : 'Activar'}">Toggle</button>
+                </form>
+                <form th:action="@{/alertas/eliminar}" method="post" onsubmit="return confirm('¿Eliminar alerta?');">
+                    <input type="hidden" name="id" th:value="${a.id}" />
+                    <button type="submit" class="delete">Eliminar</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -921,13 +972,7 @@ updateCharts();
         });
     }
 
-    document.querySelectorAll('.alert-card').forEach(card => {
-        const btn = card.querySelector('.close-alert');
-        if (btn) {
-            btn.addEventListener('click', () => card.remove());
-        }
-        setTimeout(() => card.remove(), 7000);
-    });
+    // Opcional: lógica para remover mensajes temporales si es necesario
 </script>
 
 </body>

@@ -6,6 +6,7 @@ import org.javadominicano.entidades.DatosVelocidad;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
+import org.javadominicano.dto.AlertaActivaDTO;
 import org.javadominicano.visualizadorweb.entidades.Umbrales;
 import org.javadominicano.entidades.Alerta;
 import org.javadominicano.entidades.EstacionMeteorologica;
@@ -95,21 +96,22 @@ public class VisualizadorController {
 
         // Últimas mediciones
         MedicionesRecientesDTO mediciones = new MedicionesRecientesDTO();
-        mediciones.setTemperatura(
-            repositorioTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getTemperatura()
-        );
-        mediciones.setHumedad(
-            repositorioHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
-        );
-        mediciones.setVelocidadViento(
-            repositorioVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getVelocidad()
-        );
-        mediciones.setDireccionViento(
-            repositorioDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getDireccion()
-        );
-        mediciones.setPrecipitacion(
-            repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
-        );
+        DatosTemperatura datoTemp = repositorioTemperatura
+                .findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+        DatosHumedad datoHum = repositorioHumedad
+                .findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+        DatosVelocidad datoVel = repositorioVelocidad
+                .findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+        DatosDireccion datoDir = repositorioDireccion
+                .findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+        DatosPrecipitacion datoPre = repositorioPrecipitacion
+                .findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+
+        mediciones.setTemperatura(datoTemp.getTemperatura());
+        mediciones.setHumedad(datoHum.getHumedad());
+        mediciones.setVelocidadViento(datoVel.getVelocidad());
+        mediciones.setDireccionViento(datoDir.getDireccion());
+        mediciones.setPrecipitacion(datoPre.getProbabilidad());
 
         // Fecha límite para considerar una estación activa (hace 6 horas)
         Date ahora = new Date();
@@ -145,22 +147,26 @@ public class VisualizadorController {
             }
         }
 
-        List<String> alertasActivas = new ArrayList<>();
+        List<AlertaActivaDTO> alertasActivas = new ArrayList<>();
         Alerta alTemp = repoAlerta.findByNombre("Temperatura");
         if (chequearAlerta(alTemp, mediciones.getTemperatura())) {
-            alertasActivas.add(formatoAlerta(alTemp));
+            alertasActivas.add(crearDTO(alTemp, mediciones.getTemperatura(),
+                    new Date(datoTemp.getFecha().getTime())));
         }
         Alerta alHum = repoAlerta.findByNombre("Humedad");
         if (chequearAlerta(alHum, mediciones.getHumedad())) {
-            alertasActivas.add(formatoAlerta(alHum));
+            alertasActivas.add(crearDTO(alHum, mediciones.getHumedad(),
+                    new Date(datoHum.getFecha().getTime())));
         }
         Alerta alVel = repoAlerta.findByNombre("VelocidadViento");
         if (chequearAlerta(alVel, mediciones.getVelocidadViento())) {
-            alertasActivas.add(formatoAlerta(alVel));
+            alertasActivas.add(crearDTO(alVel, mediciones.getVelocidadViento(),
+                    new Date(datoVel.getFecha().getTime())));
         }
         Alerta alPre = repoAlerta.findByNombre("Precipitacion");
         if (chequearAlerta(alPre, mediciones.getPrecipitacion())) {
-            alertasActivas.add(formatoAlerta(alPre));
+            alertasActivas.add(crearDTO(alPre, mediciones.getPrecipitacion(),
+                    new Date(datoPre.getFecha().getTime())));
         }
 
         model.addAttribute("velocidades", velocidades);
@@ -216,9 +222,19 @@ public class VisualizadorController {
         }
     }
 
-    private String formatoAlerta(Alerta a) {
-        return a.getNombre() + " " + a.getOperador() + " " + a.getUmbral();
+    private AlertaActivaDTO crearDTO(Alerta base, Double valor, Date fecha) {
+        AlertaActivaDTO dto = new AlertaActivaDTO();
+        dto.setId(base.getId());
+        dto.setNombre(base.getNombre());
+        dto.setUmbral(base.getUmbral());
+        dto.setActiva(base.isActiva());
+        dto.setOperador(base.getOperador());
+        dto.setPrioridad(base.getPrioridad());
+        dto.setValorActual(valor);
+        dto.setFecha(fecha);
+        return dto;
     }
+
 
     // Eliminar estación
     @PostMapping("/estaciones/eliminar")
