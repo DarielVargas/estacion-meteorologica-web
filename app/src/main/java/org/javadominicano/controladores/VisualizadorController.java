@@ -185,11 +185,24 @@ public class VisualizadorController {
     }
 
     @PostMapping("/configurar-alertas")
-    public String configurarAlertas(@ModelAttribute Umbrales umbrales, Model model) {
-        guardarOActualizar("Temperatura", umbrales.getTemperatura());
-        guardarOActualizar("Humedad", umbrales.getHumedad());
-        guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento());
-        guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+    public String configurarAlertas(@ModelAttribute Umbrales umbrales,
+                                    @RequestParam(required = false) Boolean chkTemp,
+                                    @RequestParam(required = false) Boolean chkHum,
+                                    @RequestParam(required = false) Boolean chkVel,
+                                    @RequestParam(required = false) Boolean chkPre,
+                                    Model model) {
+        if (Boolean.TRUE.equals(chkTemp)) {
+            guardarOActualizar("Temperatura", umbrales.getTemperatura());
+        }
+        if (Boolean.TRUE.equals(chkHum)) {
+            guardarOActualizar("Humedad", umbrales.getHumedad());
+        }
+        if (Boolean.TRUE.equals(chkVel)) {
+            guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento());
+        }
+        if (Boolean.TRUE.equals(chkPre)) {
+            guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+        }
 
         return "redirect:/"; // Redirige al dashboard para que se recargue
     }
