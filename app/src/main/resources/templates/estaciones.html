@@ -199,10 +199,6 @@
                         <button type="button" class="edit open-edit"
                                 th:data-id="${estacion.id}" th:data-nombre="${estacion.nombre}"
                                 th:data-ubicacion="${estacion.ubicacion}">✏️</button>
-                        <form th:action="@{/estaciones/eliminar}" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta estación?');">
-                            <input type="hidden" name="id" th:value="${estacion.id}" />
-                            <button type="submit" class="delete">🗑️</button>
-                        </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(estaciones)}">

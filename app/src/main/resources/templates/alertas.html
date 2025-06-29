@@ -20,13 +20,27 @@
         .logout-form { margin-top: 20px; }
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; }
-        .cards { display: flex; flex-wrap: wrap; gap: 20px; }
-        .alert-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 260px; position: relative; }
+        .cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start; }
+        .alert-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 260px;
+            height: 260px;
+            display: flex;
+            position: relative;
+        }
         .alert-card.high { border-top: 4px solid #dc3545; }
         .alert-card.medium { border-top: 4px solid #ffc107; }
         .alert-card.low { border-top: 4px solid #28a745; }
-        .alert-card h2 { margin-bottom: 10px; font-size: 18px; color: #1a3f78; }
-        .alert-card form { display: flex; flex-direction: column; gap: 10px; }
+        .alert-card h2 {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #1a3f78;
+            text-align: center;
+        }
+        .alert-card form { display: flex; flex-direction: column; gap: 10px; flex: 1; }
         .switch { position: absolute; top: 20px; right: 20px; }
         .switch input { display:none; }
         .switch span { width: 40px; height: 20px; background:#ccc; display:inline-block; border-radius: 20px; position:relative; cursor:pointer; }
@@ -34,6 +48,7 @@
         .switch input:checked + span { background:#28a745; }
         .switch input:checked + span::after { transform: translateX(20px); }
         .row { display:flex; align-items:center; gap:5px; }
+        .row.buttons { margin-top:auto; justify-content: space-between; }
         .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
         .btn-edit { background-color: #007bff; color: white; }
         .btn-delete { background-color: #dc3545; color: white; }
@@ -65,7 +80,7 @@
             <form th:action="@{/alertas/guardar}" method="post">
                 <input type="hidden" name="id" th:value="${alerta.id}" />
                 <label class="switch">
-                    <input type="checkbox" name="activa" th:checked="${alerta.activa}" />
+                    <input type="checkbox" name="activa" th:checked="${alerta.activa}" disabled />
                     <span></span>
                 </label>
                 <h2 th:text="${alerta.nombre}">Alerta</h2>
@@ -82,7 +97,7 @@
                     <option value="Media">Media</option>
                     <option value="Baja">Baja</option>
                 </select>
-                <div class="row">
+                <div class="row buttons">
                     <button type="submit" class="btn btn-edit">Guardar</button>
                     <button type="submit" form="del__${alerta.id}" class="btn btn-delete">Eliminar</button>
                 </div>
