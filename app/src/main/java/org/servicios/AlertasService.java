@@ -79,6 +79,20 @@ public class AlertasService {
     }
 
     private String formatoAlerta(Alerta a) {
-        return a.getNombre() + " " + a.getOperador() + " " + a.getUmbral();
+        if (a == null) {
+            return "Umbral superado";
+        }
+        switch (a.getNombre()) {
+            case "Temperatura":
+                return "Umbral de temperatura superado";
+            case "Humedad":
+                return "Umbral de humedad superado";
+            case "VelocidadViento":
+                return "Umbral de velocidad de viento superado";
+            case "Precipitacion":
+                return "Umbral de precipitación superado";
+            default:
+                return "Umbral superado";
+        }
     }
 }
