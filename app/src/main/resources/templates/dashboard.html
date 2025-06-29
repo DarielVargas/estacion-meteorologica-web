@@ -234,25 +234,6 @@
             cursor: pointer;
         }
 
-        .alert-card {
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .alert-card button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
 
         /* Nuevos estilos para las gráficas */
         .graficas {
@@ -497,12 +478,7 @@
         </form>
     </div>
 
-    <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card">
-            <span th:text="${a}">Alerta</span>
-            <button type="button" class="close-alert">&times;</button>
-        </div>
-    </div>
+    <div th:replace="fragments/alertasActivas :: alertas"></div>
 
     <div class="cards">
         <div class="card">
@@ -921,13 +897,6 @@ updateCharts();
         });
     }
 
-    document.querySelectorAll('.alert-card').forEach(card => {
-        const btn = card.querySelector('.close-alert');
-        if (btn) {
-            btn.addEventListener('click', () => card.remove());
-        }
-        setTimeout(() => card.remove(), 7000);
-    });
 </script>
 
 </body>

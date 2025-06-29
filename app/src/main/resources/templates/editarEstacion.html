@@ -134,6 +134,7 @@
         </svg>
     </div>
     <h2>Editar Estación Meteorológica</h2>
+    <div th:replace="fragments/alertasActivas :: alertas"></div>
     <p class="subtitle">Modifica la información de la estación</p>
     <form th:action="@{/estaciones/editar}" th:object="${estacion}" method="post">
         <label>ID</label>
