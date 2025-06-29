@@ -20,9 +20,10 @@
         }
     </style>
 
-    <div th:if="${alertasActivasTexto != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivasTexto}" class="alert-card">
-            <span th:text="${a}">Alerta</span>
+    <div th:if="${alertasActivas != null}" id="alertContainer">
+        <div th:each="a : ${alertasActivas}" class="alert-card"
+             th:attr="data-key=${'alert_'+ a.alerta.id +'_'+ a.fecha.time}">
+            <span th:text="${a.alerta.nombre + ' ' + a.alerta.operador + ' ' + a.alerta.umbral}">Alerta</span>
             <button type="button" class="close-alert">&times;</button>
         </div>
     </div>
@@ -30,27 +31,19 @@
     <script th:inline="javascript">
     /*<![CDATA[*/
     document.querySelectorAll('#alertContainer .alert-card').forEach(function(card) {
-        var text = card.querySelector('span').textContent;
-        var key = 'alert_expire_' + text;
-        var now = Date.now();
-        var stored = localStorage.getItem(key);
-        if (stored && now > parseInt(stored)) {
+        var key = card.dataset.key;
+        if (localStorage.getItem(key)) {
             card.remove();
             return;
         }
-        var expire = stored ? parseInt(stored) : now + 7000;
-        localStorage.setItem(key, expire);
+        localStorage.setItem(key, 'shown');
         var btn = card.querySelector('.close-alert');
         if (btn) {
             btn.addEventListener('click', function() {
-                localStorage.setItem(key, now);
                 card.remove();
             });
         }
-        setTimeout(function() {
-            card.remove();
-            localStorage.setItem(key, now);
-        }, expire - now);
+        setTimeout(function() { card.remove(); }, 7000);
     });
     /*]]>*/
     </script>
