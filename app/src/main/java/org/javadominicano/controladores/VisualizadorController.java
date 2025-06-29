@@ -60,16 +60,25 @@ public class VisualizadorController {
     // Carga los umbrales almacenados, o crea valores por defecto la primera vez
     @ModelAttribute("umbrales")
     public Umbrales obtenerUmbrales() {
-        return repositorioUmbrales.findById(1L).orElseGet(() -> {
+        try {
+            return repositorioUmbrales.findById(1L).orElseGet(() -> {
+                Umbrales u = new Umbrales();
+                u.setId(1L);
+                u.setTemperatura(20.0);
+                u.setHumedad(60.0);
+                u.setVelocidadViento(10.0);
+                u.setPrecipitacion(5.0);
+                repositorioUmbrales.save(u);
+                return u;
+            });
+        } catch (Exception ex) {
             Umbrales u = new Umbrales();
-            u.setId(1L);
             u.setTemperatura(20.0);
             u.setHumedad(60.0);
             u.setVelocidadViento(10.0);
             u.setPrecipitacion(5.0);
-            repositorioUmbrales.save(u);
             return u;
-        });
+        }
     }
 
     // Inyecta la lista de estaciones para Thymeleaf
