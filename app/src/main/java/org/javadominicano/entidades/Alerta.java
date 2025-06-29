@@ -13,11 +13,11 @@ public class Alerta {
 
     private double umbral;
 
-    private boolean activa = true;
+    private boolean activa;
 
-    private String operador = ">";
+    private String operador;
 
-    private String prioridad = "Media";
+    private String prioridad;
 
     public Long getId() {
         return id;
