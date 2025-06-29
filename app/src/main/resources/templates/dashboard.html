@@ -525,71 +525,6 @@
         </div>
     </div>
 
-    <div class="secciones">
-        <div class="seccion">
-            <h3>Alertas</h3>
-            <form method="post" th:action="@{/configurar-alertas}">
-                <table>
-                    <thead>
-                        <tr><th>Medición</th><th>Umbral</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Temperatura &gt;</td>
-                            <td><input type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required> °C</td>
-                        </tr>
-                        <tr>
-                            <td>Humedad &gt;</td>
-                            <td><input type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required> %</td>
-                        </tr>
-                        <tr>
-                            <td>Vel. Viento &gt;</td>
-                            <td><input type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required> km/h</td>
-                        </tr>
-                        <tr>
-                            <td>Precipitación &gt;</td>
-                            <td><input type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required> mm</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <button type="submit" style="padding: 8px 16px; background-color: #1a3f78; color: white; border: none; border-radius: 4px;">Guardar</button>
-            </form>
-        </div>
-        <div class="seccion">
-            <h3>Estaciones Meteorológicas</h3>
-
-            <!-- Botón para añadir nueva estación -->
-            <button type="button" class="btn-add" id="openNew">Añadir Estación</button>
-
-            <table>
-                <thead>
-                    <tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Acciones</th></tr>
-                </thead>
-                <tbody>
-                    <!-- Solo datos dinámicos del servidor -->
-                    <tr th:each="estacion : ${estaciones}">
-                        <td th:text="${estacion.id}">EST001</td>
-                        <td th:text="${estacion.nombre}">Estación1</td>
-                        <td th:text="${estacion.ubicacion}">Santiago</td>
-                        <td>
-                            <button type="button" class="btn btn-edit open-edit"
-                                    th:data-id="${estacion.id}"
-                                    th:data-nombre="${estacion.nombre}"
-                                    th:data-ubicacion="${estacion.ubicacion}">Editar</button>
-                        </td>
-                    </tr>
-                    <!-- Mensaje cuando no hay estaciones (solo se muestra si la lista está vacía) -->
-                    <tr th:if="${#lists.isEmpty(estaciones)}">
-                        <td colspan="4" class="no-stations">No hay estaciones meteorológicas registradas</td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-    </div>
-
-    <!-- NUEVAS GRÁFICAS en lugar de las tablas -->
     <div class="graficas">
         <div class="grafica">
             <h3>Velocidad del Viento (km/h)</h3>
@@ -640,30 +575,6 @@
 
 </div>
 
-<!-- Modal para crear/editar estación -->
-<div id="stationModal" class="modal-overlay">
-    <div class="modal">
-        <div class="station-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
-            </svg>
-        </div>
-        <h2 id="modalTitle">Nueva Estación Meteorológica</h2>
-        <form id="stationForm" th:action="@{/estaciones/nueva}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <label for="modal-id">ID</label>
-            <input type="text" id="modal-id" name="id" required>
-            <label for="modal-nombre">Nombre</label>
-            <input type="text" id="modal-nombre" name="nombre" required>
-            <label for="modal-ubicacion">Ubicación</label>
-            <input type="text" id="modal-ubicacion" name="ubicacion" required>
-            <button type="submit" class="save-btn">Guardar Cambios</button>
-            <button type="button" class="close-btn" id="closeModal">Cerrar</button>
-        </form>
-    </div>
-</div>
-
-<script>
 // Función para generar datos de ejemplo (solo para fallback o demo)
 function generateSampleData(baseValue, variation) {
     const data = [];
@@ -857,47 +768,6 @@ setInterval(updateCharts, 30000);
 updateCharts();
 </script>
 
-<script>
-    const modal = document.getElementById('stationModal');
-    const openNewBtn = document.getElementById('openNew');
-    const closeBtn = document.getElementById('closeModal');
-    const form = document.getElementById('stationForm');
-    const title = document.getElementById('modalTitle');
-    const idInput = document.getElementById('modal-id');
-    const nombreInput = document.getElementById('modal-nombre');
-    const ubicacionInput = document.getElementById('modal-ubicacion');
-
-    if (openNewBtn) {
-        openNewBtn.addEventListener('click', () => {
-            modal.classList.add('active');
-            title.textContent = 'Nueva Estación Meteorológica';
-            form.action = '/estaciones/nueva';
-            idInput.readOnly = false;
-            idInput.value = '';
-            nombreInput.value = '';
-            ubicacionInput.value = '';
-        });
-    }
-
-    document.querySelectorAll('.open-edit').forEach(btn => {
-        btn.addEventListener('click', () => {
-            modal.classList.add('active');
-            title.textContent = 'Editar Estación Meteorológica';
-            form.action = '/estaciones/editar';
-            idInput.value = btn.dataset.id;
-            idInput.readOnly = true;
-            nombreInput.value = btn.dataset.nombre;
-            ubicacionInput.value = btn.dataset.ubicacion;
-        });
-    });
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-    }
-
-</script>
 
 </body>
 </html>
