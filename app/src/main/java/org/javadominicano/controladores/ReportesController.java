@@ -75,6 +75,12 @@ public class ReportesController {
         return "redirect:/reportes?fecha=" + fecha + "&estacion=" + estacion + "&tipo=" + tipo;
     }
 
+    @PostMapping("/reportes/limpiar")
+    public String limpiarHistorial() {
+        reportesGenerados.clear();
+        return "redirect:/reportes";
+    }
+
     @GetMapping("/reportes")
     public String mostrarReportes(
             @RequestParam(value = "fecha", required = false)

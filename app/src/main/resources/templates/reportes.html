@@ -62,7 +62,8 @@
         }
         .report-generator .full-width {
             grid-column: span 2;
-            text-align: right;
+            display: flex;
+            justify-content: space-between;
         }
 
         .recent-reports { margin-top: 10px; }
@@ -132,6 +133,7 @@
                 </div>
 
                 <div class="full-width">
+                    <button type="submit" th:formaction="@{/reportes/limpiar}" formmethod="post">Limpiar Historial</button>
                     <button type="submit">Generar Reporte</button>
                 </div>
             </form>
