@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.sql.Timestamp;
@@ -21,4 +22,7 @@ public interface RepositorioDatosDireccion extends JpaRepository<DatosDireccion,
 
     @Query("SELECT d FROM DatosDireccion d ORDER BY d.fecha DESC")
     List<DatosDireccion> findTopByOrderByFechaDesc(Pageable pageable);
+
+    @Query("SELECT MAX(d.fecha) FROM DatosDireccion d WHERE d.estacionId = :estacionId")
+    Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
 }
