@@ -37,6 +37,9 @@ import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.sql.Timestamp;
 
 @Controller
 public class VisualizadorController {
@@ -100,6 +103,38 @@ public class VisualizadorController {
         return repositorioEstacion.findAll();
     }
 
+    private Date obtenerUltimaFechaEstacion(String estacionId) {
+        Date ultima = null;
+        Timestamp t;
+
+        t = repositorioTemperatura.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioHumedad.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioVelocidad.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioDireccion.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioPrecipitacion.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        return ultima;
+    }
+
     @GetMapping("/")
     public String mostrarDashboard(@RequestParam(name = "pagina", defaultValue = "0") int pagina,
                                    @RequestParam(name = "tamanoPagina", defaultValue = "20") int tamanoPagina,
@@ -131,37 +166,32 @@ public class VisualizadorController {
             repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
         );
 
-        // Fecha límite para considerar una estación activa (hace 6 horas)
+        // Fecha límite para considerar una estación activa (30 segundos)
         Date ahora = new Date();
-        Date fechaLimite = new Date(ahora.getTime() - 6L * 3600 * 1000); // 6 horas en milis
+        Date fechaLimite = new Date(ahora.getTime() - 30_000L);
 
         List<EstacionMeteorologica> todasEstaciones = repositorioEstacion.findAll();
         int estacionesActivas = 0;
         int estacionesInactivas = 0;
-        Date ultimaFechaActualizacion = new Date(0); // Epoch como valor inicial mínimo
-
+        Date ultimaFechaActualizacion = new Date(0);
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
+        Map<String, Boolean> estadoEstaciones = new HashMap<>();
+        Map<String, Date> ultimaFechaPorEstacion = new HashMap<>();
 
         for (EstacionMeteorologica estacion : todasEstaciones) {
-            // Aquí debes implementar la lógica real para obtener la última fecha de datos de cada estación,
-            // por ejemplo consultando repositorioVelocidad u otros.
-            // Por simplicidad, usamos ahora como última fecha para que funcione.
+            Date ultimaFechaEstacion = obtenerUltimaFechaEstacion(estacion.getId());
+            ultimaFechaPorEstacion.put(estacion.getId(), ultimaFechaEstacion);
 
-            Date ultimaFechaEstacion = ahora; // <- reemplaza esta línea con la consulta real a datos de la estación
-
-            if (ultimaFechaEstacion != null) {
-                if (ultimaFechaEstacion.after(fechaLimite)) {
-                    estacionesActivas++;
-                } else {
-                    estacionesInactivas++;
-                    estacionesInactivasList.add(estacion);
-                }
-                if (ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
-                    ultimaFechaActualizacion = ultimaFechaEstacion;
-                }
+            if (ultimaFechaEstacion != null && ultimaFechaEstacion.after(fechaLimite)) {
+                estacionesActivas++;
+                estadoEstaciones.put(estacion.getId(), true);
             } else {
                 estacionesInactivas++;
+                estadoEstaciones.put(estacion.getId(), false);
                 estacionesInactivasList.add(estacion);
+            }
+            if (ultimaFechaEstacion != null && ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
+                ultimaFechaActualizacion = ultimaFechaEstacion;
             }
         }
 
@@ -180,6 +210,8 @@ public class VisualizadorController {
         model.addAttribute("estacionesInactivas", estacionesInactivas);
         model.addAttribute("estacionesInactivasList", estacionesInactivasList);
         model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
+        model.addAttribute("estadoEstaciones", estadoEstaciones);
+        model.addAttribute("ultimaFechaPorEstacion", ultimaFechaPorEstacion);
 
         return "dashboard";
     }
@@ -267,30 +299,30 @@ public class VisualizadorController {
     @GetMapping("/estaciones")
     public String listarEstaciones(Model model) {
         Date ahora = new Date();
-        Date fechaLimite = new Date(ahora.getTime() - 6L * 3600 * 1000);
+        Date fechaLimite = new Date(ahora.getTime() - 30_000L);
 
         int estacionesActivas = 0;
         int estacionesInactivas = 0;
         Date ultimaFechaActualizacion = new Date(0);
         List<EstacionMeteorologica> todasEstaciones = repositorioEstacion.findAll();
         List<EstacionMeteorologica> estacionesInactivasList = new ArrayList<>();
+        Map<String, Boolean> estadoEstaciones = new HashMap<>();
+        Map<String, Date> ultimaFechaPorEstacion = new HashMap<>();
 
         for (EstacionMeteorologica estacion : todasEstaciones) {
-            Date ultimaFechaEstacion = ahora; // reemplazar con consulta real
+            Date ultimaFechaEstacion = obtenerUltimaFechaEstacion(estacion.getId());
+            ultimaFechaPorEstacion.put(estacion.getId(), ultimaFechaEstacion);
 
-            if (ultimaFechaEstacion != null) {
-                if (ultimaFechaEstacion.after(fechaLimite)) {
-                    estacionesActivas++;
-                } else {
-                    estacionesInactivas++;
-                    estacionesInactivasList.add(estacion);
-                }
-                if (ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
-                    ultimaFechaActualizacion = ultimaFechaEstacion;
-                }
+            if (ultimaFechaEstacion != null && ultimaFechaEstacion.after(fechaLimite)) {
+                estacionesActivas++;
+                estadoEstaciones.put(estacion.getId(), true);
             } else {
                 estacionesInactivas++;
+                estadoEstaciones.put(estacion.getId(), false);
                 estacionesInactivasList.add(estacion);
+            }
+            if (ultimaFechaEstacion != null && ultimaFechaEstacion.after(ultimaFechaActualizacion)) {
+                ultimaFechaActualizacion = ultimaFechaEstacion;
             }
         }
 
@@ -299,6 +331,8 @@ public class VisualizadorController {
         model.addAttribute("estacionesInactivas", estacionesInactivas);
         model.addAttribute("estacionesInactivasList", estacionesInactivasList);
         model.addAttribute("ultimaFechaActualizacion", ultimaFechaActualizacion);
+        model.addAttribute("estadoEstaciones", estadoEstaciones);
+        model.addAttribute("ultimaFechaPorEstacion", ultimaFechaPorEstacion);
 
         return "estaciones";
     }

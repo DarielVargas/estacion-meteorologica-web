@@ -191,10 +191,11 @@
                     <td th:text="${estacion.nombre}">Estación1</td>
                     <td th:text="${estacion.ubicacion}">Santiago</td>
                     <td>
-                        <span class="badge active">Activo</span>
+                        <span th:classappend="${estadoEstaciones[estacion.id]} ? 'badge active' : 'badge inactive'"
+                              th:text="${estadoEstaciones[estacion.id]} ? 'Activo' : 'Inactiva'">Activo</span>
                         <span style="margin-left:4px;">&#x1F4F6;</span>
                     </td>
-                    <td th:text="${#dates.format(ultimaFechaActualizacion, 'dd/MM/yyyy HH:mm')}" >01/01/2024 10:00</td>
+                    <td th:text="${#dates.format(ultimaFechaPorEstacion[estacion.id], 'dd/MM/yyyy HH:mm:ss')}">01/01/2024 10:00</td>
                     <td class="actions">
                         <button type="button" class="signal">&#x1F4F6;</button>
                         <button type="button" class="edit open-edit"
