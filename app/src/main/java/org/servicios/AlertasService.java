@@ -90,7 +90,7 @@ public class AlertasService {
             case "VelocidadViento":
                 return "Umbral de velocidad de viento superado";
             case "Precipitacion":
-                return "Umbral de precipitación superado";
+                return "Umbral de presión superado";
             default:
                 return "Umbral superado";
         }
