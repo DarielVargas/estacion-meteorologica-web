@@ -53,9 +53,16 @@ public class ReportesController {
 
     @PostMapping("/reportes")
     public String generarReporte(
-            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(value = "fecha", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam("estacion") String estacion,
-            @RequestParam("tipo") String tipo) {
+            @RequestParam("tipo") String tipo,
+            Model model) {
+
+        if (fecha == null) {
+            model.addAttribute("errorFecha", "Debe seleccionar una fecha para generar el reporte");
+            return mostrarReportes(null, estacion, tipo, 0, 10, model);
+        }
 
         String titulo = "";
         if ("diario".equals(tipo)) {

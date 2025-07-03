@@ -66,6 +66,12 @@
             justify-content: space-between;
         }
 
+        .report-generator .error {
+            color: red;
+            grid-column: span 2;
+            font-size: 14px;
+        }
+
         .recent-reports { margin-top: 10px; }
         .recent-reports h2 { color: #1a3f78; margin-bottom: 10px; }
         .report-item { background: white; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -110,6 +116,7 @@
                     <label for="fecha">Fecha:</label>
                     <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
                 </div>
+                <div th:if="${errorFecha}" class="error" th:text="${errorFecha}"></div>
 
                 <div class="field">
                     <label for="estacion">Estación:</label>
