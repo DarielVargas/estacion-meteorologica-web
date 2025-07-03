@@ -266,7 +266,7 @@
         </div>
         <div th:each="aa : ${alertasActivas}" th:classappend=" ${aa.alerta.prioridad.toLowerCase()}" class="active-alert">
             <div class="alert-details">
-                <div class="info" th:text="${aa.alerta.nombre + ': ' + #numbers.formatDecimal(aa.valorActual,1,1) + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' hPa') + ' (Umbral: ' + aa.alerta.umbral + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' hPa') + ')'}"></div>
+                <div class="info" th:text="${(aa.alerta.nombre == 'Precipitacion' ? 'Presión' : aa.alerta.nombre) + ': ' + #numbers.formatDecimal(aa.valorActual,1,1) + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' hPa') + ' (Umbral: ' + aa.alerta.umbral + (aa.alerta.nombre == 'Temperatura' ? '°C' : aa.alerta.nombre == 'Humedad' ? '%' : aa.alerta.nombre == 'VelocidadViento' ? ' km/h' : ' hPa') + ')'}"></div>
                 <div class="fecha" th:text="${#temporals.format(aa.fecha.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
             <form class="acciones" th:action="@{/alertas/guardar}" method="post">
