@@ -29,7 +29,7 @@ public class MedicionesPublisher {
     @Autowired private RepositorioDatosHumedad repoHumedad;
     @Autowired private RepositorioDatosTemperatura repoTemperatura;
 
-    @Scheduled(fixedDelay = 3000)
+    @Scheduled(fixedDelay = 8000)
     public void verificarNuevasMediciones() {
         Timestamp fVel = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosVelocidad::getFecha).orElse(null);
         Timestamp fDir = repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosDireccion::getFecha).orElse(null);

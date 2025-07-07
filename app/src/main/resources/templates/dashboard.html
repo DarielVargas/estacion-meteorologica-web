@@ -647,11 +647,24 @@ function updateCharts() {
         });
 }
 
-// Actualizar gráficas cada 30 segundos con datos reales
-setInterval(updateCharts, 30000);
+function updateCards() {
+    fetch('/api/ultimas-mediciones')
+        .then(r => r.json())
+        .then(d => {
+            if (d.temperatura) document.getElementById('tempValue').textContent = d.temperatura.temperatura + '°C';
+            if (d.humedad) document.getElementById('humValue').textContent = d.humedad.humedad + '%';
+            if (d.velocidad) document.getElementById('windValue').textContent = d.velocidad.velocidad + ' Km/h';
+            if (d.direccion) document.getElementById('dirValue').textContent = d.direccion.direccion;
+            if (d.precipitacion) document.getElementById('preValue').textContent = d.precipitacion.probabilidad.toFixed(1) + 'mm';
+        });
+}
+
+// Actualizar gráficas cada 8 segundos con datos reales
+setInterval(() => { updateCharts(); updateCards(); }, 8000);
 
 // Actualizar inmediatamente al cargar la página
 updateCharts();
+updateCards();
 
 // Conexión WebSocket para actualizaciones en tiempo real
 const socket = new SockJS('/ws');
@@ -665,6 +678,7 @@ stompClient.connect({}, function () {
         if (datos.direccionViento !== undefined) document.getElementById('dirValue').textContent = datos.direccionViento;
         if (datos.precipitacion !== undefined) document.getElementById('preValue').textContent = datos.precipitacion.toFixed(1) + 'mm';
         updateCharts();
+        updateCards();
     });
 });
 </script>

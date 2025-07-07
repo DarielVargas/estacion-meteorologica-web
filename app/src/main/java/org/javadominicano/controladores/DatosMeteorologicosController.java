@@ -3,17 +3,24 @@ package org.javadominicano.controladores;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.PageRequest;
 
 import org.javadominicano.dto.DatosMeteorologicosDTO;
 import org.javadominicano.dto.DatosMeteorologicosDTO.SerieDatos;
 
 import org.javadominicano.entidades.DatosVelocidad;
+import org.javadominicano.entidades.DatosDireccion;
+import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 
-import org.javadominicano.repositorios.DatosVelocidadRepository;
+import org.javadominicano.repositorios.RepositorioDatosVelocidad;
+import org.javadominicano.repositorios.RepositorioDatosDireccion;
+import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.visualizadorweb.repositorios.DatosHumedadRepository;
 import org.javadominicano.visualizadorweb.repositorios.DatosTemperaturaRepository;
+
+import org.javadominicano.dto.UltimasMedicionesDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -23,13 +30,19 @@ import java.util.stream.Collectors;
 public class DatosMeteorologicosController {
 
     @Autowired
-    private DatosVelocidadRepository repoVelocidad;
+    private RepositorioDatosVelocidad repoVelocidad;
 
     @Autowired
     private DatosHumedadRepository repoHumedad;
 
     @Autowired
     private DatosTemperaturaRepository repoTemperatura;
+
+    @Autowired
+    private RepositorioDatosDireccion repoDireccion;
+
+    @Autowired
+    private RepositorioDatosPrecipitacion repoPrecipitacion;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -66,5 +79,16 @@ public class DatosMeteorologicosController {
         SerieDatos temperature = new SerieDatos(labels, temperatureValues);
 
         return new DatosMeteorologicosDTO(wind, humidity, temperature);
+    }
+
+    @GetMapping("/api/ultimas-mediciones")
+    public UltimasMedicionesDTO obtenerUltimasMediciones() {
+        UltimasMedicionesDTO dto = new UltimasMedicionesDTO();
+        dto.setVelocidad(repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0));
+        dto.setDireccion(repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0));
+        dto.setPrecipitacion(repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0));
+        dto.setHumedad(repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0));
+        dto.setTemperatura(repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0));
+        return dto;
     }
 }

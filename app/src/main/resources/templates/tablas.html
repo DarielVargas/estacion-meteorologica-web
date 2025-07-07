@@ -55,7 +55,36 @@
       <button type="submit">Cerrar sesión</button>
     </form>
   </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2/dist/stomp.min.js"></script>
+<script>
+function updateTables() {
+    fetch('/api/ultimas-mediciones')
+        .then(r => r.json())
+        .then(d => {
+            const v = d.velocidad, dv = d.direccion, p = d.precipitacion,
+                  h = d.humedad, t = d.temperatura;
+            const vel = document.getElementById('velTable').rows[0].cells;
+            vel[0].textContent = v.id; vel[1].textContent = v.estacionId; vel[2].textContent = v.velocidad; vel[3].textContent = v.fecha;
+            const dir = document.getElementById('dirTable').rows[0].cells;
+            dir[0].textContent = dv.id; dir[1].textContent = dv.estacionId; dir[2].textContent = dv.direccion; dir[3].textContent = dv.fecha;
+            const pre = document.getElementById('preTable').rows[0].cells;
+            pre[0].textContent = p.id; pre[1].textContent = p.estacionId; pre[2].textContent = p.probabilidad.toFixed(1); pre[3].textContent = p.fecha;
+            const hum = document.getElementById('humTable').rows[0].cells;
+            hum[0].textContent = h.id; hum[1].textContent = h.estacionId; hum[2].textContent = h.humedad; hum[3].textContent = h.fecha;
+            const temp = document.getElementById('tempTable').rows[0].cells;
+            temp[0].textContent = t.id; temp[1].textContent = t.estacionId; temp[2].textContent = t.temperatura; temp[3].textContent = t.fecha;
+        });
+}
+
+const socket = new SockJS('/ws');
+const stompClient = Stomp.over(socket);
+stompClient.connect({}, function () {
+    stompClient.subscribe('/topic/mediciones', function () { updateTables(); });
+});
+</script>
   <div class="content">
     <h1>Tablas de la Base de Datos</h1>
     <div th:replace="fragments/alertasActivas :: alertas"></div>
@@ -66,7 +95,7 @@
         <h3>Velocidad del Viento</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="velTable">
             <tr th:each="v : ${velocidades.content}">
               <td th:text="${v.id}"></td>
               <td th:text="${v.estacionId}"></td>
@@ -82,7 +111,7 @@
         <h3>Dirección del Viento</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="dirTable">
             <tr th:each="d : ${direcciones.content}">
               <td th:text="${d.id}"></td>
               <td th:text="${d.estacionId}"></td>
@@ -98,7 +127,7 @@
         <h3>Precipitación</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>mm</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="preTable">
             <tr th:each="p : ${precipitaciones.content}">
               <td th:text="${p.id}"></td>
               <td th:text="${p.estacionId}"></td>
@@ -114,7 +143,7 @@
         <h3>Humedad</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>%</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="humTable">
             <tr th:each="h : ${humedades.content}">
               <td th:text="${h.id}"></td>
               <td th:text="${h.estacionId}"></td>
@@ -130,7 +159,7 @@
         <h3>Temperatura</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>°C</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tempTable">
             <tr th:each="t : ${temperaturas.content}">
               <td th:text="${t.id}"></td>
               <td th:text="${t.estacionId}"></td>
