@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Service
 public class MedicionesPublisher {
@@ -30,9 +29,7 @@ public class MedicionesPublisher {
     @Autowired private RepositorioDatosHumedad repoHumedad;
     @Autowired private RepositorioDatosTemperatura repoTemperatura;
 
-    private Date ultimaEmision = new Date(0);
-
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 3000)
     public void verificarNuevasMediciones() {
         Timestamp fVel = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosVelocidad::getFecha).orElse(null);
         Timestamp fDir = repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosDireccion::getFecha).orElse(null);
@@ -40,21 +37,12 @@ public class MedicionesPublisher {
         Timestamp fHum = repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosHumedad::getFecha).orElse(null);
         Timestamp fTemp= repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).stream().findFirst().map(DatosTemperatura::getFecha).orElse(null);
 
-        Timestamp masReciente = fVel;
-        if (fDir != null && (masReciente == null || fDir.after(masReciente))) masReciente = fDir;
-        if (fPre != null && (masReciente == null || fPre.after(masReciente))) masReciente = fPre;
-        if (fHum != null && (masReciente == null || fHum.after(masReciente))) masReciente = fHum;
-        if (fTemp != null && (masReciente == null || fTemp.after(masReciente))) masReciente = fTemp;
-
-        if (masReciente != null && masReciente.after(ultimaEmision)) {
-            ultimaEmision = masReciente;
-            MedicionesRecientesDTO dto = new MedicionesRecientesDTO();
-            dto.setTemperatura(repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getTemperatura());
-            dto.setHumedad(repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad());
-            dto.setVelocidadViento(repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getVelocidad());
-            dto.setDireccionViento(repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getDireccion());
-            dto.setPrecipitacion(repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad());
-            messagingTemplate.convertAndSend("/topic/mediciones", dto);
-        }
+        MedicionesRecientesDTO dto = new MedicionesRecientesDTO();
+        dto.setTemperatura(repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getTemperatura());
+        dto.setHumedad(repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad());
+        dto.setVelocidadViento(repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getVelocidad());
+        dto.setDireccionViento(repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getDireccion());
+        dto.setPrecipitacion(repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad());
+        messagingTemplate.convertAndSend("/topic/mediciones", dto);
     }
 }

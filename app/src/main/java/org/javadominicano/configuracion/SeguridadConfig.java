@@ -21,6 +21,7 @@ public class SeguridadConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/", "/dashboard", "/api/datos-meteorologicos").hasAnyRole("USER", "ADMIN")
                 .anyRequest().hasRole("ADMIN")
             )
@@ -33,7 +34,8 @@ public class SeguridadConfig {
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout=true")
-                .permitAll());
+                .permitAll())
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
