@@ -8,6 +8,8 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2/dist/stomp.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -367,7 +369,7 @@
                 <circle cx="12" cy="18" r="3" />
                 <path d="M12 15V5a2 2 0 1 1 4 0v5" />
             </svg>
-            <p th:text="${mediciones.temperatura + '°C'}">33.94°C</p>
+            <p id="tempValue" th:text="${mediciones.temperatura + '°C'}">33.94°C</p>
             <span>Temperatura</span>
         </div>
         <div class="card">
@@ -375,7 +377,7 @@
                 <path d="M12 3s-5 6-5 9a5 5 0 0 0 10 0c0-3-5-9-5-9z" />
                 <path d="M14 10.5a2 2 0 1 1-4 0c0-1.5 2-4.5 2-4.5s2 3 2 4.5z" opacity="0.6" />
             </svg>
-            <p th:text="${mediciones.humedad + '%'}">80.75%</p>
+            <p id="humValue" th:text="${mediciones.humedad + '%'}">80.75%</p>
             <span>Humedad</span>
         </div>
         <div class="card">
@@ -383,7 +385,7 @@
                 <path d="M3 7h9a4 4 0 1 0-4-4" />
                 <path d="M2 14h12a4 4 0 1 1-3 6" />
             </svg>
-            <p th:text="${mediciones.velocidadViento + ' Km/h'}">43.99 Km/h</p>
+            <p id="windValue" th:text="${mediciones.velocidadViento + ' Km/h'}">43.99 Km/h</p>
             <span>Velocidad del Viento</span>
         </div>
         <div class="card">
@@ -391,7 +393,7 @@
                 <circle cx="12" cy="12" r="8" />
                 <path d="M12 8l-3 4h2v4h2v-4h2l-3-4z" />
             </svg>
-            <p th:text="${mediciones.direccionViento}">Sureste</p>
+            <p id="dirValue" th:text="${mediciones.direccionViento}">Sureste</p>
             <span>Dirección del Viento</span>
         </div>
         <div class="card">
@@ -401,7 +403,7 @@
                 <path d="M12 16v3" />
                 <path d="M16 16v3" />
             </svg>
-            <p th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + 'mm'}">75.6mm</p>
+            <p id="preValue" th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + 'mm'}">75.6mm</p>
             <span>Precipitación</span>
         </div>
     </div>
@@ -650,6 +652,21 @@ setInterval(updateCharts, 30000);
 
 // Actualizar inmediatamente al cargar la página
 updateCharts();
+
+// Conexión WebSocket para actualizaciones en tiempo real
+const socket = new SockJS('/ws');
+const stompClient = Stomp.over(socket);
+stompClient.connect({}, function () {
+    stompClient.subscribe('/topic/mediciones', function (mensaje) {
+        const datos = JSON.parse(mensaje.body);
+        if (datos.temperatura !== undefined) document.getElementById('tempValue').textContent = datos.temperatura + '°C';
+        if (datos.humedad !== undefined) document.getElementById('humValue').textContent = datos.humedad + '%';
+        if (datos.velocidadViento !== undefined) document.getElementById('windValue').textContent = datos.velocidadViento + ' Km/h';
+        if (datos.direccionViento !== undefined) document.getElementById('dirValue').textContent = datos.direccionViento;
+        if (datos.precipitacion !== undefined) document.getElementById('preValue').textContent = datos.precipitacion.toFixed(1) + 'mm';
+        updateCharts();
+    });
+});
 </script>
 
 
