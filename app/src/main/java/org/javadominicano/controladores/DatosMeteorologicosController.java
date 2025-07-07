@@ -18,8 +18,8 @@ import org.javadominicano.repositorios.DatosVelocidadRepository;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
-import org.javadominicano.visualizadorweb.repositorios.DatosHumedadRepository;
-import org.javadominicano.visualizadorweb.repositorios.DatosTemperaturaRepository;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,10 +35,10 @@ public class DatosMeteorologicosController {
     private RepositorioDatosVelocidad repoVelocidadDetalle;
 
     @Autowired
-    private DatosHumedadRepository repoHumedad;
+    private RepositorioDatosHumedad repoHumedad;
 
     @Autowired
-    private DatosTemperaturaRepository repoTemperatura;
+    private RepositorioDatosTemperatura repoTemperatura;
 
     @Autowired
     private RepositorioDatosDireccion repoDireccion;
@@ -51,8 +51,8 @@ public class DatosMeteorologicosController {
     @GetMapping("/api/datos-meteorologicos")
     public DatosMeteorologicosDTO obtenerDatos() {
         List<DatosVelocidad> velocidades = repoVelocidad.findTop30ByOrderByFechaDesc();
-        List<DatosHumedad> humedades = repoHumedad.findTop30ByOrderByFechaDesc();
-        List<DatosTemperatura> temperaturas = repoTemperatura.findTop30ByOrderByFechaDesc();
+        List<DatosHumedad> humedades = repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0, 30));
+        List<DatosTemperatura> temperaturas = repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0, 30));
 
         // Ordenar ascendente (más antiguo a más reciente)
         velocidades.sort(Comparator.comparing(DatosVelocidad::getFecha));
