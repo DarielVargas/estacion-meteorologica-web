@@ -66,7 +66,7 @@
         <h3>Velocidad del Viento</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tbody-velocidad">
             <tr th:each="v : ${velocidades.content}">
               <td th:text="${v.id}"></td>
               <td th:text="${v.estacionId}"></td>
@@ -82,7 +82,7 @@
         <h3>Dirección del Viento</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tbody-direccion">
             <tr th:each="d : ${direcciones.content}">
               <td th:text="${d.id}"></td>
               <td th:text="${d.estacionId}"></td>
@@ -98,7 +98,7 @@
         <h3>Precipitación</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>mm</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tbody-precipitacion">
             <tr th:each="p : ${precipitaciones.content}">
               <td th:text="${p.id}"></td>
               <td th:text="${p.estacionId}"></td>
@@ -114,7 +114,7 @@
         <h3>Humedad</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>%</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tbody-humedad">
             <tr th:each="h : ${humedades.content}">
               <td th:text="${h.id}"></td>
               <td th:text="${h.estacionId}"></td>
@@ -130,7 +130,7 @@
         <h3>Temperatura</h3>
         <table>
           <thead><tr><th>ID</th><th>Estación ID</th><th>°C</th><th>Fecha</th></tr></thead>
-          <tbody>
+          <tbody id="tbody-temperatura">
             <tr th:each="t : ${temperaturas.content}">
               <td th:text="${t.id}"></td>
               <td th:text="${t.estacionId}"></td>
@@ -143,7 +143,7 @@
     </div>
 
     <!-- Paginación -->
-    <div class="pagination">
+  <div class="pagination">
       <span th:text="'Página ' + (${paginaActual} + 1) + ' de ' + ${velocidades.totalPages}"></span>
 
       <a th:if="${paginaActual > 0}"
@@ -175,7 +175,31 @@
         </select>
         <input type="hidden" name="pagina" th:value="${paginaActual}" />
       </form>
-    </div>
+  </div>
+
+  </div>
+
+  <script>
+    function updateTables() {
+      fetch('/api/datos-tablas')
+        .then(r => { if (!r.ok) throw new Error('Respuesta no OK'); return r.json(); })
+        .then(data => {
+          const buildRows = (items, fields) => items.map(item => {
+              return '<tr>' + fields.map(f => '<td>' + item[f] + '</td>').join('') + '</tr>';
+          }).join('');
+
+          document.getElementById('tbody-velocidad').innerHTML = buildRows(data.velocidades, ['id','estacionId','velocidad','fecha']);
+          document.getElementById('tbody-direccion').innerHTML = buildRows(data.direcciones, ['id','estacionId','direccion','fecha']);
+          document.getElementById('tbody-precipitacion').innerHTML = buildRows(data.precipitaciones, ['id','estacionId','probabilidad','fecha']);
+          document.getElementById('tbody-humedad').innerHTML = buildRows(data.humedades, ['id','estacionId','humedad','fecha']);
+          document.getElementById('tbody-temperatura').innerHTML = buildRows(data.temperaturas, ['id','estacionId','temperatura','fecha']);
+        })
+        .catch(err => console.error('Error al actualizar tablas:', err));
+    }
+
+    setInterval(updateTables, 8000);
+    updateTables();
+  </script>
 
   </div>
 </body>

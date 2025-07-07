@@ -2,16 +2,22 @@ package org.javadominicano.controladores;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.javadominicano.dto.DatosMeteorologicosDTO;
 import org.javadominicano.dto.DatosMeteorologicosDTO.SerieDatos;
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
+import org.javadominicano.dto.DatosTablasDTO;
 
 import org.javadominicano.entidades.DatosVelocidad;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 
 import org.javadominicano.repositorios.DatosVelocidadRepository;
+import org.javadominicano.repositorios.RepositorioDatosVelocidad;
+import org.javadominicano.repositorios.RepositorioDatosDireccion;
+import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.visualizadorweb.repositorios.DatosHumedadRepository;
 import org.javadominicano.visualizadorweb.repositorios.DatosTemperaturaRepository;
 
@@ -26,10 +32,19 @@ public class DatosMeteorologicosController {
     private DatosVelocidadRepository repoVelocidad;
 
     @Autowired
+    private RepositorioDatosVelocidad repoVelocidadDetalle;
+
+    @Autowired
     private DatosHumedadRepository repoHumedad;
 
     @Autowired
     private DatosTemperaturaRepository repoTemperatura;
+
+    @Autowired
+    private RepositorioDatosDireccion repoDireccion;
+
+    @Autowired
+    private RepositorioDatosPrecipitacion repoPrecipitacion;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -66,5 +81,37 @@ public class DatosMeteorologicosController {
         SerieDatos temperature = new SerieDatos(labels, temperatureValues);
 
         return new DatosMeteorologicosDTO(wind, humidity, temperature);
+    }
+
+    @GetMapping("/api/mediciones-recientes")
+    public MedicionesRecientesDTO obtenerMedicionesRecientes() {
+        MedicionesRecientesDTO dto = new MedicionesRecientesDTO();
+        dto.setTemperatura(
+            repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getTemperatura()
+        );
+        dto.setHumedad(
+            repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
+        );
+        dto.setVelocidadViento(
+            repoVelocidadDetalle.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getVelocidad()
+        );
+        dto.setDireccionViento(
+            repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getDireccion()
+        );
+        dto.setPrecipitacion(
+            repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
+        );
+        return dto;
+    }
+
+    @GetMapping("/api/datos-tablas")
+    public DatosTablasDTO obtenerDatosTablas() {
+        DatosTablasDTO dto = new DatosTablasDTO();
+        dto.setVelocidades(repoVelocidadDetalle.findTopByOrderByFechaDesc(PageRequest.of(0, 10)));
+        dto.setDirecciones(repoDireccion.findTopByOrderByFechaDesc(PageRequest.of(0, 10)));
+        dto.setPrecipitaciones(repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0, 10)));
+        dto.setHumedades(repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0, 10)));
+        dto.setTemperaturas(repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0, 10)));
+        return dto;
     }
 }
