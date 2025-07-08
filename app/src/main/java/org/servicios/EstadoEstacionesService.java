@@ -10,6 +10,8 @@ import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,10 @@ public class EstadoEstacionesService {
     private RepositorioDatosHumedad repoHumedad;
     @Autowired
     private RepositorioDatosTemperatura repoTemperatura;
+    @Autowired
+    private RepositorioDatosPresion repoPresion;
+    @Autowired
+    private RepositorioDatosHumedadSuelo repoHumedadSuelo;
     @Autowired
     private RepositorioEstacionMeteorologica repoEstacion;
 
@@ -72,6 +78,13 @@ public class EstadoEstacionesService {
         if (t != null && (ultima == null || t.after(ultima))) {
             ultima = t;
         }
+        t = repoPresion.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+        t = repoHumedadSuelo.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
         return ultima;
-    }
-}
+    }}

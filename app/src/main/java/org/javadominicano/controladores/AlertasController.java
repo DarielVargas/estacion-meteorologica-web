@@ -6,6 +6,8 @@ import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.javadominicano.visualizadorweb.entidades.Umbrales;
 import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.entidades.DatosVelocidad;
@@ -42,6 +44,12 @@ public class AlertasController {
     private RepositorioDatosTemperatura repoTemperatura;
 
     @Autowired
+    private RepositorioDatosPresion repoPresion;
+
+    @Autowired
+    private RepositorioDatosHumedadSuelo repoHumedadSuelo;
+
+    @Autowired
     private RepositorioDatosPrecipitacion repoPrecipitacion;
 
     @Autowired
@@ -54,11 +62,15 @@ public class AlertasController {
         Alerta hum  = repoAlerta.findByNombre("Humedad");
         Alerta vel  = repoAlerta.findByNombre("VelocidadViento");
         Alerta pre  = repoAlerta.findByNombre("Precipitacion");
+        Alerta pres = repoAlerta.findByNombre("Presion");
+        Alerta humSuelo = repoAlerta.findByNombre("HumedadSuelo");
 
         umbrales.setTemperatura(temp != null ? temp.getUmbral() : 20.0);
         umbrales.setHumedad(hum != null ? hum.getUmbral() : 60.0);
         umbrales.setVelocidadViento(vel != null ? vel.getUmbral() : 10.0);
         umbrales.setPrecipitacion(pre != null ? pre.getUmbral() : 5.0);
+        umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.25);
+        umbrales.setHumedadSuelo(humSuelo != null ? humSuelo.getUmbral() : 50.0);
         return umbrales;
     }
 

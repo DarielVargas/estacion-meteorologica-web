@@ -5,12 +5,16 @@ import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.entidades.DatosVelocidad;
 import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
 import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
+import org.javadominicano.visualizadorweb.entidades.DatosPresion;
+import org.javadominicano.visualizadorweb.entidades.DatosHumedadSuelo;
 import org.javadominicano.dto.AlertaActivaDTO;
 import org.javadominicano.repositorios.RepositorioAlerta;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,10 @@ public class AlertasService {
     private RepositorioDatosTemperatura repoTemperatura;
     @Autowired
     private RepositorioDatosPrecipitacion repoPrecipitacion;
+    @Autowired
+    private RepositorioDatosPresion repoPresion;
+    @Autowired
+    private RepositorioDatosHumedadSuelo repoHumedadSuelo;
 
     public List<AlertaActivaDTO> obtenerAlertasActivas() {
         List<AlertaActivaDTO> lista = new ArrayList<>();
@@ -40,11 +48,15 @@ public class AlertasService {
         DatosHumedad hum      = repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
         DatosVelocidad vel    = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
         DatosPrecipitacion pre= repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
+        DatosPresion pres    = repoPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
+        DatosHumedadSuelo hs = repoHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
 
         agregarAlertaActiva(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
         agregarAlertaActiva(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
         agregarAlertaActiva(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
         agregarAlertaActiva(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha());
 
         return lista;
     }
@@ -91,8 +103,11 @@ public class AlertasService {
                 return "Umbral de velocidad de viento superado";
             case "Precipitacion":
                 return "Umbral de precipitación superado";
+            case "Presion":
+                return "Umbral de presión superado";
+            case "HumedadSuelo":
+                return "Umbral de humedad del suelo superado";
             default:
                 return "Umbral superado";
         }
-    }
-}
+    }}

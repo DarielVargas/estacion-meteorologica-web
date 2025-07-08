@@ -254,6 +254,22 @@
             <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
         </div>
+        <div class="threshold-card">
+            <div class="title-row">
+                <input type="checkbox" id="chk-pres" name="chkPres" checked />
+                <label for="pres">Presión &gt;</label>
+            </div>
+            <input id="pres" type="number" step="0.1" name="presion" th:value="${umbrales.presion}" required />
+            <span>hPa</span>
+        </div>
+        <div class="threshold-card">
+            <div class="title-row">
+                <input type="checkbox" id="chk-hs" name="chkHumSuelo" checked />
+                <label for="hs">Hum. Suelo &gt;</label>
+            </div>
+            <input id="hs" type="number" step="0.1" name="humedadSuelo" th:value="${umbrales.humedadSuelo}" required />
+            <span>%</span>
+        </div>
         <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
     </form>
 

@@ -16,6 +16,8 @@ import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.javadominicano.repositorios.RepositorioAlerta;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,12 @@ public class VisualizadorController {
     private RepositorioDatosTemperatura repositorioTemperatura;
 
     @Autowired
+    private RepositorioDatosPresion repositorioPresion;
+
+    @Autowired
+    private RepositorioDatosHumedadSuelo repositorioHumedadSuelo;
+
+    @Autowired
     private RepositorioEstacionMeteorologica repositorioEstacion;
 
     @Autowired
@@ -89,11 +97,15 @@ public class VisualizadorController {
         Alerta hum  = repoAlerta.findByNombre("Humedad");
         Alerta vel  = repoAlerta.findByNombre("VelocidadViento");
         Alerta pre  = repoAlerta.findByNombre("Precipitacion");
+        Alerta pres = repoAlerta.findByNombre("Presion");
+        Alerta humSuelo = repoAlerta.findByNombre("HumedadSuelo");
 
         umbrales.setTemperatura(temp != null ? temp.getUmbral() : 20.0);
         umbrales.setHumedad(hum != null ? hum.getUmbral() : 60.0);
         umbrales.setVelocidadViento(vel != null ? vel.getUmbral() : 10.0);
         umbrales.setPrecipitacion(pre != null ? pre.getUmbral() : 5.0);
+        umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.25);
+        umbrales.setHumedadSuelo(humSuelo != null ? humSuelo.getUmbral() : 50.0);
         return umbrales;
     }
 
@@ -132,6 +144,16 @@ public class VisualizadorController {
             ultima = t;
         }
 
+        t = repositorioPresion.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioHumedadSuelo.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
         return ultima;
     }
 
@@ -147,6 +169,8 @@ public class VisualizadorController {
         Page<DatosPrecipitacion> precipitaciones = repositorioPrecipitacion.findAll(pageable);
         Page<DatosHumedad> humedades = repositorioHumedad.findAll(pageable);
         Page<DatosTemperatura> temperaturas = repositorioTemperatura.findAll(pageable);
+        Page<DatosPresion> presiones = repositorioPresion.findAll(pageable);
+        Page<DatosHumedadSuelo> humedadesSuelo = repositorioHumedadSuelo.findAll(pageable);
 
         // Últimas mediciones
         MedicionesRecientesDTO mediciones = new MedicionesRecientesDTO();
@@ -164,6 +188,12 @@ public class VisualizadorController {
         );
         mediciones.setPrecipitacion(
             repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
+        );
+        mediciones.setPresion(
+            repositorioPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getPresion()
+        );
+        mediciones.setHumedadSuelo(
+            repositorioHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
         );
 
         // Fecha límite para considerar una estación activa (30 segundos)
@@ -201,6 +231,8 @@ public class VisualizadorController {
         model.addAttribute("precipitaciones", precipitaciones);
         model.addAttribute("humedades", humedades);
         model.addAttribute("temperaturas", temperaturas);
+        model.addAttribute("presiones", presiones);
+        model.addAttribute("humedadesSuelo", humedadesSuelo);
         model.addAttribute("mediciones", mediciones);
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("tamanoPagina", tamanoPagina);
@@ -222,6 +254,8 @@ public class VisualizadorController {
                                     @RequestParam(required = false) Boolean chkHum,
                                     @RequestParam(required = false) Boolean chkVel,
                                     @RequestParam(required = false) Boolean chkPre,
+                                    @RequestParam(required = false) Boolean chkPres,
+                                    @RequestParam(required = false) Boolean chkHumSuelo,
                                     Model model) {
         if (Boolean.TRUE.equals(chkTemp)) {
             guardarOActualizar("Temperatura", umbrales.getTemperatura());
@@ -234,6 +268,12 @@ public class VisualizadorController {
         }
         if (Boolean.TRUE.equals(chkPre)) {
             guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+        }
+        if (Boolean.TRUE.equals(chkPres)) {
+            guardarOActualizar("Presion", umbrales.getPresion());
+        }
+        if (Boolean.TRUE.equals(chkHumSuelo)) {
+            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo());
         }
 
         return "redirect:/"; // Redirige al dashboard para que se recargue

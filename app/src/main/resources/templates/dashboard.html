@@ -404,6 +404,22 @@
             <p th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + 'mm'}">75.6mm</p>
             <span>Precipitación</span>
         </div>
+        <div class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+            </svg>
+            <p th:text="${mediciones.presion + ' hPa'}">1013 hPa</p>
+            <span>Presión</span>
+        </div>
+        <div class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <path d="M12 2v20" />
+                <path d="M5 16l7-6 7 6" />
+            </svg>
+            <p th:text="${mediciones.humedadSuelo + '%'}">55%</p>
+            <span>Humedad del Suelo</span>
+        </div>
     </div>
 
     <!-- NUEVAS GRÁFICAS en lugar de las tablas -->
