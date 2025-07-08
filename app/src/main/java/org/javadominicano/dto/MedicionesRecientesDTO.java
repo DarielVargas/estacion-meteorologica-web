@@ -6,6 +6,8 @@ public class MedicionesRecientesDTO {
     private Double velocidadViento;
     private String direccionViento;
     private Double precipitacion;
+    private Double presion;
+    private Double humedadSuelo;
 
     // Getters y setters
     public Double getTemperatura() {
@@ -46,5 +48,21 @@ public class MedicionesRecientesDTO {
 
     public void setPrecipitacion(Double precipitacion) {
         this.precipitacion = precipitacion;
+    }
+
+    public Double getPresion() {
+        return presion;
+    }
+
+    public void setPresion(Double presion) {
+        this.presion = presion;
+    }
+
+    public Double getHumedadSuelo() {
+        return humedadSuelo;
+    }
+
+    public void setHumedadSuelo(Double humedadSuelo) {
+        this.humedadSuelo = humedadSuelo;
     }
 }
