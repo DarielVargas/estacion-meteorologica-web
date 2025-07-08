@@ -1,13 +1,14 @@
 <div th:fragment="alertas">
     <style>
         .alert-card {
-            background-color: #dc3545;
             color: white;
             padding: 10px 15px;
             border-radius: 5px;
             margin-bottom: 10px;
             position: relative;
         }
+        .alert-card.danger { background-color: #dc3545; }
+        .alert-card.success { background-color: #28a745; }
         .alert-card button {
             position: absolute;
             top: 5px;
@@ -21,7 +22,7 @@
     </style>
 
     <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card"
+        <div th:each="a : ${alertasActivas}" class="alert-card danger"
              th:attr="data-key=${'alert_'+ a.alerta.id +'_'+ a.fecha.time}">
             <span th:text="${a.alerta.nombre == 'Temperatura' ? 'Umbral de temperatura superado' :
                              a.alerta.nombre == 'Humedad' ? 'Umbral de humedad superado' :
@@ -30,6 +31,8 @@
             <button type="button" class="close-alert">&times;</button>
         </div>
     </div>
+
+    <div id="estadoAlertContainer"></div>
 
     <script th:inline="javascript">
     /*<![CDATA[*/
@@ -49,6 +52,47 @@
         }
         setTimeout(markAsShown, 7000);
     });
+
+    function mostrarAlertaEstado(nombre, activa) {
+        var cont = document.getElementById('estadoAlertContainer');
+        if (!cont) return;
+        var card = document.createElement('div');
+        card.className = 'alert-card ' + (activa ? 'success' : 'danger');
+        var span = document.createElement('span');
+        span.textContent = activa ?
+            'La estación ' + nombre + ' se ha reconectado correctamente.' :
+            'La estación ' + nombre + ' se ha desconectado.';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'close-alert';
+        btn.innerHTML = '&times;';
+        card.appendChild(span);
+        card.appendChild(btn);
+        cont.appendChild(card);
+        var remove = function() { card.remove(); };
+        btn.addEventListener('click', remove);
+        setTimeout(remove, 7000);
+    }
+
+    function checkEstados() {
+        fetch('/api/estado-estaciones')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var prev = JSON.parse(localStorage.getItem('estados_estaciones') || '{}');
+                data.forEach(function(e) {
+                    var before = prev[e.id];
+                    if (before !== undefined && before !== e.activa) {
+                        mostrarAlertaEstado(e.nombre, e.activa);
+                    }
+                    prev[e.id] = e.activa;
+                });
+                localStorage.setItem('estados_estaciones', JSON.stringify(prev));
+            })
+            .catch(function(err) { console.error(err); });
+    }
+
+    checkEstados();
+    setInterval(checkEstados, 30000);
     /*]]>*/
     </script>
 </div>
