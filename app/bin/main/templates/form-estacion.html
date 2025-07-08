@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Formulario Estación Meteorológica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom right, #cfe0ff, #1f4dd9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 420px;
+            text-align: center;
+            animation: fadeScale 0.6s ease both;
+        }
+
+        .station-icon {
+            background-color: #1f4dd9;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .station-icon:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            color: #1f4dd9;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #1f4dd9;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(to right, #1f4dd9, #4f74ff);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            color: #555;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #1f4dd9;
+        }
+
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <div class="station-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" class="bi bi-geo-alt" viewBox="0 0 16 16">
+            <path d="M12.166 8.94C13.187 7.207 14 5.322 14 4a6 6 0 1 0-12 0c0 1.322.813 3.207 1.834 4.94.969 1.65 2.109 3.063 3.09 4.121a.5.5 0 0 0 .752 0c.98-1.058 2.12-2.47 3.09-4.121zM8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+        </svg>
+    </div>
+    <h2>Añadir Estación Meteorológica</h2>
+    <div th:replace="fragments/alertasActivas :: alertas"></div>
+    <p class="subtitle">Completa la información de la estación</p>
+    <form th:action="@{${estacion.id} == null ? '/estaciones/nueva' : '/estaciones/editar'}" th:object="${estacion}" method="post">
+        <label for="id">ID</label>
+        <input type="text" id="id" th:field="*{id}" placeholder="ID de la estación" required />
+
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre de la estación" required />
+
+        <label for="ubicacion">Ubicación</label>
+        <input type="text" id="ubicacion" th:field="*{ubicacion}" placeholder="Ubicación de la estación" required />
+
+        <button type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                <path d="M13.485 1.99a.75.75 0 0 1 1.06 1.06l-8.25 8.25-3.25-3.25a.75.75 0 0 1 1.06-1.06l2.19 2.19 7.19-7.19z"/>
+            </svg>
+            Guardar Cambios
+        </button>
+    </form>
+
+    <a th:href="@{/}" class="back-link">Volver al Dashboard</a>
+</div>
+</body>
+</html>
