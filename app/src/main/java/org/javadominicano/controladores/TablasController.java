@@ -16,6 +16,8 @@ import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 // Repositorios bajo org.javadominicano.visualizadorweb.repositorios
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 
 @Controller
 public class TablasController {
@@ -25,6 +27,8 @@ public class TablasController {
     @Autowired private RepositorioDatosPrecipitacion repoPrecipitacion;
     @Autowired private RepositorioDatosHumedad       repoHumedad;
     @Autowired private RepositorioDatosTemperatura   repoTemperatura;
+    @Autowired private RepositorioDatosPresion       repoPresion;
+    @Autowired private RepositorioDatosHumedadSuelo  repoHumedadSuelo;
 
     @GetMapping("/tablas")
     public String mostrarTablas(
@@ -40,12 +44,16 @@ public class TablasController {
         Page<?> precipitaciones = repoPrecipitacion.findAll(pr);
         Page<?> humedades       = repoHumedad.findAll(pr);
         Page<?> temperaturas    = repoTemperatura.findAll(pr);
+        Page<?> presiones       = repoPresion.findAll(pr);
+        Page<?> humedadesSuelo  = repoHumedadSuelo.findAll(pr);
 
         model.addAttribute("velocidades",     velocidades);
         model.addAttribute("direcciones",     direcciones);
         model.addAttribute("precipitaciones", precipitaciones);
         model.addAttribute("humedades",       humedades);
         model.addAttribute("temperaturas",    temperaturas);
+        model.addAttribute("presiones",       presiones);
+        model.addAttribute("humedadesSuelo",  humedadesSuelo);
         model.addAttribute("paginaActual",    paginaActual);
         model.addAttribute("tamanoPagina",    tamanoPagina);
 
