@@ -21,6 +21,8 @@ import org.javadominicano.repositorios.RepositorioDatosDireccion;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.javadominicano.dto.ReporteGenerado;
 import org.javadominicano.entidades.EstacionMeteorologica;
 import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
@@ -41,6 +43,8 @@ public class ReportesController {
     @Autowired private RepositorioDatosPrecipitacion repoPrecipitacion;
     @Autowired private RepositorioDatosHumedad repoHumedad;
     @Autowired private RepositorioDatosTemperatura repoTemperatura;
+    @Autowired private RepositorioDatosPresion repoPresion;
+    @Autowired private RepositorioDatosHumedadSuelo repoHumedadSuelo;
     @Autowired private RepositorioEstacionMeteorologica repoEstacion;
 
     private static List<ReporteGenerado> reportesGenerados = new ArrayList<>();
@@ -96,6 +100,8 @@ public class ReportesController {
         Page<?> precipitaciones = Page.empty();
         Page<?> humedades = Page.empty();
         Page<?> temperaturas = Page.empty();
+        Page<?> presiones = Page.empty();
+        Page<?> humedadesSuelo = Page.empty();
 
         if (fecha != null) {
             LocalDateTime start = fecha.atStartOfDay();
@@ -111,6 +117,8 @@ public class ReportesController {
             precipitaciones = repoPrecipitacion.findByFechaBetween(inicio, fin, pr);
             humedades = repoHumedad.findByFechaBetween(inicio, fin, pr);
             temperaturas = repoTemperatura.findByFechaBetween(inicio, fin, pr);
+            presiones = repoPresion.findByFechaBetween(inicio, fin, pr);
+            humedadesSuelo = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
         }
 
 
@@ -120,6 +128,8 @@ public class ReportesController {
         model.addAttribute("precipitaciones", precipitaciones);
         model.addAttribute("humedades", humedades);
         model.addAttribute("temperaturas", temperaturas);
+        model.addAttribute("presiones", presiones);
+        model.addAttribute("humedadesSuelo", humedadesSuelo);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("tamanoPagina", tamanoPagina);
         model.addAttribute("fecha", fecha);
@@ -158,6 +168,8 @@ public class ReportesController {
         model.addAttribute("precipitaciones", repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin));
         model.addAttribute("humedades", repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin));
         model.addAttribute("temperaturas", repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin));
+        model.addAttribute("presiones", repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin));
+        model.addAttribute("humedadesSuelo", repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin));
 
         return "reportePreview";
     }
@@ -201,9 +213,14 @@ public class ReportesController {
         csv.append("\nTemperaturaID,Temperatura,Fecha\n");
         repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin)
             .forEach(t -> csv.append(t.getId()).append(',').append(t.getTemperatura()).append(',').append(t.getFecha()).append('\n'));
+        csv.append("\nPresionID,Presion,Fecha\n");
+        repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
+            .forEach(p -> csv.append(p.getId()).append(',').append(p.getPresion()).append(',').append(p.getFecha()).append('\n'));
+        csv.append("\nHumedadSueloID,Humedad,Fecha\n");
+        repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin)
+            .forEach(hs -> csv.append(hs.getId()).append(',').append(hs.getHumedad()).append(',').append(hs.getFecha()).append('\n'));
 
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".csv");
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.getWriter().write(csv.toString());
-    }
-}
+    }}
