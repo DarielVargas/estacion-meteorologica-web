@@ -1,5 +1,7 @@
 package org.javadominicano.dto;
 
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
+
 public class DashboardUpdateDTO {
     private DatosMeteorologicosDTO datos;
     private MedicionesRecientesDTO mediciones;

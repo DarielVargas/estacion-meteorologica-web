@@ -2,7 +2,7 @@ package org.javadominicano.servicios;
 
 import org.javadominicano.dto.DashboardUpdateDTO;
 import org.javadominicano.dto.DatosMeteorologicosDTO;
-import org.javadominicano.dto.MedicionesRecientesDTO;
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
 import org.javadominicano.entidades.*;
 import org.javadominicano.repositorios.*;
 import org.javadominicano.visualizadorweb.repositorios.*;
