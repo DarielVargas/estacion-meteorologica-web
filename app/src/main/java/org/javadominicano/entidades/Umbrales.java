@@ -5,6 +5,8 @@ public class Umbrales {
     private double humedad;
     private double velocidadViento;
     private double precipitacion;
+    private double presion;
+    private double humedadSuelo;
 
     public double getTemperatura() {
         return temperatura;
@@ -36,5 +38,21 @@ public class Umbrales {
 
     public void setPrecipitacion(double precipitacion) {
         this.precipitacion = precipitacion;
+    }
+
+    public double getPresion() {
+        return presion;
+    }
+
+    public void setPresion(double presion) {
+        this.presion = presion;
+    }
+
+    public double getHumedadSuelo() {
+        return humedadSuelo;
+    }
+
+    public void setHumedadSuelo(double humedadSuelo) {
+        this.humedadSuelo = humedadSuelo;
     }
 }

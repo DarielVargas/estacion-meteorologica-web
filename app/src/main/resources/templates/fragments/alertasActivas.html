@@ -27,7 +27,9 @@
             <span th:text="${a.alerta.nombre == 'Temperatura' ? 'Umbral de temperatura superado' :
                              a.alerta.nombre == 'Humedad' ? 'Umbral de humedad superado' :
                              a.alerta.nombre == 'VelocidadViento' ? 'Umbral de velocidad de viento superado' :
-                             'Umbral de precipitación superado'}">Alerta</span>
+                             a.alerta.nombre == 'Precipitacion' ? 'Umbral de precipitación superado' :
+                             a.alerta.nombre == 'Presion' ? 'Umbral de presión superado' :
+                             'Umbral de humedad del suelo superado'}">Alerta</span>
             <button type="button" class="close-alert">&times;</button>
         </div>
     </div>

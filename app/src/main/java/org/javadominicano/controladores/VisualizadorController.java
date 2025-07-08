@@ -93,15 +93,19 @@ public class VisualizadorController {
     @ModelAttribute("umbrales")
     public Umbrales obtenerUmbrales() {
         Umbrales umbrales = new Umbrales();
-        Alerta temp = repoAlerta.findByNombre("Temperatura");
-        Alerta hum  = repoAlerta.findByNombre("Humedad");
-        Alerta vel  = repoAlerta.findByNombre("VelocidadViento");
-        Alerta pre  = repoAlerta.findByNombre("Precipitacion");
+        Alerta temp   = repoAlerta.findByNombre("Temperatura");
+        Alerta hum    = repoAlerta.findByNombre("Humedad");
+        Alerta vel    = repoAlerta.findByNombre("VelocidadViento");
+        Alerta pre    = repoAlerta.findByNombre("Precipitacion");
+        Alerta pres   = repoAlerta.findByNombre("Presion");
+        Alerta humSu  = repoAlerta.findByNombre("HumedadSuelo");
 
         umbrales.setTemperatura(temp != null ? temp.getUmbral() : 20.0);
         umbrales.setHumedad(hum != null ? hum.getUmbral() : 60.0);
         umbrales.setVelocidadViento(vel != null ? vel.getUmbral() : 10.0);
         umbrales.setPrecipitacion(pre != null ? pre.getUmbral() : 5.0);
+        umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.0);
+        umbrales.setHumedadSuelo(humSu != null ? humSu.getUmbral() : 40.0);
         return umbrales;
     }
 
@@ -246,6 +250,8 @@ public class VisualizadorController {
                                     @RequestParam(required = false) Boolean chkHum,
                                     @RequestParam(required = false) Boolean chkVel,
                                     @RequestParam(required = false) Boolean chkPre,
+                                    @RequestParam(required = false) Boolean chkPres,
+                                    @RequestParam(required = false) Boolean chkHumSu,
                                     Model model) {
         if (Boolean.TRUE.equals(chkTemp)) {
             guardarOActualizar("Temperatura", umbrales.getTemperatura());
@@ -258,6 +264,12 @@ public class VisualizadorController {
         }
         if (Boolean.TRUE.equals(chkPre)) {
             guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+        }
+        if (Boolean.TRUE.equals(chkPres)) {
+            guardarOActualizar("Presion", umbrales.getPresion());
+        }
+        if (Boolean.TRUE.equals(chkHumSu)) {
+            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo());
         }
 
         return "redirect:/"; // Redirige al dashboard para que se recargue
