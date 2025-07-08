@@ -140,6 +140,38 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Presión -->
+      <div class="tabla">
+        <h3>Presión</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>hPa</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <tr th:each="pr : ${presiones.content}">
+              <td th:text="${pr.id}"></td>
+              <td th:text="${pr.estacionId}"></td>
+              <td th:text="${pr.presion}"></td>
+              <td th:text="${pr.fecha}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Humedad del Suelo -->
+      <div class="tabla">
+        <h3>Humedad del Suelo</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Estación ID</th><th>%</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <tr th:each="hs : ${humedadesSuelo.content}">
+              <td th:text="${hs.id}"></td>
+              <td th:text="${hs.estacionId}"></td>
+              <td th:text="${hs.humedadSuelo}"></td>
+              <td th:text="${hs.fecha}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Paginación -->
