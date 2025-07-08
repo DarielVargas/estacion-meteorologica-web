@@ -44,8 +44,20 @@ public class TablasController {
         Page<?> precipitaciones = repoPrecipitacion.findAll(pr);
         Page<?> humedades       = repoHumedad.findAll(pr);
         Page<?> temperaturas    = repoTemperatura.findAll(pr);
-        Page<?> presiones       = repoPresion.findAll(pr);
-        Page<?> humedadesSuelo  = repoHumedadSuelo.findAll(pr);
+
+        Page<?> presiones;
+        try {
+            presiones = repoPresion.findAll(pr);
+        } catch (Exception ex) {
+            presiones = Page.empty();
+        }
+
+        Page<?> humedadesSuelo;
+        try {
+            humedadesSuelo = repoHumedadSuelo.findAll(pr);
+        } catch (Exception ex) {
+            humedadesSuelo = Page.empty();
+        }
 
         model.addAttribute("velocidades",     velocidades);
         model.addAttribute("direcciones",     direcciones);
