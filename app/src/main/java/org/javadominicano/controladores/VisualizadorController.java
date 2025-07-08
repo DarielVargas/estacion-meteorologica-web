@@ -16,6 +16,8 @@ import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.javadominicano.repositorios.RepositorioAlerta;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,12 @@ public class VisualizadorController {
 
     @Autowired
     private RepositorioDatosTemperatura repositorioTemperatura;
+
+    @Autowired
+    private RepositorioDatosPresion repositorioPresion;
+
+    @Autowired
+    private RepositorioDatosHumedadSuelo repositorioHumedadSuelo;
 
     @Autowired
     private RepositorioEstacionMeteorologica repositorioEstacion;
@@ -132,6 +140,16 @@ public class VisualizadorController {
             ultima = t;
         }
 
+        t = repositorioPresion.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
+        t = repositorioHumedadSuelo.findUltimaFechaByEstacion(estacionId);
+        if (t != null && (ultima == null || t.after(ultima))) {
+            ultima = t;
+        }
+
         return ultima;
     }
 
@@ -164,6 +182,12 @@ public class VisualizadorController {
         );
         mediciones.setPrecipitacion(
             repositorioPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getProbabilidad()
+        );
+        mediciones.setPresion(
+            repositorioPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getPresion()
+        );
+        mediciones.setHumedadSuelo(
+            repositorioHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
         );
 
         // Fecha límite para considerar una estación activa (30 segundos)
