@@ -16,7 +16,7 @@ public class DatosPresion {
     @Column(name = "estacion_id")
     private String estacionId;
 
-    @Column(name = "presion")
+    @Column(name = "valor")
     private double presion;
 
     @Column(name = "fecha")

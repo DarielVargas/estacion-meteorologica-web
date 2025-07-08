@@ -16,7 +16,7 @@ public class DatosHumedadSuelo {
     @Column(name = "estacion_id")
     private String estacionId;
 
-    @Column(name = "humedad")
+   @Column(name = "valor")
     private double humedad;
 
     @Column(name = "fecha")
