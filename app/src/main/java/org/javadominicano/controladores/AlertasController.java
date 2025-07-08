@@ -50,15 +50,19 @@ public class AlertasController {
     @ModelAttribute("umbrales")
     public Umbrales obtenerUmbrales() {
         Umbrales umbrales = new Umbrales();
-        Alerta temp = repoAlerta.findByNombre("Temperatura");
-        Alerta hum  = repoAlerta.findByNombre("Humedad");
-        Alerta vel  = repoAlerta.findByNombre("VelocidadViento");
-        Alerta pre  = repoAlerta.findByNombre("Precipitacion");
+        Alerta temp   = repoAlerta.findByNombre("Temperatura");
+        Alerta hum    = repoAlerta.findByNombre("Humedad");
+        Alerta vel    = repoAlerta.findByNombre("VelocidadViento");
+        Alerta pre    = repoAlerta.findByNombre("Precipitacion");
+        Alerta pres   = repoAlerta.findByNombre("Presion");
+        Alerta humSu  = repoAlerta.findByNombre("HumedadSuelo");
 
         umbrales.setTemperatura(temp != null ? temp.getUmbral() : 20.0);
         umbrales.setHumedad(hum != null ? hum.getUmbral() : 60.0);
         umbrales.setVelocidadViento(vel != null ? vel.getUmbral() : 10.0);
         umbrales.setPrecipitacion(pre != null ? pre.getUmbral() : 5.0);
+        umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.0);
+        umbrales.setHumedadSuelo(humSu != null ? humSu.getUmbral() : 40.0);
         return umbrales;
     }
 
