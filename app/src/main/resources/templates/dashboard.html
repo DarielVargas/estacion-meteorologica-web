@@ -8,6 +8,8 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -367,7 +369,7 @@
                 <circle cx="12" cy="18" r="3" />
                 <path d="M12 15V5a2 2 0 1 1 4 0v5" />
             </svg>
-            <p th:text="${mediciones.temperatura + '°C'}">33.94°C</p>
+            <p id="tempCard" th:text="${mediciones.temperatura + '°C'}">33.94°C</p>
             <span>Temperatura</span>
         </div>
         <div class="card">
@@ -375,7 +377,7 @@
                 <path d="M12 3s-5 6-5 9a5 5 0 0 0 10 0c0-3-5-9-5-9z" />
                 <path d="M14 10.5a2 2 0 1 1-4 0c0-1.5 2-4.5 2-4.5s2 3 2 4.5z" opacity="0.6" />
             </svg>
-            <p th:text="${mediciones.humedad + '%'}">80.75%</p>
+            <p id="humCard" th:text="${mediciones.humedad + '%'}">80.75%</p>
             <span>Humedad</span>
         </div>
         <div class="card">
@@ -383,7 +385,7 @@
                 <path d="M3 7h9a4 4 0 1 0-4-4" />
                 <path d="M2 14h12a4 4 0 1 1-3 6" />
             </svg>
-            <p th:text="${mediciones.velocidadViento + ' Km/h'}">43.99 Km/h</p>
+            <p id="windSpeedCard" th:text="${mediciones.velocidadViento + ' Km/h'}">43.99 Km/h</p>
             <span>Velocidad del Viento</span>
         </div>
         <div class="card">
@@ -391,7 +393,7 @@
                 <circle cx="12" cy="12" r="8" />
                 <path d="M12 8l-3 4h2v4h2v-4h2l-3-4z" />
             </svg>
-            <p th:text="${mediciones.direccionViento}">Sureste</p>
+            <p id="windDirCard" th:text="${mediciones.direccionViento}">Sureste</p>
             <span>Dirección del Viento</span>
         </div>
         <div class="card">
@@ -401,7 +403,7 @@
                 <path d="M12 16v3" />
                 <path d="M16 16v3" />
             </svg>
-            <p th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + 'mm'}">75.6mm</p>
+            <p id="precCard" th:text="${#numbers.formatDecimal(mediciones.precipitacion, 1, 1) + 'mm'}">75.6mm</p>
             <span>Precipitación</span>
         </div>
     </div>
@@ -435,15 +437,15 @@
 
     <div class="info-bar">
         <div class="section">
-            <div class="number" th:text="${#lists.size(estaciones)}">0</div>
+            <div class="number" id="totalEstaciones" th:text="${#lists.size(estaciones)}">0</div>
             <div class="label">Total de estaciones</div>
         </div>
         <div class="section">
-            <div class="number" th:text="${estacionesActivas}">0</div>
+            <div class="number" id="estacionesActivas" th:text="${estacionesActivas}">0</div>
             <div class="label">Estaciones activas</div>
         </div>
         <div class="section">
-            <div class="number" th:text="${estacionesInactivas}">0</div>
+            <div class="number" id="estacionesInactivas" th:text="${estacionesInactivas}">0</div>
             <div class="label">Estaciones inactivas</div>
         </div>
     </div>
@@ -617,39 +619,44 @@ const temperatureChart = new Chart(temperatureCtx, {
 });
 
 // Función para actualizar las gráficas con datos reales desde el backend
-function updateCharts() {
-    fetch('/api/datos-meteorologicos')
-        .then(response => {
-            if (!response.ok) throw new Error('Respuesta no OK');
-            return response.json();
-        })
-        .then(data => {
-            // Actualizar gráfica de viento
-            windChart.data.labels = data.wind.labels;
-            windChart.data.datasets[0].data = data.wind.values;
-            windChart.update();
-
-            // Actualizar gráfica de humedad
-            humidityChart.data.labels = data.humidity.labels;
-            humidityChart.data.datasets[0].data = data.humidity.values;
-            humidityChart.update();
-
-            // Actualizar gráfica de temperatura
-            temperatureChart.data.labels = data.temperature.labels;
-            temperatureChart.data.datasets[0].data = data.temperature.values;
-            temperatureChart.update();
-        })
-        .catch(error => {
-            console.error('Error al obtener datos meteorológicos:', error);
-            // Opcional: puedes dejar las gráficas con datos de ejemplo o mostrar un mensaje al usuario
+function connectWebSocket() {
+    const socket = new SockJS('/ws');
+    const stomp = Stomp.over(socket);
+    stomp.connect({}, () => {
+        stomp.subscribe('/topic/dashboard', msg => {
+            const data = JSON.parse(msg.body);
+            actualizarVista(data);
         });
+    });
 }
 
-// Actualizar gráficas cada 30 segundos con datos reales
-setInterval(updateCharts, 30000);
+function actualizarVista(payload) {
+    const datos = payload.datos;
+    windChart.data.labels = datos.wind.labels;
+    windChart.data.datasets[0].data = datos.wind.values;
+    windChart.update();
 
-// Actualizar inmediatamente al cargar la página
-updateCharts();
+    humidityChart.data.labels = datos.humidity.labels;
+    humidityChart.data.datasets[0].data = datos.humidity.values;
+    humidityChart.update();
+
+    temperatureChart.data.labels = datos.temperature.labels;
+    temperatureChart.data.datasets[0].data = datos.temperature.values;
+    temperatureChart.update();
+
+    const med = payload.mediciones;
+    document.getElementById('tempCard').innerText = med.temperatura + '°C';
+    document.getElementById('humCard').innerText = med.humedad + '%';
+    document.getElementById('windSpeedCard').innerText = med.velocidadViento + ' Km/h';
+    document.getElementById('windDirCard').innerText = med.direccionViento;
+    document.getElementById('precCard').innerText = med.precipitacion.toFixed(1) + 'mm';
+
+    document.getElementById('totalEstaciones').innerText = payload.totalEstaciones;
+    document.getElementById('estacionesActivas').innerText = payload.estacionesActivas;
+    document.getElementById('estacionesInactivas').innerText = payload.estacionesInactivas;
+}
+
+connectWebSocket();
 </script>
 
 

@@ -20,7 +20,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/ws/**").permitAll()
                 .requestMatchers("/", "/dashboard", "/api/datos-meteorologicos").hasAnyRole("USER", "ADMIN")
                 .anyRequest().hasRole("ADMIN")
             )
