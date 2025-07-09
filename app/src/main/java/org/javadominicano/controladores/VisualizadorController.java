@@ -331,6 +331,16 @@ public class VisualizadorController {
         return "redirect:/estaciones";
     }
 
+    @PostMapping("/estaciones/toggle")
+    public String toggleActiva(@RequestParam String id) {
+        EstacionMeteorologica estacion = repositorioEstacion.findById(id).orElse(null);
+        if (estacion != null) {
+            estacion.setActiva(!estacion.isActiva());
+            repositorioEstacion.save(estacion);
+        }
+        return "redirect:/estaciones";
+    }
+
     // Listar estaciones en página independiente
     @GetMapping("/estaciones")
     public String listarEstaciones(Model model) {
