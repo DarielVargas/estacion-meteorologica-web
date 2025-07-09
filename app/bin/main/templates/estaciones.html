@@ -201,6 +201,7 @@
                         <button type="button" class="edit open-edit"
                                 th:data-id="${estacion.id}" th:data-nombre="${estacion.nombre}"
                                 th:data-ubicacion="${estacion.ubicacion}">✏️</button>
+                        <button type="button" class="delete delete-btn" th:data-id="${estacion.id}">🗑️</button>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(estaciones)}">
@@ -250,6 +251,11 @@
     </div>
 </div>
 
+<form id="deleteForm" th:action="@{/estaciones/eliminar}" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId" />
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+
 <script>
     const modal = document.getElementById('stationModal');
     const openNewBtn = document.getElementById('openNew');
@@ -284,11 +290,21 @@
         });
     });
 
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (confirm('¿Desea eliminar esta estación?')) {
+                const deleteForm = document.getElementById('deleteForm');
+                const deleteId = document.getElementById('deleteId');
+                deleteId.value = btn.dataset.id;
+                deleteForm.submit();
+            }
+        });
+    });
+
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             modal.classList.remove('active');
         });
     }
 </script>
-</body>
-</html>
+</body></html>
