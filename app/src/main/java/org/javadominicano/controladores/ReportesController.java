@@ -141,7 +141,11 @@ public class ReportesController {
     }
 
     @GetMapping("/reportes/ver/{id}")
-    public String verReporte(@PathVariable("id") int id, Model model) {
+    public String verReporte(
+            @PathVariable("id") int id,
+            @RequestParam(name = "pagina", defaultValue = "0") int paginaActual,
+            @RequestParam(name = "tamanoPagina", defaultValue = "10") int tamanoPagina,
+            Model model) {
         ReporteGenerado rep = reportesGenerados.stream()
                 .filter(r -> r.getId() == id)
                 .findFirst()
@@ -162,14 +166,19 @@ public class ReportesController {
         Timestamp inicio = Timestamp.valueOf(inicioLdt);
         Timestamp fin = Timestamp.valueOf(finLdt);
 
+        Sort sort = Sort.by("fecha").descending();
+        PageRequest pr = PageRequest.of(paginaActual, tamanoPagina, sort);
+
         model.addAttribute("reporte", rep);
-        model.addAttribute("velocidades", repoVelocidad.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("direcciones", repoDireccion.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("precipitaciones", repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("humedades", repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("temperaturas", repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("presiones", repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin));
-        model.addAttribute("humedadesSuelo", repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin));
+        model.addAttribute("velocidades", repoVelocidad.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("direcciones", repoDireccion.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("precipitaciones", repoPrecipitacion.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("humedades", repoHumedad.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("temperaturas", repoTemperatura.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("presiones", repoPresion.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("humedadesSuelo", repoHumedadSuelo.findByFechaBetween(inicio, fin, pr));
+        model.addAttribute("paginaActual", paginaActual);
+        model.addAttribute("tamanoPagina", tamanoPagina);
 
         return "reportePreview";
     }

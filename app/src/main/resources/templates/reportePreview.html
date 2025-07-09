@@ -25,6 +25,9 @@
         .tabla table{ width:100%;border-collapse:collapse; }
         .tabla th,.tabla td{ border:1px solid #ddd;padding:8px;font-size:14px; }
         .tabla th{ background-color:#f0f0f0; }
+        .pagination{ margin-top:20px;display:flex;align-items:center;flex-wrap:wrap;gap:10px; }
+        .pagination a,.pagination span{ padding:6px 12px;background:white;border:1px solid #ccc;border-radius:4px;text-decoration:none;color:black; }
+        .pagination .actual{ background-color:#007b00;color:white;font-weight:bold; }
     </style>
 </head>
 <body>
@@ -56,7 +59,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>Velocidad</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="v : ${velocidades}">
+                        <tr th:each="v : ${velocidades.content}">
                             <td th:text="${v.id}"></td>
                             <td th:text="${v.velocidad}"></td>
                             <td th:text="${v.fecha}"></td>
@@ -69,7 +72,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>Dirección</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="d : ${direcciones}">
+                        <tr th:each="d : ${direcciones.content}">
                             <td th:text="${d.id}"></td>
                             <td th:text="${d.direccion}"></td>
                             <td th:text="${d.fecha}"></td>
@@ -82,7 +85,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>mm</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="p : ${precipitaciones}">
+                        <tr th:each="p : ${precipitaciones.content}">
                             <td th:text="${p.id}"></td>
                             <td th:text="${#numbers.formatDecimal(p.probabilidad,1,1)}"></td>
                             <td th:text="${p.fecha}"></td>
@@ -95,7 +98,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="h : ${humedades}">
+                        <tr th:each="h : ${humedades.content}">
                             <td th:text="${h.id}"></td>
                             <td th:text="${h.humedad}"></td>
                             <td th:text="${h.fecha}"></td>
@@ -108,7 +111,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>°C</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="t : ${temperaturas}">
+                        <tr th:each="t : ${temperaturas.content}">
                             <td th:text="${t.id}"></td>
                             <td th:text="${t.temperatura}"></td>
                             <td th:text="${t.fecha}"></td>
@@ -121,7 +124,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>hPa</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="p : ${presiones}">
+                        <tr th:each="p : ${presiones.content}">
                             <td th:text="${p.id}"></td>
                             <td th:text="${p.presion}"></td>
                             <td th:text="${p.fecha}"></td>
@@ -134,7 +137,7 @@
                 <table>
                     <thead><tr><th>ID</th><th>%</th><th>Fecha</th></tr></thead>
                     <tbody>
-                        <tr th:each="hs : ${humedadesSuelo}">
+                        <tr th:each="hs : ${humedadesSuelo.content}">
                             <td th:text="${hs.id}"></td>
                             <td th:text="${hs.humedad}"></td>
                             <td th:text="${hs.fecha}"></td>
@@ -143,5 +146,38 @@
                 </table>
             </div>
         </div>
-    </div>
-</body></html>
+
+        <div class="pagination">
+            <span th:text="'Página ' + (${paginaActual} + 1) + ' de ' + ${velocidades.totalPages}"></span>
+
+            <a th:if="${paginaActual > 0}"
+               th:href="@{/reportes/ver/{id}(id=${reporte.id},pagina=0,tamanoPagina=${tamanoPagina})}">&laquo;</a>
+            <a th:if="${paginaActual > 0}"
+               th:href="@{/reportes/ver/{id}(id=${reporte.id},pagina=${paginaActual - 1},tamanoPagina=${tamanoPagina})}">&lt;</a>
+
+            <span th:each="i : ${#numbers.sequence(0, velocidades.totalPages - 1)}"
+                  th:if="${i >= paginaActual - 2 && i <= paginaActual + 2}"
+                  th:classappend="${i == paginaActual}? 'actual'">
+                <a th:if="${i != paginaActual}"
+                   th:href="@{/reportes/ver/{id}(id=${reporte.id},pagina=${i},tamanoPagina=${tamanoPagina})}" th:text="${i + 1}"></a>
+                <span th:if="${i == paginaActual}" th:text="${i + 1}"></span>
+            </span>
+
+            <a th:if="${paginaActual + 1 < velocidades.totalPages}"
+               th:href="@{/reportes/ver/{id}(id=${reporte.id},pagina=${paginaActual + 1},tamanoPagina=${tamanoPagina})}">&gt;</a>
+            <a th:if="${paginaActual + 1 < velocidades.totalPages}"
+               th:href="@{/reportes/ver/{id}(id=${reporte.id},pagina=${velocidades.totalPages - 1},tamanoPagina=${tamanoPagina})}">&raquo;</a>
+
+            <form method="get" th:action="@{/reportes/ver/{id}(id=${reporte.id})}" style="display:inline; margin-left:10px;">
+                <label>Registros por página:</label>
+                <select name="tamanoPagina" onchange="this.form.submit()">
+                    <option th:value="10"  th:selected="${tamanoPagina==10}">10</option>
+                    <option th:value="20"  th:selected="${tamanoPagina==20}">20</option>
+                    <option th:value="50"  th:selected="${tamanoPagina==50}">50</option>
+                    <option th:value="100" th:selected="${tamanoPagina==100}">100</option>
+                </select>
+                <input type="hidden" name="pagina" th:value="${paginaActual}" />
+            </form>
+        </div>
+
+    </div></body></html>
