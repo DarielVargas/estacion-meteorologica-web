@@ -296,6 +296,16 @@ public class VisualizadorController {
         return "redirect:/estaciones";
     }
 
+    @PostMapping("/estaciones/toggle")
+    public String toggleEstacion(@RequestParam String id) {
+        EstacionMeteorologica estacion = repositorioEstacion.findById(id).orElse(null);
+        if (estacion != null) {
+            estacion.setHabilitada(!estacion.isHabilitada());
+            repositorioEstacion.save(estacion);
+        }
+        return "redirect:/estaciones";
+    }
+
     // Mostrar formulario de edición
     @GetMapping("/estaciones/editar")
     public String mostrarEditarEstacion(@RequestParam String id, Model model) {

@@ -18,6 +18,9 @@ public class EstacionMeteorologica {
     @Column(name = "ubicacion")
     private String ubicacion;
 
+    @Column(name = "habilitada")
+    private boolean habilitada = true;
+
     // Constructor vacío (necesario para Thymeleaf)
     public EstacionMeteorologica() {
     }
@@ -50,4 +53,11 @@ public class EstacionMeteorologica {
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
     }
-}
+
+    public boolean isHabilitada() {
+        return habilitada;
+    }
+
+    public void setHabilitada(boolean habilitada) {
+        this.habilitada = habilitada;
+    }}
