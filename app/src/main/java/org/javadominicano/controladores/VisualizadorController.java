@@ -381,5 +381,4 @@ public class VisualizadorController {
         model.addAttribute("ultimaFechaPorEstacion", ultimaFechaPorEstacion);
 
         return "estaciones";
-    }
-}
+    }}
