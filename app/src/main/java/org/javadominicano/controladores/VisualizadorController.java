@@ -194,9 +194,9 @@ public class VisualizadorController {
             repositorioHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0).getHumedad()
         );
 
-        // Fecha límite para considerar una estación activa (30 segundos)
+        // Fecha límite para considerar una estación activa (12 segundos)
         Date ahora = new Date();
-        Date fechaLimite = new Date(ahora.getTime() - 30_000L);
+        Date fechaLimite = new Date(ahora.getTime() - 12_000L);
 
         List<EstacionMeteorologica> todasEstaciones = repositorioEstacion.findAll();
         int estacionesActivas = 0;
@@ -335,7 +335,7 @@ public class VisualizadorController {
     @GetMapping("/estaciones")
     public String listarEstaciones(Model model) {
         Date ahora = new Date();
-        Date fechaLimite = new Date(ahora.getTime() - 30_000L);
+        Date fechaLimite = new Date(ahora.getTime() - 12_000L);
 
         int estacionesActivas = 0;
         int estacionesInactivas = 0;
