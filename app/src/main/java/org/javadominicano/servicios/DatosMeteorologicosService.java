@@ -8,6 +8,14 @@ import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
 import org.javadominicano.repositorios.DatosVelocidadRepository;
 import org.javadominicano.visualizadorweb.repositorios.DatosHumedadRepository;
 import org.javadominicano.visualizadorweb.repositorios.DatosTemperaturaRepository;
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
+import org.javadominicano.repositorios.RepositorioDatosDireccion;
+import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
+import org.javadominicano.repositorios.RepositorioDatosVelocidad;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
+import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedadSuelo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class DatosMeteorologicosService {
@@ -25,6 +34,21 @@ public class DatosMeteorologicosService {
     private DatosHumedadRepository repoHumedad;
     @Autowired
     private DatosTemperaturaRepository repoTemperatura;
+
+    @Autowired
+    private RepositorioDatosVelocidad repoVelocidadUltimo;
+    @Autowired
+    private RepositorioDatosDireccion repoDireccionUltimo;
+    @Autowired
+    private RepositorioDatosPrecipitacion repoPrecipitacionUltimo;
+    @Autowired
+    private RepositorioDatosHumedad repoHumedadUltimo;
+    @Autowired
+    private RepositorioDatosTemperatura repoTemperaturaUltimo;
+    @Autowired
+    private RepositorioDatosPresion repoPresionUltimo;
+    @Autowired
+    private RepositorioDatosHumedadSuelo repoHumedadSueloUltimo;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -57,6 +81,22 @@ public class DatosMeteorologicosService {
         SerieDatos humidity = new SerieDatos(labels, humidityValues);
         SerieDatos temperature = new SerieDatos(labels, temperatureValues);
 
-        return new DatosMeteorologicosDTO(wind, humidity, temperature);
+        MedicionesRecientesDTO mediciones = new MedicionesRecientesDTO();
+        mediciones.setTemperatura(
+            repoTemperaturaUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getTemperatura());
+        mediciones.setHumedad(
+            repoHumedadUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getHumedad());
+        mediciones.setVelocidadViento(
+            repoVelocidadUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getVelocidad());
+        mediciones.setDireccionViento(
+            repoDireccionUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getDireccion());
+        mediciones.setPrecipitacion(
+            repoPrecipitacionUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getProbabilidad());
+        mediciones.setPresion(
+            repoPresionUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getPresion());
+        mediciones.setHumedadSuelo(
+            repoHumedadSueloUltimo.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0).getHumedad());
+
+        return new DatosMeteorologicosDTO(wind, humidity, temperature, mediciones);
     }
 }

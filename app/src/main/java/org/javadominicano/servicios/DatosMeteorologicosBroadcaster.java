@@ -15,7 +15,7 @@ public class DatosMeteorologicosBroadcaster {
     @Autowired
     private DatosMeteorologicosService service;
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 8000)
     public void enviarActualizacion() {
         DatosMeteorologicosDTO datos = service.obtenerDatos();
         messagingTemplate.convertAndSend("/topic/datos-meteorologicos", datos);

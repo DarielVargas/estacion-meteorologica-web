@@ -1,6 +1,7 @@
 package org.javadominicano.dto;
 
 import java.util.List;
+import org.javadominicano.visualizadorweb.dto.MedicionesRecientesDTO;
 
 public class DatosMeteorologicosDTO {
 
@@ -33,11 +34,14 @@ public class DatosMeteorologicosDTO {
     private SerieDatos wind;
     private SerieDatos humidity;
     private SerieDatos temperature;
+    private MedicionesRecientesDTO mediciones;
 
-    public DatosMeteorologicosDTO(SerieDatos wind, SerieDatos humidity, SerieDatos temperature) {
+    public DatosMeteorologicosDTO(SerieDatos wind, SerieDatos humidity, SerieDatos temperature,
+                                  MedicionesRecientesDTO mediciones) {
         this.wind = wind;
         this.humidity = humidity;
         this.temperature = temperature;
+        this.mediciones = mediciones;
     }
 
     public SerieDatos getWind() {
@@ -52,6 +56,10 @@ public class DatosMeteorologicosDTO {
         return temperature;
     }
 
+    public MedicionesRecientesDTO getMediciones() {
+        return mediciones;
+    }
+
     public void setWind(SerieDatos wind) {
         this.wind = wind;
     }
@@ -62,5 +70,9 @@ public class DatosMeteorologicosDTO {
 
     public void setTemperature(SerieDatos temperature) {
         this.temperature = temperature;
+    }
+
+    public void setMediciones(MedicionesRecientesDTO mediciones) {
+        this.mediciones = mediciones;
     }
 }
