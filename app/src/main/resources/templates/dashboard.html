@@ -8,6 +8,8 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2/dist/stomp.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -633,39 +635,33 @@ const temperatureChart = new Chart(temperatureCtx, {
 });
 
 // Función para actualizar las gráficas con datos reales desde el backend
-function updateCharts() {
-    fetch('/api/datos-meteorologicos')
-        .then(response => {
-            if (!response.ok) throw new Error('Respuesta no OK');
-            return response.json();
-        })
-        .then(data => {
-            // Actualizar gráfica de viento
-            windChart.data.labels = data.wind.labels;
-            windChart.data.datasets[0].data = data.wind.values;
-            windChart.update();
+function actualizarGraficas(data) {
+    windChart.data.labels = data.wind.labels;
+    windChart.data.datasets[0].data = data.wind.values;
+    windChart.update();
 
-            // Actualizar gráfica de humedad
-            humidityChart.data.labels = data.humidity.labels;
-            humidityChart.data.datasets[0].data = data.humidity.values;
-            humidityChart.update();
+    humidityChart.data.labels = data.humidity.labels;
+    humidityChart.data.datasets[0].data = data.humidity.values;
+    humidityChart.update();
 
-            // Actualizar gráfica de temperatura
-            temperatureChart.data.labels = data.temperature.labels;
-            temperatureChart.data.datasets[0].data = data.temperature.values;
-            temperatureChart.update();
-        })
-        .catch(error => {
-            console.error('Error al obtener datos meteorológicos:', error);
-            // Opcional: puedes dejar las gráficas con datos de ejemplo o mostrar un mensaje al usuario
-        });
+    temperatureChart.data.labels = data.temperature.labels;
+    temperatureChart.data.datasets[0].data = data.temperature.values;
+    temperatureChart.update();
 }
 
-// Actualizar gráficas cada 30 segundos con datos reales
-setInterval(updateCharts, 30000);
+let stompClient = null;
+function connect() {
+    const socket = new SockJS('/ws');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, () => {
+        stompClient.subscribe('/topic/datos-meteorologicos', message => {
+            const datos = JSON.parse(message.body);
+            actualizarGraficas(datos);
+        });
+    });
+}
 
-// Actualizar inmediatamente al cargar la página
-updateCharts();
+connect();
 </script>
 
 
