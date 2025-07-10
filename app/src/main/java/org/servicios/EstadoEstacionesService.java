@@ -35,7 +35,7 @@ public class EstadoEstacionesService {
 
     public List<EstadoEstacionDTO> obtenerEstados() {
         Date ahora = new Date();
-        Date limite = new Date(ahora.getTime() - 30_000L);
+        Date limite = new Date(ahora.getTime() - 12_000L);
         List<EstadoEstacionDTO> lista = new ArrayList<>();
         for (EstacionMeteorologica e : repoEstacion.findAll()) {
             Date ultima = obtenerUltimaFechaEstacion(e.getId());
