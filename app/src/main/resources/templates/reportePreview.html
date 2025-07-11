@@ -68,7 +68,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${velMin}"></span> |
                                 Máximo: <span th:text="${velMax}"></span> |
-                                Promedio: <span th:text="${velAvg}"></span>
+                                Promedio: <span th:text="${velAvg != null ? #numbers.formatDecimal(velAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -101,7 +101,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${preMin}"></span> |
                                 Máximo: <span th:text="${preMax}"></span> |
-                                Promedio: <span th:text="${preAvg}"></span>
+                                Promedio: <span th:text="${preAvg != null ? #numbers.formatDecimal(preAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -121,7 +121,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${humMin}"></span> |
                                 Máximo: <span th:text="${humMax}"></span> |
-                                Promedio: <span th:text="${humAvg}"></span>
+                                Promedio: <span th:text="${humAvg != null ? #numbers.formatDecimal(humAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -141,7 +141,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${temMin}"></span> |
                                 Máximo: <span th:text="${temMax}"></span> |
-                                Promedio: <span th:text="${temAvg}"></span>
+                                Promedio: <span th:text="${temAvg != null ? #numbers.formatDecimal(temAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -161,7 +161,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${presMin}"></span> |
                                 Máximo: <span th:text="${presMax}"></span> |
-                                Promedio: <span th:text="${presAvg}"></span>
+                                Promedio: <span th:text="${presAvg != null ? #numbers.formatDecimal(presAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -181,7 +181,7 @@
                             <td colspan="3">
                                 Mínimo: <span th:text="${humSMin}"></span> |
                                 Máximo: <span th:text="${humSMax}"></span> |
-                                Promedio: <span th:text="${humSAvg}"></span>
+                                Promedio: <span th:text="${humSAvg != null ? #numbers.formatDecimal(humSAvg, 1, 2) : ''}"></span>
                             </td>
                         </tr>
                     </tbody>
