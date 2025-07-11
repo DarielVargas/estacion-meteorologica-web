@@ -18,6 +18,11 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageImpl;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.TemplateEngine;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import java.io.ByteArrayOutputStream;
 import org.javadominicano.entidades.DatosDireccion;
 import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.entidades.DatosVelocidad;
@@ -56,6 +61,7 @@ public class ReportesController {
     @Autowired private RepositorioDatosPresion repoPresion;
     @Autowired private RepositorioDatosHumedadSuelo repoHumedadSuelo;
     @Autowired private RepositorioEstacionMeteorologica repoEstacion;
+    @Autowired private TemplateEngine templateEngine;
 
     private static List<ReporteGenerado> reportesGenerados = new ArrayList<>();
     private static int nextId = 1;
@@ -267,30 +273,76 @@ public class ReportesController {
         Timestamp inicio = Timestamp.valueOf(inicioLdt);
         Timestamp fin = Timestamp.valueOf(finLdt);
 
-        StringBuilder csv = new StringBuilder();
-        csv.append("VelocidadID,Velocidad,Fecha\n");
-        repoVelocidad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(v -> csv.append(v.getId()).append(',').append(v.getVelocidad()).append(',').append(v.getFecha()).append('\n'));
-        csv.append("\nDireccionID,Direccion,Fecha\n");
-        repoDireccion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(d -> csv.append(d.getId()).append(',').append(d.getDireccion()).append(',').append(d.getFecha()).append('\n'));
-        csv.append("\nPrecipitacionID,mm,Fecha\n");
-        repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> csv.append(p.getId()).append(',').append(p.getProbabilidad()).append(',').append(p.getFecha()).append('\n'));
-        csv.append("\nHumedadID,Humedad,Fecha\n");
-        repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(h -> csv.append(h.getId()).append(',').append(h.getHumedad()).append(',').append(h.getFecha()).append('\n'));
-        csv.append("\nTemperaturaID,Temperatura,Fecha\n");
-        repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(t -> csv.append(t.getId()).append(',').append(t.getTemperatura()).append(',').append(t.getFecha()).append('\n'));
-        csv.append("\nPresionID,Presion,Fecha\n");
-        repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> csv.append(p.getId()).append(',').append(p.getPresion()).append(',').append(p.getFecha()).append('\n'));
-        csv.append("\nHumedadSueloID,Humedad,Fecha\n");
-        repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(hs -> csv.append(hs.getId()).append(',').append(hs.getHumedad()).append(',').append(hs.getFecha()).append('\n'));
+        List<DatosVelocidad> velocidadesList = repoVelocidad.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosDireccion> direccionesList = repoDireccion.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosPrecipitacion> precipitacionesList = repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosHumedad> humedadesList = repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosTemperatura> temperaturasList = repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosPresion> presionesList = repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+        List<DatosHumedadSuelo> humedadesSueloList = repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin);
 
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".csv");
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(csv.toString());
+        Page<DatosVelocidad> velocidadesPage = new PageImpl<>(velocidadesList);
+        Page<DatosDireccion> direccionesPage = new PageImpl<>(direccionesList);
+        Page<DatosPrecipitacion> precipitacionesPage = new PageImpl<>(precipitacionesList);
+        Page<DatosHumedad> humedadesPage = new PageImpl<>(humedadesList);
+        Page<DatosTemperatura> temperaturasPage = new PageImpl<>(temperaturasList);
+        Page<DatosPresion> presionesPage = new PageImpl<>(presionesList);
+        Page<DatosHumedadSuelo> humedadesSueloPage = new PageImpl<>(humedadesSueloList);
+
+        DoubleSummaryStatistics statsVel = velocidadesList.stream().mapToDouble(DatosVelocidad::getVelocidad).summaryStatistics();
+        DoubleSummaryStatistics statsPre = precipitacionesList.stream().mapToDouble(DatosPrecipitacion::getProbabilidad).summaryStatistics();
+        DoubleSummaryStatistics statsHum = humedadesList.stream().mapToDouble(DatosHumedad::getHumedad).summaryStatistics();
+        DoubleSummaryStatistics statsTem = temperaturasList.stream().mapToDouble(DatosTemperatura::getTemperatura).summaryStatistics();
+        DoubleSummaryStatistics statsPreS = presionesList.stream().mapToDouble(DatosPresion::getPresion).summaryStatistics();
+        DoubleSummaryStatistics statsHumS = humedadesSueloList.stream().mapToDouble(DatosHumedadSuelo::getHumedad).summaryStatistics();
+
+        Context context = new Context();
+        context.setVariable("reporte", rep);
+        context.setVariable("velocidades", velocidadesPage);
+        context.setVariable("direcciones", direccionesPage);
+        context.setVariable("precipitaciones", precipitacionesPage);
+        context.setVariable("humedades", humedadesPage);
+        context.setVariable("temperaturas", temperaturasPage);
+        context.setVariable("presiones", presionesPage);
+        context.setVariable("humedadesSuelo", humedadesSueloPage);
+        context.setVariable("dirFrecuente", direccionesList.stream()
+                .collect(Collectors.groupingBy(d -> d.getDireccion(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null));
+        context.setVariable("velMin", statsVel.getCount() > 0 ? statsVel.getMin() : null);
+        context.setVariable("velMax", statsVel.getCount() > 0 ? statsVel.getMax() : null);
+        context.setVariable("velAvg", statsVel.getCount() > 0 ? statsVel.getAverage() : null);
+        context.setVariable("preMin", statsPre.getCount() > 0 ? statsPre.getMin() : null);
+        context.setVariable("preMax", statsPre.getCount() > 0 ? statsPre.getMax() : null);
+        context.setVariable("preAvg", statsPre.getCount() > 0 ? statsPre.getAverage() : null);
+        context.setVariable("humMin", statsHum.getCount() > 0 ? statsHum.getMin() : null);
+        context.setVariable("humMax", statsHum.getCount() > 0 ? statsHum.getMax() : null);
+        context.setVariable("humAvg", statsHum.getCount() > 0 ? statsHum.getAverage() : null);
+        context.setVariable("temMin", statsTem.getCount() > 0 ? statsTem.getMin() : null);
+        context.setVariable("temMax", statsTem.getCount() > 0 ? statsTem.getMax() : null);
+        context.setVariable("temAvg", statsTem.getCount() > 0 ? statsTem.getAverage() : null);
+        context.setVariable("presMin", statsPreS.getCount() > 0 ? statsPreS.getMin() : null);
+        context.setVariable("presMax", statsPreS.getCount() > 0 ? statsPreS.getMax() : null);
+        context.setVariable("presAvg", statsPreS.getCount() > 0 ? statsPreS.getAverage() : null);
+        context.setVariable("humSMin", statsHumS.getCount() > 0 ? statsHumS.getMin() : null);
+        context.setVariable("humSMax", statsHumS.getCount() > 0 ? statsHumS.getMax() : null);
+        context.setVariable("humSAvg", statsHumS.getCount() > 0 ? statsHumS.getAverage() : null);
+        context.setVariable("paginaActual", 0);
+        context.setVariable("tamanoPagina", velocidadesList.size());
+
+        String html = templateEngine.process("reportePreview", context);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfRendererBuilder builder = new PdfRendererBuilder();
+        builder.withHtmlContent(html, null);
+        builder.toStream(baos);
+        builder.run();
+
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".pdf");
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.getOutputStream().write(baos.toByteArray());
+    }
+
     }}

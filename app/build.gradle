@@ -28,6 +28,10 @@ dependencies {
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // Generación de PDF
+    implementation 'com.openhtmltopdf:openhtmltopdf-core:1.0.10'
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
