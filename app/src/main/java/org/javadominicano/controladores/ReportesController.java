@@ -18,6 +18,13 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.javadominicano.entidades.DatosDireccion;
+import org.javadominicano.entidades.DatosPrecipitacion;
+import org.javadominicano.entidades.DatosVelocidad;
+import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
+import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
+import org.javadominicano.visualizadorweb.entidades.DatosPresion;
+import org.javadominicano.visualizadorweb.entidades.DatosHumedadSuelo;
 
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
@@ -173,13 +180,13 @@ public class ReportesController {
         PageRequest pr = PageRequest.of(paginaActual, tamanoPagina, sort);
 
         model.addAttribute("reporte", rep);
-        Page<?> velocidadesPage = repoVelocidad.findByFechaBetween(inicio, fin, pr);
-        Page<?> direccionesPage = repoDireccion.findByFechaBetween(inicio, fin, pr);
-        Page<?> precipitacionesPage = repoPrecipitacion.findByFechaBetween(inicio, fin, pr);
-        Page<?> humedadesPage = repoHumedad.findByFechaBetween(inicio, fin, pr);
-        Page<?> temperaturasPage = repoTemperatura.findByFechaBetween(inicio, fin, pr);
-        Page<?> presionesPage = repoPresion.findByFechaBetween(inicio, fin, pr);
-        Page<?> humedadesSueloPage = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
+        Page<DatosVelocidad> velocidadesPage = repoVelocidad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosDireccion> direccionesPage = repoDireccion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPrecipitacion> precipitacionesPage = repoPrecipitacion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedad> humedadesPage = repoHumedad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosTemperatura> temperaturasPage = repoTemperatura.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPresion> presionesPage = repoPresion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedadSuelo> humedadesSueloPage = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
 
         // Calcular dirección más frecuente
         String dirFrecuente = repoDireccion
@@ -200,24 +207,18 @@ public class ReportesController {
         model.addAttribute("humedadesSuelo", humedadesSueloPage);
         model.addAttribute("dirFrecuente", dirFrecuente);
 
-        DoubleSummaryStatistics statsVel = repoVelocidad
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(v -> v.getVelocidad()).summaryStatistics();
-        DoubleSummaryStatistics statsPre = repoPrecipitacion
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(p -> p.getProbabilidad()).summaryStatistics();
-        DoubleSummaryStatistics statsHum = repoHumedad
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(h -> h.getHumedad()).summaryStatistics();
-        DoubleSummaryStatistics statsTem = repoTemperatura
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(t -> t.getTemperatura()).summaryStatistics();
-        DoubleSummaryStatistics statsPreS = repoPresion
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(p -> p.getPresion()).summaryStatistics();
-        DoubleSummaryStatistics statsHumS = repoHumedadSuelo
-                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
-                .stream().mapToDouble(hs -> hs.getHumedad()).summaryStatistics();
+        DoubleSummaryStatistics statsVel = velocidadesPage.getContent().stream()
+                .mapToDouble(DatosVelocidad::getVelocidad).summaryStatistics();
+        DoubleSummaryStatistics statsPre = precipitacionesPage.getContent().stream()
+                .mapToDouble(DatosPrecipitacion::getProbabilidad).summaryStatistics();
+        DoubleSummaryStatistics statsHum = humedadesPage.getContent().stream()
+                .mapToDouble(DatosHumedad::getHumedad).summaryStatistics();
+        DoubleSummaryStatistics statsTem = temperaturasPage.getContent().stream()
+                .mapToDouble(DatosTemperatura::getTemperatura).summaryStatistics();
+        DoubleSummaryStatistics statsPreS = presionesPage.getContent().stream()
+                .mapToDouble(DatosPresion::getPresion).summaryStatistics();
+        DoubleSummaryStatistics statsHumS = humedadesSueloPage.getContent().stream()
+                .mapToDouble(DatosHumedadSuelo::getHumedad).summaryStatistics();
 
         model.addAttribute("velMin", statsVel.getCount() > 0 ? statsVel.getMin() : null);
         model.addAttribute("velMax", statsVel.getCount() > 0 ? statsVel.getMax() : null);
