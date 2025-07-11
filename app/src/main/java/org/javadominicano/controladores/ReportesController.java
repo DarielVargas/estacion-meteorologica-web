@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import java.io.ByteArrayOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -267,30 +272,58 @@ public class ReportesController {
         Timestamp inicio = Timestamp.valueOf(inicioLdt);
         Timestamp fin = Timestamp.valueOf(finLdt);
 
-        StringBuilder csv = new StringBuilder();
-        csv.append("VelocidadID,Velocidad,Fecha\n");
+        StringBuilder content = new StringBuilder();
+        content.append("VelocidadID,Velocidad,Fecha\n");
         repoVelocidad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(v -> csv.append(v.getId()).append(',').append(v.getVelocidad()).append(',').append(v.getFecha()).append('\n'));
-        csv.append("\nDireccionID,Direccion,Fecha\n");
+            .forEach(v -> content.append(v.getId()).append(',').append(v.getVelocidad()).append(',').append(v.getFecha()).append('\n'));
+        content.append("\nDireccionID,Direccion,Fecha\n");
         repoDireccion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(d -> csv.append(d.getId()).append(',').append(d.getDireccion()).append(',').append(d.getFecha()).append('\n'));
-        csv.append("\nPrecipitacionID,mm,Fecha\n");
+            .forEach(d -> content.append(d.getId()).append(',').append(d.getDireccion()).append(',').append(d.getFecha()).append('\n'));
+        content.append("\nPrecipitacionID,mm,Fecha\n");
         repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> csv.append(p.getId()).append(',').append(p.getProbabilidad()).append(',').append(p.getFecha()).append('\n'));
-        csv.append("\nHumedadID,Humedad,Fecha\n");
+            .forEach(p -> content.append(p.getId()).append(',').append(p.getProbabilidad()).append(',').append(p.getFecha()).append('\n'));
+        content.append("\nHumedadID,Humedad,Fecha\n");
         repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(h -> csv.append(h.getId()).append(',').append(h.getHumedad()).append(',').append(h.getFecha()).append('\n'));
-        csv.append("\nTemperaturaID,Temperatura,Fecha\n");
+            .forEach(h -> content.append(h.getId()).append(',').append(h.getHumedad()).append(',').append(h.getFecha()).append('\n'));
+        content.append("\nTemperaturaID,Temperatura,Fecha\n");
         repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(t -> csv.append(t.getId()).append(',').append(t.getTemperatura()).append(',').append(t.getFecha()).append('\n'));
-        csv.append("\nPresionID,Presion,Fecha\n");
+            .forEach(t -> content.append(t.getId()).append(',').append(t.getTemperatura()).append(',').append(t.getFecha()).append('\n'));
+        content.append("\nPresionID,Presion,Fecha\n");
         repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> csv.append(p.getId()).append(',').append(p.getPresion()).append(',').append(p.getFecha()).append('\n'));
-        csv.append("\nHumedadSueloID,Humedad,Fecha\n");
+            .forEach(p -> content.append(p.getId()).append(',').append(p.getPresion()).append(',').append(p.getFecha()).append('\n'));
+        content.append("\nHumedadSueloID,Humedad,Fecha\n");
         repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(hs -> csv.append(hs.getId()).append(',').append(hs.getHumedad()).append(',').append(hs.getFecha()).append('\n'));
+            .forEach(hs -> content.append(hs.getId()).append(',').append(hs.getHumedad()).append(',').append(hs.getFecha()).append('\n'));
 
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".csv");
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(csv.toString());
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream stream = new PDPageContentStream(document, page);
+        stream.setFont(PDType1Font.HELVETICA, 12);
+
+        float y = 750;
+        for (String line : content.toString().split("\\n")) {
+            if (y < 50) {
+                stream.close();
+                page = new PDPage();
+                document.addPage(page);
+                stream = new PDPageContentStream(document, page);
+                stream.setFont(PDType1Font.HELVETICA, 12);
+                y = 750;
+            }
+            stream.beginText();
+            stream.newLineAtOffset(50, y);
+            stream.showText(line);
+            stream.endText();
+            y -= 15;
+        }
+        stream.close();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        document.save(baos);
+        document.close();
+
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".pdf");
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.getOutputStream().write(baos.toByteArray());
     }}
