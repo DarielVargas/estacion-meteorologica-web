@@ -14,7 +14,17 @@ import org.springframework.http.MediaType;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import java.util.DoubleSummaryStatistics;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.javadominicano.entidades.DatosDireccion;
+import org.javadominicano.entidades.DatosPrecipitacion;
+import org.javadominicano.entidades.DatosVelocidad;
+import org.javadominicano.visualizadorweb.entidades.DatosHumedad;
+import org.javadominicano.visualizadorweb.entidades.DatosTemperatura;
+import org.javadominicano.visualizadorweb.entidades.DatosPresion;
+import org.javadominicano.visualizadorweb.entidades.DatosHumedadSuelo;
 
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
 import org.javadominicano.repositorios.RepositorioDatosDireccion;
@@ -170,13 +180,64 @@ public class ReportesController {
         PageRequest pr = PageRequest.of(paginaActual, tamanoPagina, sort);
 
         model.addAttribute("reporte", rep);
-        model.addAttribute("velocidades", repoVelocidad.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("direcciones", repoDireccion.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("precipitaciones", repoPrecipitacion.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("humedades", repoHumedad.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("temperaturas", repoTemperatura.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("presiones", repoPresion.findByFechaBetween(inicio, fin, pr));
-        model.addAttribute("humedadesSuelo", repoHumedadSuelo.findByFechaBetween(inicio, fin, pr));
+        Page<DatosVelocidad> velocidadesPage = repoVelocidad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosDireccion> direccionesPage = repoDireccion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPrecipitacion> precipitacionesPage = repoPrecipitacion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedad> humedadesPage = repoHumedad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosTemperatura> temperaturasPage = repoTemperatura.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPresion> presionesPage = repoPresion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedadSuelo> humedadesSueloPage = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
+
+        // Calcular dirección más frecuente
+        String dirFrecuente = repoDireccion
+                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
+                .stream()
+                .collect(Collectors.groupingBy(d -> d.getDireccion(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        model.addAttribute("velocidades", velocidadesPage);
+        model.addAttribute("direcciones", direccionesPage);
+        model.addAttribute("precipitaciones", precipitacionesPage);
+        model.addAttribute("humedades", humedadesPage);
+        model.addAttribute("temperaturas", temperaturasPage);
+        model.addAttribute("presiones", presionesPage);
+        model.addAttribute("humedadesSuelo", humedadesSueloPage);
+        model.addAttribute("dirFrecuente", dirFrecuente);
+
+        DoubleSummaryStatistics statsVel = velocidadesPage.getContent().stream()
+                .mapToDouble(DatosVelocidad::getVelocidad).summaryStatistics();
+        DoubleSummaryStatistics statsPre = precipitacionesPage.getContent().stream()
+                .mapToDouble(DatosPrecipitacion::getProbabilidad).summaryStatistics();
+        DoubleSummaryStatistics statsHum = humedadesPage.getContent().stream()
+                .mapToDouble(DatosHumedad::getHumedad).summaryStatistics();
+        DoubleSummaryStatistics statsTem = temperaturasPage.getContent().stream()
+                .mapToDouble(DatosTemperatura::getTemperatura).summaryStatistics();
+        DoubleSummaryStatistics statsPreS = presionesPage.getContent().stream()
+                .mapToDouble(DatosPresion::getPresion).summaryStatistics();
+        DoubleSummaryStatistics statsHumS = humedadesSueloPage.getContent().stream()
+                .mapToDouble(DatosHumedadSuelo::getHumedad).summaryStatistics();
+
+        model.addAttribute("velMin", statsVel.getCount() > 0 ? statsVel.getMin() : null);
+        model.addAttribute("velMax", statsVel.getCount() > 0 ? statsVel.getMax() : null);
+        model.addAttribute("velAvg", statsVel.getCount() > 0 ? statsVel.getAverage() : null);
+        model.addAttribute("preMin", statsPre.getCount() > 0 ? statsPre.getMin() : null);
+        model.addAttribute("preMax", statsPre.getCount() > 0 ? statsPre.getMax() : null);
+        model.addAttribute("preAvg", statsPre.getCount() > 0 ? statsPre.getAverage() : null);
+        model.addAttribute("humMin", statsHum.getCount() > 0 ? statsHum.getMin() : null);
+        model.addAttribute("humMax", statsHum.getCount() > 0 ? statsHum.getMax() : null);
+        model.addAttribute("humAvg", statsHum.getCount() > 0 ? statsHum.getAverage() : null);
+        model.addAttribute("temMin", statsTem.getCount() > 0 ? statsTem.getMin() : null);
+        model.addAttribute("temMax", statsTem.getCount() > 0 ? statsTem.getMax() : null);
+        model.addAttribute("temAvg", statsTem.getCount() > 0 ? statsTem.getAverage() : null);
+        model.addAttribute("presMin", statsPreS.getCount() > 0 ? statsPreS.getMin() : null);
+        model.addAttribute("presMax", statsPreS.getCount() > 0 ? statsPreS.getMax() : null);
+        model.addAttribute("presAvg", statsPreS.getCount() > 0 ? statsPreS.getAverage() : null);
+        model.addAttribute("humSMin", statsHumS.getCount() > 0 ? statsHumS.getMin() : null);
+        model.addAttribute("humSMax", statsHumS.getCount() > 0 ? statsHumS.getMax() : null);
+        model.addAttribute("humSAvg", statsHumS.getCount() > 0 ? statsHumS.getAverage() : null);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("tamanoPagina", tamanoPagina);
 
