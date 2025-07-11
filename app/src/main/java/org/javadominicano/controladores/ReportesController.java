@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import java.util.DoubleSummaryStatistics;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
@@ -179,6 +181,16 @@ public class ReportesController {
         Page<?> presionesPage = repoPresion.findByFechaBetween(inicio, fin, pr);
         Page<?> humedadesSueloPage = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
 
+        // Calcular dirección más frecuente
+        String dirFrecuente = repoDireccion
+                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
+                .stream()
+                .collect(Collectors.groupingBy(d -> d.getDireccion(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
         model.addAttribute("velocidades", velocidadesPage);
         model.addAttribute("direcciones", direccionesPage);
         model.addAttribute("precipitaciones", precipitacionesPage);
@@ -186,6 +198,7 @@ public class ReportesController {
         model.addAttribute("temperaturas", temperaturasPage);
         model.addAttribute("presiones", presionesPage);
         model.addAttribute("humedadesSuelo", humedadesSueloPage);
+        model.addAttribute("dirFrecuente", dirFrecuente);
 
         DoubleSummaryStatistics statsVel = repoVelocidad
                 .findByFechaBetweenOrderByFechaDesc(inicio, fin)
