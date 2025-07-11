@@ -64,6 +64,13 @@
                             <td th:text="${v.velocidad}"></td>
                             <td th:text="${v.fecha}"></td>
                         </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${velMin}"></span> |
+                                Máximo: <span th:text="${velMax}"></span> |
+                                Promedio: <span th:text="${velAvg}"></span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -90,6 +97,13 @@
                             <td th:text="${#numbers.formatDecimal(p.probabilidad,1,1)}"></td>
                             <td th:text="${p.fecha}"></td>
                         </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${preMin}"></span> |
+                                Máximo: <span th:text="${preMax}"></span> |
+                                Promedio: <span th:text="${preAvg}"></span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -102,6 +116,13 @@
                             <td th:text="${h.id}"></td>
                             <td th:text="${h.humedad}"></td>
                             <td th:text="${h.fecha}"></td>
+                        </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${humMin}"></span> |
+                                Máximo: <span th:text="${humMax}"></span> |
+                                Promedio: <span th:text="${humAvg}"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -116,6 +137,13 @@
                             <td th:text="${t.temperatura}"></td>
                             <td th:text="${t.fecha}"></td>
                         </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${temMin}"></span> |
+                                Máximo: <span th:text="${temMax}"></span> |
+                                Promedio: <span th:text="${temAvg}"></span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -129,6 +157,13 @@
                             <td th:text="${p.presion}"></td>
                             <td th:text="${p.fecha}"></td>
                         </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${presMin}"></span> |
+                                Máximo: <span th:text="${presMax}"></span> |
+                                Promedio: <span th:text="${presAvg}"></span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -141,6 +176,13 @@
                             <td th:text="${hs.id}"></td>
                             <td th:text="${hs.humedad}"></td>
                             <td th:text="${hs.fecha}"></td>
+                        </tr>
+                        <tr style="background-color:#f0f0f0;font-weight:bold;">
+                            <td colspan="3">
+                                Mínimo: <span th:text="${humSMin}"></span> |
+                                Máximo: <span th:text="${humSMax}"></span> |
+                                Promedio: <span th:text="${humSAvg}"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
