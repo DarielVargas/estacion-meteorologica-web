@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import java.io.ByteArrayOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -23,6 +19,9 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import org.javadominicano.entidades.DatosDireccion;
 import org.javadominicano.entidades.DatosPrecipitacion;
 import org.javadominicano.entidades.DatosVelocidad;
@@ -61,6 +60,7 @@ public class ReportesController {
     @Autowired private RepositorioDatosPresion repoPresion;
     @Autowired private RepositorioDatosHumedadSuelo repoHumedadSuelo;
     @Autowired private RepositorioEstacionMeteorologica repoEstacion;
+    @Autowired private SpringTemplateEngine templateEngine;
 
     private static List<ReporteGenerado> reportesGenerados = new ArrayList<>();
     private static int nextId = 1;
@@ -272,56 +272,75 @@ public class ReportesController {
         Timestamp inicio = Timestamp.valueOf(inicioLdt);
         Timestamp fin = Timestamp.valueOf(finLdt);
 
-        StringBuilder content = new StringBuilder();
-        content.append("VelocidadID,Velocidad,Fecha\n");
-        repoVelocidad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(v -> content.append(v.getId()).append(',').append(v.getVelocidad()).append(',').append(v.getFecha()).append('\n'));
-        content.append("\nDireccionID,Direccion,Fecha\n");
-        repoDireccion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(d -> content.append(d.getId()).append(',').append(d.getDireccion()).append(',').append(d.getFecha()).append('\n'));
-        content.append("\nPrecipitacionID,mm,Fecha\n");
-        repoPrecipitacion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> content.append(p.getId()).append(',').append(p.getProbabilidad()).append(',').append(p.getFecha()).append('\n'));
-        content.append("\nHumedadID,Humedad,Fecha\n");
-        repoHumedad.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(h -> content.append(h.getId()).append(',').append(h.getHumedad()).append(',').append(h.getFecha()).append('\n'));
-        content.append("\nTemperaturaID,Temperatura,Fecha\n");
-        repoTemperatura.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(t -> content.append(t.getId()).append(',').append(t.getTemperatura()).append(',').append(t.getFecha()).append('\n'));
-        content.append("\nPresionID,Presion,Fecha\n");
-        repoPresion.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(p -> content.append(p.getId()).append(',').append(p.getPresion()).append(',').append(p.getFecha()).append('\n'));
-        content.append("\nHumedadSueloID,Humedad,Fecha\n");
-        repoHumedadSuelo.findByFechaBetweenOrderByFechaDesc(inicio, fin)
-            .forEach(hs -> content.append(hs.getId()).append(',').append(hs.getHumedad()).append(',').append(hs.getFecha()).append('\n'));
+        Sort sort = Sort.by("fecha").descending();
+        PageRequest pr = PageRequest.of(0, Integer.MAX_VALUE, sort);
 
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream stream = new PDPageContentStream(document, page);
-        stream.setFont(PDType1Font.HELVETICA, 12);
+        Page<DatosVelocidad> velocidadesPage = repoVelocidad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosDireccion> direccionesPage = repoDireccion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPrecipitacion> precipitacionesPage = repoPrecipitacion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedad> humedadesPage = repoHumedad.findByFechaBetween(inicio, fin, pr);
+        Page<DatosTemperatura> temperaturasPage = repoTemperatura.findByFechaBetween(inicio, fin, pr);
+        Page<DatosPresion> presionesPage = repoPresion.findByFechaBetween(inicio, fin, pr);
+        Page<DatosHumedadSuelo> humedadesSueloPage = repoHumedadSuelo.findByFechaBetween(inicio, fin, pr);
 
-        float y = 750;
-        for (String line : content.toString().split("\\n")) {
-            if (y < 50) {
-                stream.close();
-                page = new PDPage();
-                document.addPage(page);
-                stream = new PDPageContentStream(document, page);
-                stream.setFont(PDType1Font.HELVETICA, 12);
-                y = 750;
-            }
-            stream.beginText();
-            stream.newLineAtOffset(50, y);
-            stream.showText(line);
-            stream.endText();
-            y -= 15;
-        }
-        stream.close();
+        String dirFrecuente = repoDireccion
+                .findByFechaBetweenOrderByFechaDesc(inicio, fin)
+                .stream()
+                .collect(Collectors.groupingBy(d -> d.getDireccion(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        DoubleSummaryStatistics statsVel = velocidadesPage.getContent().stream()
+                .mapToDouble(DatosVelocidad::getVelocidad).summaryStatistics();
+        DoubleSummaryStatistics statsPre = precipitacionesPage.getContent().stream()
+                .mapToDouble(DatosPrecipitacion::getProbabilidad).summaryStatistics();
+        DoubleSummaryStatistics statsHum = humedadesPage.getContent().stream()
+                .mapToDouble(DatosHumedad::getHumedad).summaryStatistics();
+        DoubleSummaryStatistics statsTem = temperaturasPage.getContent().stream()
+                .mapToDouble(DatosTemperatura::getTemperatura).summaryStatistics();
+        DoubleSummaryStatistics statsPreS = presionesPage.getContent().stream()
+                .mapToDouble(DatosPresion::getPresion).summaryStatistics();
+        DoubleSummaryStatistics statsHumS = humedadesSueloPage.getContent().stream()
+                .mapToDouble(DatosHumedadSuelo::getHumedad).summaryStatistics();
+
+        Context ctx = new Context();
+        ctx.setVariable("reporte", rep);
+        ctx.setVariable("velocidades", velocidadesPage);
+        ctx.setVariable("direcciones", direccionesPage);
+        ctx.setVariable("precipitaciones", precipitacionesPage);
+        ctx.setVariable("humedades", humedadesPage);
+        ctx.setVariable("temperaturas", temperaturasPage);
+        ctx.setVariable("presiones", presionesPage);
+        ctx.setVariable("humedadesSuelo", humedadesSueloPage);
+        ctx.setVariable("dirFrecuente", dirFrecuente);
+        ctx.setVariable("velMin", statsVel.getCount() > 0 ? statsVel.getMin() : null);
+        ctx.setVariable("velMax", statsVel.getCount() > 0 ? statsVel.getMax() : null);
+        ctx.setVariable("velAvg", statsVel.getCount() > 0 ? statsVel.getAverage() : null);
+        ctx.setVariable("preMin", statsPre.getCount() > 0 ? statsPre.getMin() : null);
+        ctx.setVariable("preMax", statsPre.getCount() > 0 ? statsPre.getMax() : null);
+        ctx.setVariable("preAvg", statsPre.getCount() > 0 ? statsPre.getAverage() : null);
+        ctx.setVariable("humMin", statsHum.getCount() > 0 ? statsHum.getMin() : null);
+        ctx.setVariable("humMax", statsHum.getCount() > 0 ? statsHum.getMax() : null);
+        ctx.setVariable("humAvg", statsHum.getCount() > 0 ? statsHum.getAverage() : null);
+        ctx.setVariable("temMin", statsTem.getCount() > 0 ? statsTem.getMin() : null);
+        ctx.setVariable("temMax", statsTem.getCount() > 0 ? statsTem.getMax() : null);
+        ctx.setVariable("temAvg", statsTem.getCount() > 0 ? statsTem.getAverage() : null);
+        ctx.setVariable("presMin", statsPreS.getCount() > 0 ? statsPreS.getMin() : null);
+        ctx.setVariable("presMax", statsPreS.getCount() > 0 ? statsPreS.getMax() : null);
+        ctx.setVariable("presAvg", statsPreS.getCount() > 0 ? statsPreS.getAverage() : null);
+        ctx.setVariable("humSMin", statsHumS.getCount() > 0 ? statsHumS.getMin() : null);
+        ctx.setVariable("humSMax", statsHumS.getCount() > 0 ? statsHumS.getMax() : null);
+        ctx.setVariable("humSAvg", statsHumS.getCount() > 0 ? statsHumS.getAverage() : null);
+
+        String html = templateEngine.process("reportePreview", ctx);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos);
-        document.close();
+        PdfRendererBuilder builder = new PdfRendererBuilder();
+        builder.withHtmlContent(html, "");
+        builder.toStream(baos);
+        builder.run();
 
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + id + ".pdf");
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
