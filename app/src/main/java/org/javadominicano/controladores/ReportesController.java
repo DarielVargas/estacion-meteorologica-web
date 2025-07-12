@@ -338,7 +338,8 @@ public class ReportesController {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PdfRendererBuilder builder = new PdfRendererBuilder();
-        builder.withHtmlContent(html, "");
+        builder.withHtmlContent(html, null);
+        builder.useFastMode();
         builder.toStream(baos);
         builder.run();
 
