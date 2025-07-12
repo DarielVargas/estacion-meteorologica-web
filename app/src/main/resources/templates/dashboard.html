@@ -451,23 +451,23 @@
 
     <div class="info-bar">
         <div class="section">
-            <div class="number" th:text="${#lists.size(estaciones)}">0</div>
+            <div class="number" id="totalStations" th:text="${#lists.size(estaciones)}">0</div>
             <div class="label">Total de estaciones</div>
         </div>
         <div class="section">
-            <div class="number" th:text="${estacionesActivas}">0</div>
+            <div class="number" id="activeStations" th:text="${estacionesActivas}">0</div>
             <div class="label">Estaciones activas</div>
         </div>
         <div class="section">
-            <div class="number" th:text="${estacionesInactivas}">0</div>
+            <div class="number" id="inactiveStations" th:text="${estacionesInactivas}">0</div>
             <div class="label">Estaciones inactivas</div>
         </div>
     </div>
-    <div th:if="${estacionesInactivas == 0}" class="info-bar-message success">
+    <div id="msgAllOk" class="info-bar-message success" th:style="${estacionesInactivas > 0 ? 'display:none' : ''}">
         <span class="checkmark">&#10004;</span>
         <strong>Todas las estaciones están comunicando</strong>
     </div>
-    <div th:if="${estacionesInactivas > 0}" class="info-bar-message inactive" th:text="'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'">
+    <div id="msgInactive" class="info-bar-message inactive" th:text="'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'" th:style="${estacionesInactivas > 0 ? '' : 'display:none'}">
         Hay una estación que no está comunicando (EST001)
     </div>
 
@@ -683,6 +683,28 @@ updateCharts();
             document.getElementById('rainValue').textContent = data.precipitacion.toFixed(1) + 'mm';
             document.getElementById('pressValue').textContent = data.presion + ' hPa';
             document.getElementById('soilHumValue').textContent = data.humedadSuelo + '%';
+        });
+        stomp.subscribe('/topic/estado-estaciones', (msg) => {
+            const est = JSON.parse(msg.body);
+            document.getElementById('totalStations').textContent = est.total;
+            document.getElementById('activeStations').textContent = est.activas;
+            document.getElementById('inactiveStations').textContent = est.inactivas;
+            const msgAllOk = document.getElementById('msgAllOk');
+            const msgInactive = document.getElementById('msgInactive');
+            if (est.inactivas === 0) {
+                if (msgAllOk) msgAllOk.style.display = 'block';
+                if (msgInactive) msgInactive.style.display = 'none';
+            } else {
+                if (msgAllOk) msgAllOk.style.display = 'none';
+                if (msgInactive) {
+                    msgInactive.style.display = 'block';
+                    if (est.primeraInactiva) {
+                        msgInactive.textContent = 'Hay una estación que no está comunicando (' + est.primeraInactiva + ')';
+                    } else {
+                        msgInactive.textContent = 'Hay estaciones que no están comunicando';
+                    }
+                }
+            }
         });
     });
 </script>
