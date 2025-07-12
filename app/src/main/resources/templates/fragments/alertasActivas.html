@@ -74,6 +74,17 @@
         var remove = function() { card.remove(); };
         btn.addEventListener('click', remove);
         setTimeout(remove, 7000);
+
+        // Registrar notificación en la base de datos
+        fetch('/api/notificaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                estacion: nombre,
+                mensaje: span.textContent,
+                estado: activa ? 'ACTIVA' : 'INACTIVA'
+            })
+        }).catch(function(err) { console.error(err); });
     }
 
     function checkEstados() {
