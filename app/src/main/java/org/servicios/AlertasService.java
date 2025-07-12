@@ -11,6 +11,8 @@ import org.javadominicano.dto.AlertaActivaDTO;
 import org.javadominicano.repositorios.RepositorioAlerta;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
+import org.javadominicano.repositorios.RepositorioAlertaMedicion;
+import org.javadominicano.entidades.AlertaMedicion;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosPresion;
@@ -41,6 +43,9 @@ public class AlertasService {
     @Autowired
     private RepositorioDatosHumedadSuelo repoHumedadSuelo;
 
+    @Autowired
+    private RepositorioAlertaMedicion repoAlertaMedicion;
+
     public List<AlertaActivaDTO> obtenerAlertasActivas() {
         List<AlertaActivaDTO> lista = new ArrayList<>();
 
@@ -51,12 +56,12 @@ public class AlertasService {
         DatosPresion pres      = repoPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
         DatosHumedadSuelo hs   = repoHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
 
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha(), temp.getEstacionId());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha(), hum.getEstacionId());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha(), vel.getEstacionId());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha(), pre.getEstacionId());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha(), pres.getEstacionId());
+        agregarAlertaActiva(lista, repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha(), hs.getEstacionId());
 
         return lista;
     }
@@ -69,13 +74,21 @@ public class AlertasService {
         return textos;
     }
 
-    private void agregarAlertaActiva(List<AlertaActivaDTO> lista, Alerta alerta, double valor, Timestamp fecha) {
+    private void agregarAlertaActiva(List<AlertaActivaDTO> lista, Alerta alerta, double valor, Timestamp fecha, String estacion) {
         if (chequearAlerta(alerta, valor)) {
             AlertaActivaDTO dto = new AlertaActivaDTO();
             dto.setAlerta(alerta);
             dto.setValorActual(valor);
             dto.setFecha(fecha);
             lista.add(dto);
+
+            AlertaMedicion registro = new AlertaMedicion();
+            registro.setEstacion(estacion);
+            registro.setParametro(alerta != null ? alerta.getNombre() : null);
+            registro.setValorActual(valor);
+            registro.setValorUmbral(alerta != null ? alerta.getUmbral() : 0);
+            registro.setMensaje(formatoAlerta(alerta));
+            repoAlertaMedicion.save(registro);
         }
     }
 
