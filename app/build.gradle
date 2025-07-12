@@ -28,6 +28,9 @@ dependencies {
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // Generación de PDFs
+    implementation 'org.apache.pdfbox:pdfbox:2.0.27'
+
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
