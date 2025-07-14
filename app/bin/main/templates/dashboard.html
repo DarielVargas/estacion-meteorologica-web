@@ -684,6 +684,16 @@ updateCharts();
             document.getElementById('pressValue').textContent = data.presion + ' hPa';
             document.getElementById('soilHumValue').textContent = data.humedadSuelo + '%';
         });
+
+        stomp.subscribe('/topic/estadoEstaciones', (msg) => {
+            const data = JSON.parse(msg.body);
+            const nums = document.querySelectorAll('.info-bar .section .number');
+            if (nums.length >= 3) {
+                nums[0].textContent = data.total;
+                nums[1].textContent = data.activas;
+                nums[2].textContent = data.inactivas;
+            }
+        });
     });
 </script>
 
