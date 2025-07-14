@@ -19,7 +19,7 @@ public class AlertasBroadcastService {
     public void broadcastAlertas() {
         messagingTemplate.convertAndSend(
             "/topic/alertas",
-            alertasService.obtenerAlertasActivasTexto()
+            alertasService.obtenerAlertasActivasMensaje()
         );
     }
 }

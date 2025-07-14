@@ -69,6 +69,18 @@ public class AlertasService {
         return textos;
     }
 
+    public List<org.javadominicano.dto.AlertaMensajeDTO> obtenerAlertasActivasMensaje() {
+        List<org.javadominicano.dto.AlertaMensajeDTO> mensajes = new ArrayList<>();
+        for (AlertaActivaDTO dto : obtenerAlertasActivas()) {
+            org.javadominicano.dto.AlertaMensajeDTO m = new org.javadominicano.dto.AlertaMensajeDTO();
+            m.setId(dto.getAlerta().getId());
+            m.setFecha(dto.getFecha().getTime());
+            m.setTexto(formatoAlerta(dto.getAlerta()));
+            mensajes.add(m);
+        }
+        return mensajes;
+    }
+
     private void agregarAlertaActiva(List<AlertaActivaDTO> lista, Alerta alerta, double valor, Timestamp fecha) {
         if (chequearAlerta(alerta, valor)) {
             AlertaActivaDTO dto = new AlertaActivaDTO();

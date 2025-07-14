@@ -76,9 +76,10 @@
         setTimeout(remove, 7000);
     }
 
-    function mostrarAlertaTexto(texto) {
+    function mostrarAlertaTexto(texto, key) {
         var cont = document.getElementById('alertContainer');
         if (!cont) return;
+        if (key && localStorage.getItem(key)) return;
         var card = document.createElement('div');
         card.className = 'alert-card danger';
         var span = document.createElement('span');
@@ -90,7 +91,7 @@
         card.appendChild(span);
         card.appendChild(btn);
         cont.appendChild(card);
-        var remove = function() { card.remove(); };
+        var remove = function() { if(key) localStorage.setItem(key,'shown'); card.remove(); };
         btn.addEventListener('click', remove);
         setTimeout(remove, 7000);
     }
@@ -119,8 +120,11 @@
     const alertStomp = Stomp.over(alertSocket);
     alertStomp.connect({}, function() {
         alertStomp.subscribe('/topic/alertas', function(msg) {
-            var textos = JSON.parse(msg.body);
-            textos.forEach(mostrarAlertaTexto);
+            var datos = JSON.parse(msg.body);
+            datos.forEach(function(a) {
+                var key = 'alert_' + a.id + '_' + a.fecha;
+                mostrarAlertaTexto(a.texto, key);
+            });
         });
     });
     /*]]>*/
