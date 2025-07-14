@@ -15,6 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -67,5 +71,41 @@ public class ActividadController {
         model.addAttribute("tamanoPagina", tamanoPagina);
 
         return "actividad";
+    }
+
+    @GetMapping("/actividad/csv")
+    public void descargarActividad(
+            @RequestParam(value = "fecha", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(value = "estacion", required = false) String estacion,
+            HttpServletResponse response) throws java.io.IOException {
+
+        List<Notificacion> notificaciones = List.of();
+
+        if (fecha != null) {
+            LocalDateTime start = fecha.atStartOfDay();
+            LocalDateTime end = start.plusDays(1);
+            Timestamp inicio = Timestamp.valueOf(start);
+            Timestamp fin = Timestamp.valueOf(end);
+
+            if (estacion != null && !"all".equals(estacion)) {
+                notificaciones = repoNotificacion.findByEstacionAndFechaBetweenOrderByFechaDesc(estacion, inicio, fin);
+            } else {
+                notificaciones = repoNotificacion.findByFechaBetweenOrderByFechaDesc(inicio, fin);
+            }
+        }
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("Fecha y hora,Estado,Mensaje\n");
+        for (Notificacion n : notificaciones) {
+            csv.append(n.getFecha()).append(',')
+               .append(n.getEstado()).append(',')
+               .append(n.getMensaje().replace("\n", " "))
+               .append('\n');
+        }
+
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=actividad_estaciones.csv");
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.getWriter().write(csv.toString());
     }
 }

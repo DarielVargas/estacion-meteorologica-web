@@ -28,6 +28,14 @@
         .pagination { margin-top: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
         .pagination a, .pagination span { padding: 6px 12px; background: white; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: black; }
         .pagination .actual { background-color: #007b00; color: white; font-weight: bold; }
+        .download-btn {
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -54,6 +62,9 @@
         <h1>Actividad de Estaciones</h1>
         <div th:replace="fragments/alertasActivas :: alertas"></div>
         <p class="subtitle">Listado de cambios de estado</p>
+        <div style="text-align:right; margin-bottom:10px;">
+            <a th:href="@{/actividad/csv(fecha=${#temporals.format(fecha,'yyyy-MM-dd')},estacion=${estacionSeleccionada})}" class="download-btn">Descargar</a>
+        </div>
         <table>
             <thead>
                 <tr>
