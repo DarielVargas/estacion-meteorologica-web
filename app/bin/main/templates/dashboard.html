@@ -463,12 +463,13 @@
             <div class="label">Estaciones inactivas</div>
         </div>
     </div>
-    <div th:if="${estacionesInactivas == 0}" class="info-bar-message success">
-        <span class="checkmark">&#10004;</span>
-        <strong>Todas las estaciones están comunicando</strong>
-    </div>
-    <div th:if="${estacionesInactivas > 0}" class="info-bar-message inactive" th:text="'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'">
-        Hay una estación que no está comunicando (EST001)
+    <div id="estadoMensaje" class="info-bar-message"
+         th:classappend="${estacionesInactivas == 0} ? ' success' : ' inactive'">
+        <span id="estadoCheck" class="checkmark" th:if="${estacionesInactivas == 0}">&#10004;</span>
+        <strong id="estadoTexto"
+                th:text="${estacionesInactivas == 0} ? 'Todas las estaciones están comunicando' : 'Hay una estación que no está comunicando (' + ${estacionesInactivasList.get(0).id} + ')'">
+            Texto estado
+        </strong>
     </div>
 
 </div>
@@ -692,6 +693,22 @@ updateCharts();
                 nums[0].textContent = data.total;
                 nums[1].textContent = data.activas;
                 nums[2].textContent = data.inactivas;
+            }
+            const msgDiv = document.getElementById('estadoMensaje');
+            const textEl = document.getElementById('estadoTexto');
+            const checkEl = document.getElementById('estadoCheck');
+            if (msgDiv && textEl) {
+                if (data.inactivas === 0) {
+                    msgDiv.classList.remove('inactive');
+                    msgDiv.classList.add('success');
+                    textEl.textContent = 'Todas las estaciones están comunicando';
+                    if (checkEl) checkEl.style.display = 'inline';
+                } else {
+                    msgDiv.classList.remove('success');
+                    msgDiv.classList.add('inactive');
+                    textEl.textContent = 'Hay una estación que no está comunicando (' + data.primeraInactivaId + ')';
+                    if (checkEl) checkEl.style.display = 'none';
+                }
             }
         });
     });
