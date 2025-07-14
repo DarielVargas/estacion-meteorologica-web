@@ -22,6 +22,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AlertasService {
@@ -40,6 +43,9 @@ public class AlertasService {
     private RepositorioDatosPresion repoPresion;
     @Autowired
     private RepositorioDatosHumedadSuelo repoHumedadSuelo;
+
+    private final Map<Long, Double> ultimoUmbral = new ConcurrentHashMap<>();
+    private final Set<Long> alertasDisparadas = ConcurrentHashMap.newKeySet();
 
     public List<AlertaActivaDTO> obtenerAlertasActivas() {
         List<AlertaActivaDTO> lista = new ArrayList<>();
@@ -70,12 +76,23 @@ public class AlertasService {
     }
 
     private void agregarAlertaActiva(List<AlertaActivaDTO> lista, Alerta alerta, double valor, Timestamp fecha) {
-        if (chequearAlerta(alerta, valor)) {
+        if (alerta == null) {
+            return;
+        }
+
+        Double prev = ultimoUmbral.get(alerta.getId());
+        if (prev == null || Double.compare(prev, alerta.getUmbral()) != 0) {
+            ultimoUmbral.put(alerta.getId(), alerta.getUmbral());
+            alertasDisparadas.remove(alerta.getId());
+        }
+
+        if (chequearAlerta(alerta, valor) && !alertasDisparadas.contains(alerta.getId())) {
             AlertaActivaDTO dto = new AlertaActivaDTO();
             dto.setAlerta(alerta);
             dto.setValorActual(valor);
             dto.setFecha(fecha);
             lista.add(dto);
+            alertasDisparadas.add(alerta.getId());
         }
     }
 
