@@ -267,39 +267,45 @@
         const nombreInput = document.getElementById('modal-nombre');
         const ubicacionInput = document.getElementById('modal-ubicacion');
 
-        if (openNewBtn) {
-            openNewBtn.addEventListener('click', function () {
-                modal.classList.add('active');
-                title.textContent = 'Nueva Estación Meteorológica';
-                form.action = '/estaciones/nueva';
-                idInput.readOnly = false;
-                idInput.value = '';
-                nombreInput.value = '';
-                ubicacionInput.value = '';
-            });
+        function openModalForNew() {
+            modal.classList.add('active');
+            title.textContent = 'Nueva Estación Meteorológica';
+            form.action = '/estaciones/nueva';
+            idInput.readOnly = false;
+            idInput.value = '';
+            nombreInput.value = '';
+            ubicacionInput.value = '';
         }
 
-        document.querySelectorAll('.open-edit').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                modal.classList.add('active');
-                title.textContent = 'Editar Estación Meteorológica';
-                form.action = '/estaciones/editar';
-                idInput.value = btn.dataset.id;
-                idInput.readOnly = true;
-                nombreInput.value = btn.dataset.nombre;
-                ubicacionInput.value = btn.dataset.ubicacion;
-            });
-        });
+        function openModalForEdit(btn) {
+            modal.classList.add('active');
+            title.textContent = 'Editar Estación Meteorológica';
+            form.action = '/estaciones/editar';
+            idInput.value = btn.getAttribute('data-id');
+            idInput.readOnly = true;
+            nombreInput.value = btn.getAttribute('data-nombre');
+            ubicacionInput.value = btn.getAttribute('data-ubicacion');
+        }
 
-        document.querySelectorAll('.delete-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                if (confirm('¿Desea eliminar esta estación?')) {
-                    const deleteForm = document.getElementById('deleteForm');
-                    const deleteId = document.getElementById('deleteId');
-                    deleteId.value = btn.dataset.id;
-                    deleteForm.submit();
-                }
-            });
+        function deleteStation(btn) {
+            if (confirm('¿Desea eliminar esta estación?')) {
+                const deleteForm = document.getElementById('deleteForm');
+                const deleteId = document.getElementById('deleteId');
+                deleteId.value = btn.getAttribute('data-id');
+                deleteForm.submit();
+            }
+        }
+
+        if (openNewBtn) {
+            openNewBtn.addEventListener('click', openModalForNew);
+        }
+
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('open-edit')) {
+                openModalForEdit(event.target);
+            } else if (event.target.classList.contains('delete-btn')) {
+                deleteStation(event.target);
+            }
         });
 
         if (closeBtn) {
