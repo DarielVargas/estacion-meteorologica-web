@@ -36,6 +36,9 @@
 
     <div id="estadoAlertContainer"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script th:inline="javascript">
     /*<![CDATA[*/
     document.querySelectorAll('#alertContainer .alert-card').forEach(function(card) {
@@ -95,6 +98,77 @@
 
     checkEstados();
     setInterval(checkEstados, 12000);
+
+    function mensajeAlerta(a) {
+        switch(a.alerta.nombre) {
+            case 'Temperatura': return 'Umbral de temperatura superado';
+            case 'Humedad': return 'Umbral de humedad superado';
+            case 'VelocidadViento': return 'Umbral de velocidad de viento superado';
+            case 'Precipitacion': return 'Umbral de precipitación superado';
+            case 'Presion': return 'Umbral de presión superado';
+            case 'HumedadSuelo': return 'Umbral de humedad del suelo superado';
+            default: return 'Umbral superado';
+        }
+    }
+
+    function agregarAlerta(a) {
+        var root = document.currentScript.parentElement;
+        var cont = root.querySelector('#alertContainer');
+        var estadoCont = root.querySelector('#estadoAlertContainer');
+        if (!cont) {
+            cont = document.createElement('div');
+            cont.id = 'alertContainer';
+            if (estadoCont) root.insertBefore(cont, estadoCont); else root.appendChild(cont);
+        }
+
+        var key = 'alert_' + a.alerta.id + '_' + new Date(a.fecha).getTime();
+        if (localStorage.getItem(key) || cont.querySelector('[data-key="' + key + '"]')) {
+            return;
+        }
+
+        var card = document.createElement('div');
+        card.className = 'alert-card danger';
+        card.setAttribute('data-key', key);
+        var span = document.createElement('span');
+        span.textContent = mensajeAlerta(a);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'close-alert';
+        btn.innerHTML = '&times;';
+        card.appendChild(span);
+        card.appendChild(btn);
+        cont.appendChild(card);
+
+        var remove = function() { card.remove(); };
+        btn.addEventListener('click', function(){ localStorage.setItem(key, 'shown'); remove(); });
+        setTimeout(function(){ localStorage.setItem(key, 'shown'); remove(); }, 7000);
+    }
+
+    function actualizarAlertas(lista) {
+        var root = document.currentScript.parentElement;
+        var cont = root.querySelector('#alertContainer');
+        var keys = [];
+        lista.forEach(function(a){
+            var key = 'alert_' + a.alerta.id + '_' + new Date(a.fecha).getTime();
+            keys.push(key);
+            agregarAlerta(a);
+        });
+        if (cont) {
+            cont.querySelectorAll('.alert-card').forEach(function(el){
+                if(keys.indexOf(el.getAttribute('data-key')) === -1){
+                    el.remove();
+                }
+            });
+        }
+    }
+
+    var socketA = new SockJS('/ws');
+    var stompA = Stomp.over(socketA);
+    stompA.connect({}, function(){
+        stompA.subscribe('/topic/alertas', function(msg){
+            actualizarAlertas(JSON.parse(msg.body));
+        });
+    });
     /*]]>*/
     </script>
 </div>
