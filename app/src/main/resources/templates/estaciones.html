@@ -256,55 +256,57 @@
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 </form>
 
-<script>
-    const modal = document.getElementById('stationModal');
-    const openNewBtn = document.getElementById('openNew');
-    const closeBtn = document.getElementById('closeModal');
-    const form = document.getElementById('stationForm');
-    const title = document.getElementById('modalTitle');
-    const idInput = document.getElementById('modal-id');
-    const nombreInput = document.getElementById('modal-nombre');
-    const ubicacionInput = document.getElementById('modal-ubicacion');
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('stationModal');
+        const openNewBtn = document.getElementById('openNew');
+        const closeBtn = document.getElementById('closeModal');
+        const form = document.getElementById('stationForm');
+        const title = document.getElementById('modalTitle');
+        const idInput = document.getElementById('modal-id');
+        const nombreInput = document.getElementById('modal-nombre');
+        const ubicacionInput = document.getElementById('modal-ubicacion');
 
-    if (openNewBtn) {
-        openNewBtn.addEventListener('click', () => {
-            modal.classList.add('active');
-            title.textContent = 'Nueva Estación Meteorológica';
-            form.action = '/estaciones/nueva';
-            idInput.readOnly = false;
-            idInput.value = '';
-            nombreInput.value = '';
-            ubicacionInput.value = '';
-        });
-    }
+        if (openNewBtn) {
+            openNewBtn.addEventListener('click', function () {
+                modal.classList.add('active');
+                title.textContent = 'Nueva Estación Meteorológica';
+                form.action = '/estaciones/nueva';
+                idInput.readOnly = false;
+                idInput.value = '';
+                nombreInput.value = '';
+                ubicacionInput.value = '';
+            });
+        }
 
-    document.querySelectorAll('.open-edit').forEach(btn => {
-        btn.addEventListener('click', () => {
-            modal.classList.add('active');
-            title.textContent = 'Editar Estación Meteorológica';
-            form.action = '/estaciones/editar';
-            idInput.value = btn.dataset.id;
-            idInput.readOnly = true;
-            nombreInput.value = btn.dataset.nombre;
-            ubicacionInput.value = btn.dataset.ubicacion;
+        document.querySelectorAll('.open-edit').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                modal.classList.add('active');
+                title.textContent = 'Editar Estación Meteorológica';
+                form.action = '/estaciones/editar';
+                idInput.value = btn.dataset.id;
+                idInput.readOnly = true;
+                nombreInput.value = btn.dataset.nombre;
+                ubicacionInput.value = btn.dataset.ubicacion;
+            });
         });
+
+        document.querySelectorAll('.delete-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (confirm('¿Desea eliminar esta estación?')) {
+                    const deleteForm = document.getElementById('deleteForm');
+                    const deleteId = document.getElementById('deleteId');
+                    deleteId.value = btn.dataset.id;
+                    deleteForm.submit();
+                }
+            });
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                modal.classList.remove('active');
+            });
+        }
     });
-
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (confirm('¿Desea eliminar esta estación?')) {
-                const deleteForm = document.getElementById('deleteForm');
-                const deleteId = document.getElementById('deleteId');
-                deleteId.value = btn.dataset.id;
-                deleteForm.submit();
-            }
-        });
-    });
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-    }
 </script>
 </body></html>
