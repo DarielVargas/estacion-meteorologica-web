@@ -145,6 +145,11 @@
         }
         .threshold-card label { font-weight: bold; margin-bottom: 8px; color: white; }
         .threshold-card .title-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+        .threshold-card .title-row select {
+            margin-left: auto;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
         .threshold-card input[type="number"] {
             padding: 6px;
             border: 1px solid rgba(255,255,255,0.7);
@@ -215,7 +220,11 @@
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <div class="title-row">
-                <label for="temp">Temperatura &gt;</label>
+                <label for="temp">Temperatura</label>
+                <select name="opTemp">
+                    <option value=">" th:selected="${operadores.temp == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.temp == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
             <span>°C</span>
@@ -226,7 +235,11 @@
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <label for="hum">Humedad &gt;</label>
+                <label for="hum">Humedad</label>
+                <select name="opHum">
+                    <option value=">" th:selected="${operadores.hum == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.hum == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
             <span>%</span>
@@ -237,7 +250,11 @@
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <label for="vel">Vel. Viento &gt;</label>
+                <label for="vel">Vel. Viento</label>
+                <select name="opVel">
+                    <option value=">" th:selected="${operadores.vel == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.vel == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
             <span>km/h</span>
@@ -248,7 +265,11 @@
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <label for="pre">Precipitación &gt;</label>
+                <label for="pre">Precipitación</label>
+                <select name="opPre">
+                    <option value=">" th:selected="${operadores.pre == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.pre == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
@@ -259,7 +280,11 @@
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <label for="pres">Presión &gt;</label>
+                <label for="pres">Presión</label>
+                <select name="opPres">
+                    <option value=">" th:selected="${operadores.pres == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.pres == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="pres" type="number" step="0.1" name="presion" th:value="${umbrales.presion}" required />
             <span>hPa</span>
@@ -270,7 +295,11 @@
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <label for="humsu">Humedad Suelo &gt;</label>
+                <label for="humsu">Humedad Suelo</label>
+                <select name="opHumSu">
+                    <option value=">" th:selected="${operadores.humsu == '>'}">&gt;</option>
+                    <option value="<" th:selected="${operadores.humsu == '<'}">&lt;</option>
+                </select>
             </div>
             <input id="humsu" type="number" step="0.1" name="humedadSuelo" th:value="${umbrales.humedadSuelo}" required />
             <span>%</span>

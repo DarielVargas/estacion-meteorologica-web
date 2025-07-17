@@ -25,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 public class AlertasController {
@@ -64,6 +66,23 @@ public class AlertasController {
         umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.0);
         umbrales.setHumedadSuelo(humSu != null ? humSu.getUmbral() : 40.0);
         return umbrales;
+    }
+
+    @ModelAttribute("operadores")
+    public Map<String, String> obtenerOperadores() {
+        Map<String, String> ops = new HashMap<>();
+        ops.put("temp", getOperador("Temperatura"));
+        ops.put("hum", getOperador("Humedad"));
+        ops.put("vel", getOperador("VelocidadViento"));
+        ops.put("pre", getOperador("Precipitacion"));
+        ops.put("pres", getOperador("Presion"));
+        ops.put("humsu", getOperador("HumedadSuelo"));
+        return ops;
+    }
+
+    private String getOperador(String nombre) {
+        Alerta a = repoAlerta.findByNombre(nombre);
+        return a != null ? a.getOperador() : ">";
     }
 
     @GetMapping("/alertas")
