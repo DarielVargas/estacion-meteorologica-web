@@ -21,11 +21,37 @@
         .logout-form button { width: 100%; background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; }
         .content { flex: 1; padding: 30px; }
         .cards { display: flex; flex-wrap: wrap; gap: 60px; justify-content: flex-start; }
-        .switch { position: absolute; top: 20px; right: 20px; }
-        .switch input { display:none; }
-        .switch span { width: 40px; height: 20px; background:#ccc; display:inline-block; border-radius: 20px; position:relative; cursor:pointer; }
-        .switch span::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:white; border-radius:50%; transition:.2s; }
-        .switch input:checked + span { background:#28a745; }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-top: 8px;
+        }
+        .switch input { display: none; }
+        .switch span {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+        .switch span::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .switch input:checked + span { background: #28a745; }
         .switch input:checked + span::after { transform: translateX(20px); }
         .row { display:flex; align-items:center; gap:5px; }
         .row.buttons { margin-top:auto; justify-content: space-between; }
@@ -189,51 +215,69 @@
     <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-temp" name="chkTemp" checked />
                 <label for="temp">Temperatura &gt;</label>
             </div>
             <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
             <span>°C</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-temp" name="chkTemp" checked />
+                <span></span>
+            </label>
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-hum" name="chkHum" checked />
                 <label for="hum">Humedad &gt;</label>
             </div>
             <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
             <span>%</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-hum" name="chkHum" checked />
+                <span></span>
+            </label>
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-vel" name="chkVel" checked />
                 <label for="vel">Vel. Viento &gt;</label>
             </div>
             <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
             <span>km/h</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-vel" name="chkVel" checked />
+                <span></span>
+            </label>
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-pre" name="chkPre" checked />
                 <label for="pre">Precipitación &gt;</label>
             </div>
             <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-pre" name="chkPre" checked />
+                <span></span>
+            </label>
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-pres" name="chkPres" checked />
                 <label for="pres">Presión &gt;</label>
             </div>
             <input id="pres" type="number" step="0.1" name="presion" th:value="${umbrales.presion}" required />
             <span>hPa</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-pres" name="chkPres" checked />
+                <span></span>
+            </label>
         </div>
         <div class="threshold-card">
             <div class="title-row">
-                <input type="checkbox" id="chk-humsu" name="chkHumSu" checked />
                 <label for="humsu">Humedad Suelo &gt;</label>
             </div>
             <input id="humsu" type="number" step="0.1" name="humedadSuelo" th:value="${umbrales.humedadSuelo}" required />
             <span>%</span>
+            <label class="switch">
+                <input type="checkbox" id="chk-humsu" name="chkHumSu" checked />
+                <span></span>
+            </label>
         </div>
         <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
     </form>
