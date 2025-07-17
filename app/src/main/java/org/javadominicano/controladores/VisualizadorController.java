@@ -252,38 +252,44 @@ public class VisualizadorController {
                                     @RequestParam(required = false) Boolean chkPre,
                                     @RequestParam(required = false) Boolean chkPres,
                                     @RequestParam(required = false) Boolean chkHumSu,
+                                    @RequestParam String opTemp,
+                                    @RequestParam String opHum,
+                                    @RequestParam String opVel,
+                                    @RequestParam String opPre,
+                                    @RequestParam String opPres,
+                                    @RequestParam String opHumSu,
                                     Model model) {
         if (Boolean.TRUE.equals(chkTemp)) {
-            guardarOActualizar("Temperatura", umbrales.getTemperatura());
+            guardarOActualizar("Temperatura", umbrales.getTemperatura(), opTemp);
         }
         if (Boolean.TRUE.equals(chkHum)) {
-            guardarOActualizar("Humedad", umbrales.getHumedad());
+            guardarOActualizar("Humedad", umbrales.getHumedad(), opHum);
         }
         if (Boolean.TRUE.equals(chkVel)) {
-            guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento());
+            guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento(), opVel);
         }
         if (Boolean.TRUE.equals(chkPre)) {
-            guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+            guardarOActualizar("Precipitacion", umbrales.getPrecipitacion(), opPre);
         }
         if (Boolean.TRUE.equals(chkPres)) {
-            guardarOActualizar("Presion", umbrales.getPresion());
+            guardarOActualizar("Presion", umbrales.getPresion(), opPres);
         }
         if (Boolean.TRUE.equals(chkHumSu)) {
-            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo());
+            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo(), opHumSu);
         }
 
         return "redirect:/"; // Redirige al dashboard para que se recargue
     }
 
-    private void guardarOActualizar(String nombre, double umbral) {
+    private void guardarOActualizar(String nombre, double umbral, String operador) {
         Alerta a = repoAlerta.findByNombre(nombre);
         if (a == null) {
             a = new Alerta();
             a.setNombre(nombre);
-            a.setOperador(">");
             a.setPrioridad("Media");
             a.setActiva(true);
         }
+        a.setOperador(operador);
         a.setUmbral(umbral);
         repoAlerta.save(a);
     }
