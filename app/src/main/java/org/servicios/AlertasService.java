@@ -86,13 +86,21 @@ public class AlertasService {
             alertasDisparadas.remove(alerta.getId());
         }
 
-        if (chequearAlerta(alerta, valor) && !alertasDisparadas.contains(alerta.getId())) {
+        boolean activa = chequearAlerta(alerta, valor);
+        if (activa) {
             AlertaActivaDTO dto = new AlertaActivaDTO();
             dto.setAlerta(alerta);
             dto.setValorActual(valor);
             dto.setFecha(fecha);
             lista.add(dto);
-            alertasDisparadas.add(alerta.getId());
+
+            // Solo marcar como disparada la primera vez que se detecta
+            if (!alertasDisparadas.contains(alerta.getId())) {
+                alertasDisparadas.add(alerta.getId());
+            }
+        } else {
+            // Si deja de estar activa, permitir que vuelva a dispararse
+            alertasDisparadas.remove(alerta.getId());
         }
     }
 
