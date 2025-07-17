@@ -300,14 +300,9 @@
                                  'Humedad del suelo ' + a.operador + ' ' + #numbers.formatDecimal(a.umbral,1,1) + ' %'}"></div>
                 <div class="fecha" th:text="${#temporals.format(a.fechaCreacion.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
-            <form class="acciones" th:action="@{/alertas/guardar}" method="post">
+            <form class="acciones" th:action="@{/alertas/eliminar}" method="post">
                 <input type="hidden" name="id" th:value="${a.id}" />
-                <input type="hidden" name="nombre" th:value="${a.nombre}" />
-                <input type="hidden" name="operador" th:value="${a.operador}" />
-                <input type="hidden" name="umbral" th:value="${a.umbral}" />
-                <input type="hidden" name="prioridad" th:value="${a.prioridad}" />
-                <input type="hidden" name="activa" th:value="${!a.activa}" />
-                <button type="submit" class="btn-toggle" th:text="${a.activa ? 'Desactivar' : 'Activar'}"></button>
+                <button type="submit" class="btn-toggle">Eliminar</button>
             </form>
         </div>
     </div>
