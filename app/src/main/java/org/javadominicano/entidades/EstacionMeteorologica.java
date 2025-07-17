@@ -45,6 +45,10 @@ public class EstacionMeteorologica {
     }
 
     public String getUbicacion() {
+        if ((ubicacion == null || ubicacion.isBlank() || "Desconocida".equalsIgnoreCase(ubicacion))
+                && "1".equals(this.id)) {
+            return "Santiago";
+        }
         return ubicacion;
     }
     public void setUbicacion(String ubicacion) {
