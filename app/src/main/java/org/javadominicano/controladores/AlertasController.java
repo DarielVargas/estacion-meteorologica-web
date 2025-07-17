@@ -4,6 +4,8 @@ import org.javadominicano.entidades.Alerta;
 import org.javadominicano.repositorios.RepositorioAlerta;
 import org.javadominicano.repositorios.RepositorioDatosPrecipitacion;
 import org.javadominicano.repositorios.RepositorioDatosVelocidad;
+import org.javadominicano.entidades.EstacionMeteorologica;
+import org.javadominicano.repositorios.RepositorioEstacionMeteorologica;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosHumedad;
 import org.javadominicano.visualizadorweb.repositorios.RepositorioDatosTemperatura;
 import org.javadominicano.visualizadorweb.entidades.Umbrales;
@@ -45,6 +47,9 @@ public class AlertasController {
     private RepositorioDatosPrecipitacion repoPrecipitacion;
 
     @Autowired
+    private RepositorioEstacionMeteorologica repoEstacion;
+
+    @Autowired
     private AlertasService alertasService;
 
     @ModelAttribute("umbrales")
@@ -64,6 +69,11 @@ public class AlertasController {
         umbrales.setPresion(pres != null ? pres.getUmbral() : 1013.0);
         umbrales.setHumedadSuelo(humSu != null ? humSu.getUmbral() : 40.0);
         return umbrales;
+    }
+
+    @ModelAttribute("estaciones")
+    public List<EstacionMeteorologica> getEstaciones() {
+        return repoEstacion.findAll();
     }
 
     @GetMapping("/alertas")
