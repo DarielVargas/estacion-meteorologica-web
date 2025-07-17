@@ -66,6 +66,20 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .alerts-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
         .btn-toggle {
             background-color: #007bff;
             color: white;
@@ -188,6 +202,82 @@
             font-size: 14px;
             color: #666;
         }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            animation: fadeScale 0.3s ease;
+        }
+
+        .modal h2 {
+            color: #1f4dd9;
+            margin-bottom: 10px;
+        }
+
+        .modal label {
+            display: block;
+            margin-top: 10px;
+            text-align: left;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .modal select,
+        .modal input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+
+        .modal button.save-btn {
+            width: 100%;
+            background: linear-gradient(to right, #1f4dd9, #4f74ff);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal button.close-btn {
+            width: 100%;
+            background: #dc3545;
+            color: white;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -212,75 +302,10 @@
 <div class="content">
     <h1 style="margin-bottom:20px;">Configuración de Alertas</h1>
     
-    <form class="thresholds" method="post" th:action="@{/configurar-alertas}">
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="temp">Temperatura &gt;</label>
-            </div>
-            <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
-            <span>°C</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-temp" name="chkTemp" checked />
-                <span></span>
-            </label>
-        </div>
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="hum">Humedad &gt;</label>
-            </div>
-            <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
-            <span>%</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-hum" name="chkHum" checked />
-                <span></span>
-            </label>
-        </div>
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="vel">Vel. Viento &gt;</label>
-            </div>
-            <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
-            <span>km/h</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-vel" name="chkVel" checked />
-                <span></span>
-            </label>
-        </div>
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="pre">Precipitación &gt;</label>
-            </div>
-            <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
-            <span>mm</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-pre" name="chkPre" checked />
-                <span></span>
-            </label>
-        </div>
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="pres">Presión &gt;</label>
-            </div>
-            <input id="pres" type="number" step="0.1" name="presion" th:value="${umbrales.presion}" required />
-            <span>hPa</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-pres" name="chkPres" checked />
-                <span></span>
-            </label>
-        </div>
-        <div class="threshold-card">
-            <div class="title-row">
-                <label for="humsu">Humedad Suelo &gt;</label>
-            </div>
-            <input id="humsu" type="number" step="0.1" name="humedadSuelo" th:value="${umbrales.humedadSuelo}" required />
-            <span>%</span>
-            <label class="switch">
-                <input type="checkbox" id="chk-humsu" name="chkHumSu" checked />
-                <span></span>
-            </label>
-        </div>
-        <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
-    </form>
+
+    <div class="alerts-header">
+        <button type="button" class="btn-add" id="openAlertModal">Nueva Alarma</button>
+    </div>
 
     <div class="configured-alerts" th:if="${alertas != null}">
         <div class="configured-alerts-header">
@@ -313,6 +338,59 @@
             <div class="label">Alertas configuradas</div>
         </div>
     </div>
+
+    <!-- Modal Nueva Alarma -->
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal">
+            <h2>Nueva Alarma</h2>
+            <form th:action="@{/alertas/guardar}" method="post">
+                <label for="alert-estacion">Estación</label>
+                <select id="alert-estacion" name="estacion">
+                    <option th:each="e : ${estaciones}" th:value="${e.id}" th:text="${e.nombre}"></option>
+                </select>
+
+                <label for="alert-sensor">Sensor</label>
+                <select id="alert-sensor" name="nombre">
+                    <option value="Temperatura">Temperatura</option>
+                    <option value="Humedad">Humedad</option>
+                    <option value="VelocidadViento">Velocidad del Viento</option>
+                    <option value="Precipitacion">Precipitación</option>
+                    <option value="Presion">Presión</option>
+                    <option value="HumedadSuelo">Humedad del Suelo</option>
+                </select>
+
+                <label for="alert-operador">Tipo de Alarma</label>
+                <select id="alert-operador" name="operador">
+                    <option value=">">&gt;</option>
+                    <option value="<"><</option>
+                    <option value="=">=</option>
+                </select>
+
+                <label for="alert-umbral">Umbral</label>
+                <input id="alert-umbral" type="number" step="0.1" name="umbral" required />
+
+                <button type="submit" class="save-btn">Guardar Alarma</button>
+                <button type="button" class="close-btn" id="closeAlertModal">Cancelar</button>
+            </form>
+        </div>
+    </div>
 </div>
+<script>
+    const alertModal = document.getElementById('alertModal');
+    const openAlertBtn = document.getElementById('openAlertModal');
+    const closeAlertBtn = document.getElementById('closeAlertModal');
+
+    if (openAlertBtn) {
+        openAlertBtn.addEventListener('click', () => {
+            alertModal.classList.add('active');
+        });
+    }
+
+    if (closeAlertBtn) {
+        closeAlertBtn.addEventListener('click', () => {
+            alertModal.classList.remove('active');
+        });
+    }
+</script>
 </body>
 </html>
