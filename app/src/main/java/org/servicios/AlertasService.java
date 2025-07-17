@@ -50,19 +50,68 @@ public class AlertasService {
     public List<AlertaActivaDTO> obtenerAlertasActivas() {
         List<AlertaActivaDTO> lista = new ArrayList<>();
 
-        DatosTemperatura temp = repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
-        DatosHumedad hum      = repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
-        DatosVelocidad vel    = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
-        DatosPrecipitacion pre= repoPrecipitacion.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
-        DatosPresion pres      = repoPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
-        DatosHumedadSuelo hs   = repoHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
+        List<Alerta> alertas = repoAlerta.findAll();
+        PageRequest pr = PageRequest.of(0, 1);
 
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha());
+        for (Alerta alerta : alertas) {
+            Timestamp fecha = null;
+            double valor = 0.0;
+
+            switch (alerta.getNombre()) {
+                case "Temperatura":
+                    List<DatosTemperatura> temps = repoTemperatura.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!temps.isEmpty()) {
+                        DatosTemperatura t = temps.get(0);
+                        valor = t.getTemperatura();
+                        fecha = t.getFecha();
+                    }
+                    break;
+                case "Humedad":
+                    List<DatosHumedad> hums = repoHumedad.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!hums.isEmpty()) {
+                        DatosHumedad h = hums.get(0);
+                        valor = h.getHumedad();
+                        fecha = h.getFecha();
+                    }
+                    break;
+                case "VelocidadViento":
+                    List<DatosVelocidad> vels = repoVelocidad.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!vels.isEmpty()) {
+                        DatosVelocidad v = vels.get(0);
+                        valor = v.getVelocidad();
+                        fecha = v.getFecha();
+                    }
+                    break;
+                case "Precipitacion":
+                    List<DatosPrecipitacion> pres = repoPrecipitacion.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!pres.isEmpty()) {
+                        DatosPrecipitacion p = pres.get(0);
+                        valor = p.getProbabilidad();
+                        fecha = p.getFecha();
+                    }
+                    break;
+                case "Presion":
+                    List<DatosPresion> press = repoPresion.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!press.isEmpty()) {
+                        DatosPresion p = press.get(0);
+                        valor = p.getPresion();
+                        fecha = p.getFecha();
+                    }
+                    break;
+                case "HumedadSuelo":
+                    List<DatosHumedadSuelo> hs = repoHumedadSuelo.findTopByEstacionIdOrderByFechaDesc(alerta.getEstacionId(), pr);
+                    if (!hs.isEmpty()) {
+                        DatosHumedadSuelo s = hs.get(0);
+                        valor = s.getHumedad();
+                        fecha = s.getFecha();
+                    }
+                    break;
+            }
+
+            if (fecha != null) {
+                agregarAlertaActiva(lista, alerta, valor, fecha);
+            }
+        }
 
         return lista;
     }

@@ -23,6 +23,9 @@ public interface RepositorioDatosVelocidad extends JpaRepository<DatosVelocidad,
     @Query("SELECT d FROM DatosVelocidad d ORDER BY d.fecha DESC")
     List<DatosVelocidad> findTopByOrderByFechaDesc(Pageable pageable);
 
+    @Query("SELECT d FROM DatosVelocidad d WHERE d.estacionId = :estacionId ORDER BY d.fecha DESC")
+    List<DatosVelocidad> findTopByEstacionIdOrderByFechaDesc(@Param("estacionId") String estacionId, Pageable pageable);
+
     // NUEVO MÉTODO: obtener la última fecha por cada sensor
     @Query("SELECT d.sensorId, MAX(d.fecha) FROM DatosVelocidad d GROUP BY d.sensorId")
     List<Object[]> findLastFechaBySensor();

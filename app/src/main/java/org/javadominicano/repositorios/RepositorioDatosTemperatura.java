@@ -23,6 +23,9 @@ public interface RepositorioDatosTemperatura extends JpaRepository<DatosTemperat
     @Query("SELECT d FROM DatosTemperatura d ORDER BY d.fecha DESC")
     List<DatosTemperatura> findTopByOrderByFechaDesc(Pageable pageable);
 
+    @Query("SELECT d FROM DatosTemperatura d WHERE d.estacionId = :estacionId ORDER BY d.fecha DESC")
+    List<DatosTemperatura> findTopByEstacionIdOrderByFechaDesc(@Param("estacionId") String estacionId, Pageable pageable);
+
     @Query("SELECT MAX(d.fecha) FROM DatosTemperatura d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
 }

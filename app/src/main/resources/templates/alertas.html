@@ -156,6 +156,20 @@
         .threshold-card input[type="checkbox"] { width:auto; margin:0; }
         .threshold-card span { margin-top: 4px; color: white; }
 
+        .estacion-field {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 200px;
+        }
+
+        .estacion-field select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
         /* Barra resumen de alertas */
         .summary-bar {
             display: flex;
@@ -280,6 +294,12 @@
             </label>
         </div>
         <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
+        <div class="estacion-field">
+            <label for="estacion">Seleccionar estación:</label>
+            <select id="estacion" name="estacion">
+                <option th:each="est : ${estaciones}" th:value="${est.id}" th:text="${est.nombre}"></option>
+            </select>
+        </div>
     </form>
 
     <div class="configured-alerts" th:if="${alertas != null}">

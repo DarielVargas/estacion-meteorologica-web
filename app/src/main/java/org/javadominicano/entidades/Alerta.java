@@ -21,6 +21,9 @@ public class Alerta {
 
     private String prioridad = "Media";
 
+    @Column(name = "estacion_id")
+    private String estacionId;
+
     @CreationTimestamp
     @Column(name = "fecha_creacion", updatable = false)
     private Timestamp fechaCreacion;
@@ -71,6 +74,14 @@ public class Alerta {
 
     public void setPrioridad(String prioridad) {
         this.prioridad = prioridad;
+    }
+
+    public String getEstacionId() {
+        return estacionId;
+    }
+
+    public void setEstacionId(String estacionId) {
+        this.estacionId = estacionId;
     }
 
     public Timestamp getFechaCreacion() {

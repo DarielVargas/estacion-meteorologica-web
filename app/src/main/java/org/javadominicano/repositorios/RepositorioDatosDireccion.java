@@ -23,6 +23,9 @@ public interface RepositorioDatosDireccion extends JpaRepository<DatosDireccion,
     @Query("SELECT d FROM DatosDireccion d ORDER BY d.fecha DESC")
     List<DatosDireccion> findTopByOrderByFechaDesc(Pageable pageable);
 
+    @Query("SELECT d FROM DatosDireccion d WHERE d.estacionId = :estacionId ORDER BY d.fecha DESC")
+    List<DatosDireccion> findTopByEstacionIdOrderByFechaDesc(@Param("estacionId") String estacionId, Pageable pageable);
+
     @Query("SELECT MAX(d.fecha) FROM DatosDireccion d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
 }

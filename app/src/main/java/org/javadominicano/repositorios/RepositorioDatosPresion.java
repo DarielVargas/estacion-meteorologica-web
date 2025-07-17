@@ -20,6 +20,9 @@ public interface RepositorioDatosPresion extends JpaRepository<DatosPresion, Int
     @Query("SELECT d FROM DatosPresion d ORDER BY d.fecha DESC")
     List<DatosPresion> findTopByOrderByFechaDesc(Pageable pageable);
 
+    @Query("SELECT d FROM DatosPresion d WHERE d.estacionId = :estacionId ORDER BY d.fecha DESC")
+    List<DatosPresion> findTopByEstacionIdOrderByFechaDesc(@Param("estacionId") String estacionId, Pageable pageable);
+
     @Query("SELECT MAX(d.fecha) FROM DatosPresion d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
 }

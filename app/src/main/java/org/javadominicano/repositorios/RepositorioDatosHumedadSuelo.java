@@ -20,6 +20,9 @@ public interface RepositorioDatosHumedadSuelo extends JpaRepository<DatosHumedad
     @Query("SELECT d FROM DatosHumedadSuelo d ORDER BY d.fecha DESC")
     List<DatosHumedadSuelo> findTopByOrderByFechaDesc(Pageable pageable);
 
+    @Query("SELECT d FROM DatosHumedadSuelo d WHERE d.estacionId = :estacionId ORDER BY d.fecha DESC")
+    List<DatosHumedadSuelo> findTopByEstacionIdOrderByFechaDesc(@Param("estacionId") String estacionId, Pageable pageable);
+
     @Query("SELECT MAX(d.fecha) FROM DatosHumedadSuelo d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
 }
