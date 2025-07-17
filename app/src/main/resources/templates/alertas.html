@@ -225,7 +225,11 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-temp" name="chkTemp" checked />
-                <label for="temp">Temperatura &gt;</label>
+                <label for="temp">Temperatura</label>
+                <select name="opTemp">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="temp" type="number" step="0.1" name="temperatura" th:value="${umbrales.temperatura}" required />
             <span>°C</span>
@@ -233,7 +237,11 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-hum" name="chkHum" checked />
-                <label for="hum">Humedad &gt;</label>
+                <label for="hum">Humedad</label>
+                <select name="opHum">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="hum" type="number" step="0.1" name="humedad" th:value="${umbrales.humedad}" required />
             <span>%</span>
@@ -241,7 +249,11 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-vel" name="chkVel" checked />
-                <label for="vel">Vel. Viento &gt;</label>
+                <label for="vel">Vel. Viento</label>
+                <select name="opVel">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="vel" type="number" step="0.1" name="velocidadViento" th:value="${umbrales.velocidadViento}" required />
             <span>km/h</span>
@@ -249,7 +261,11 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-pre" name="chkPre" checked />
-                <label for="pre">Precipitación &gt;</label>
+                <label for="pre">Precipitación</label>
+                <select name="opPre">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="pre" type="number" step="0.1" name="precipitacion" th:value="${umbrales.precipitacion}" required />
             <span>mm</span>
@@ -257,7 +273,11 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-pres" name="chkPres" checked />
-                <label for="pres">Presión &gt;</label>
+                <label for="pres">Presión</label>
+                <select name="opPres">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="pres" type="number" step="0.1" name="presion" th:value="${umbrales.presion}" required />
             <span>hPa</span>
@@ -265,12 +285,22 @@
         <div class="threshold-card">
             <div class="title-row">
                 <input type="checkbox" id="chk-humsu" name="chkHumSu" checked />
-                <label for="humsu">Humedad Suelo &gt;</label>
+                <label for="humsu">Humedad Suelo</label>
+                <select name="opHumSu">
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                </select>
             </div>
             <input id="humsu" type="number" step="0.1" name="humedadSuelo" th:value="${umbrales.humedadSuelo}" required />
             <span>%</span>
         </div>
         <button type="submit" class="btn btn-edit" style="align-self:flex-start;">Guardar</button>
+        <div style="margin-top:10px; width:100%;">
+            <label for="estacion" style="color:white;">Estación:</label>
+            <select id="estacion" name="estacion" style="margin-left:5px;">
+                <option th:each="e : ${estaciones}" th:value="${e.id}" th:text="${e.nombre}"></option>
+            </select>
+        </div>
     </form>
 
     <div class="active-alerts" th:if="${alertasActivas != null}">

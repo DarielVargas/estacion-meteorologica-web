@@ -247,44 +247,52 @@ public class VisualizadorController {
     @PostMapping("/configurar-alertas")
     public String configurarAlertas(@ModelAttribute Umbrales umbrales,
                                     @RequestParam(required = false) Boolean chkTemp,
+                                    @RequestParam(required = false) String opTemp,
                                     @RequestParam(required = false) Boolean chkHum,
+                                    @RequestParam(required = false) String opHum,
                                     @RequestParam(required = false) Boolean chkVel,
+                                    @RequestParam(required = false) String opVel,
                                     @RequestParam(required = false) Boolean chkPre,
+                                    @RequestParam(required = false) String opPre,
                                     @RequestParam(required = false) Boolean chkPres,
+                                    @RequestParam(required = false) String opPres,
                                     @RequestParam(required = false) Boolean chkHumSu,
+                                    @RequestParam(required = false) String opHumSu,
+                                    @RequestParam String estacion,
                                     Model model) {
         if (Boolean.TRUE.equals(chkTemp)) {
-            guardarOActualizar("Temperatura", umbrales.getTemperatura());
+            guardarOActualizar("Temperatura", umbrales.getTemperatura(), opTemp, estacion);
         }
         if (Boolean.TRUE.equals(chkHum)) {
-            guardarOActualizar("Humedad", umbrales.getHumedad());
+            guardarOActualizar("Humedad", umbrales.getHumedad(), opHum, estacion);
         }
         if (Boolean.TRUE.equals(chkVel)) {
-            guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento());
+            guardarOActualizar("VelocidadViento", umbrales.getVelocidadViento(), opVel, estacion);
         }
         if (Boolean.TRUE.equals(chkPre)) {
-            guardarOActualizar("Precipitacion", umbrales.getPrecipitacion());
+            guardarOActualizar("Precipitacion", umbrales.getPrecipitacion(), opPre, estacion);
         }
         if (Boolean.TRUE.equals(chkPres)) {
-            guardarOActualizar("Presion", umbrales.getPresion());
+            guardarOActualizar("Presion", umbrales.getPresion(), opPres, estacion);
         }
         if (Boolean.TRUE.equals(chkHumSu)) {
-            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo());
+            guardarOActualizar("HumedadSuelo", umbrales.getHumedadSuelo(), opHumSu, estacion);
         }
 
         return "redirect:/"; // Redirige al dashboard para que se recargue
     }
 
-    private void guardarOActualizar(String nombre, double umbral) {
-        Alerta a = repoAlerta.findByNombre(nombre);
+    private void guardarOActualizar(String nombre, double umbral, String operador, String estacionId) {
+        Alerta a = repoAlerta.findByNombreAndEstacionId(nombre, estacionId);
         if (a == null) {
             a = new Alerta();
             a.setNombre(nombre);
-            a.setOperador(">");
             a.setPrioridad("Media");
             a.setActiva(true);
         }
+        a.setOperador(operador);
         a.setUmbral(umbral);
+        a.setEstacionId(estacionId);
         repoAlerta.save(a);
     }
 
