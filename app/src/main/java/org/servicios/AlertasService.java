@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -45,11 +44,9 @@ public class AlertasService {
     private RepositorioDatosHumedadSuelo repoHumedadSuelo;
 
     private final Map<Long, Double> ultimoUmbral = new ConcurrentHashMap<>();
-    private final Set<Long> alertasDisparadas = ConcurrentHashMap.newKeySet();
+    private final Map<Long, AlertaActivaDTO> alertasActivasMap = new ConcurrentHashMap<>();
 
     public List<AlertaActivaDTO> obtenerAlertasActivas() {
-        List<AlertaActivaDTO> lista = new ArrayList<>();
-
         DatosTemperatura temp = repoTemperatura.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
         DatosHumedad hum      = repoHumedad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
         DatosVelocidad vel    = repoVelocidad.findTopByOrderByFechaDesc(PageRequest.of(0, 1)).get(0);
@@ -57,14 +54,14 @@ public class AlertasService {
         DatosPresion pres      = repoPresion.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
         DatosHumedadSuelo hs   = repoHumedadSuelo.findTopByOrderByFechaDesc(PageRequest.of(0,1)).get(0);
 
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha());
-        agregarAlertaActiva(lista, repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("Temperatura"), temp.getTemperatura(), temp.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("Humedad"), hum.getHumedad(), hum.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("VelocidadViento"), vel.getVelocidad(), vel.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("Precipitacion"), pre.getProbabilidad(), pre.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("Presion"), pres.getPresion(), pres.getFecha());
+        agregarAlertaActiva(repoAlerta.findByNombre("HumedadSuelo"), hs.getHumedad(), hs.getFecha());
 
-        return lista;
+        return new ArrayList<>(alertasActivasMap.values());
     }
 
     public List<String> obtenerAlertasActivasTexto() {
@@ -75,7 +72,7 @@ public class AlertasService {
         return textos;
     }
 
-    private void agregarAlertaActiva(List<AlertaActivaDTO> lista, Alerta alerta, double valor, Timestamp fecha) {
+    private void agregarAlertaActiva(Alerta alerta, double valor, Timestamp fecha) {
         if (alerta == null) {
             return;
         }
@@ -83,16 +80,20 @@ public class AlertasService {
         Double prev = ultimoUmbral.get(alerta.getId());
         if (prev == null || Double.compare(prev, alerta.getUmbral()) != 0) {
             ultimoUmbral.put(alerta.getId(), alerta.getUmbral());
-            alertasDisparadas.remove(alerta.getId());
+            alertasActivasMap.remove(alerta.getId());
         }
 
-        if (chequearAlerta(alerta, valor) && !alertasDisparadas.contains(alerta.getId())) {
-            AlertaActivaDTO dto = new AlertaActivaDTO();
-            dto.setAlerta(alerta);
+        if (chequearAlerta(alerta, valor)) {
+            AlertaActivaDTO dto = alertasActivasMap.get(alerta.getId());
+            if (dto == null) {
+                dto = new AlertaActivaDTO();
+                dto.setAlerta(alerta);
+                dto.setFecha(fecha);
+                alertasActivasMap.put(alerta.getId(), dto);
+            }
             dto.setValorActual(valor);
-            dto.setFecha(fecha);
-            lista.add(dto);
-            alertasDisparadas.add(alerta.getId());
+        } else {
+            alertasActivasMap.remove(alerta.getId());
         }
     }
 
@@ -127,4 +128,5 @@ public class AlertasService {
             default:
                 return "Umbral superado";
         }
-    }}
+    }
+}
