@@ -21,14 +21,14 @@
         }
     </style>
 
-    <div th:if="${alertasActivas != null}" id="alertContainer">
-        <div th:each="a : ${alertasActivas}" class="alert-card danger"
-             th:attr="data-key=${'alert_'+ a.alerta.id +'_'+ a.fecha.time}">
-            <span th:text="${a.alerta.nombre == 'Temperatura' ? 'Umbral de temperatura superado' :
-                             a.alerta.nombre == 'Humedad' ? 'Umbral de humedad superado' :
-                             a.alerta.nombre == 'VelocidadViento' ? 'Umbral de velocidad de viento superado' :
-                             a.alerta.nombre == 'Precipitacion' ? 'Umbral de precipitación superado' :
-                             a.alerta.nombre == 'Presion' ? 'Umbral de presión superado' :
+    <div th:if="${alarmasActivas != null}" id="alertContainer">
+        <div th:each="a : ${alarmasActivas}" class="alert-card danger"
+             th:attr="data-key=${'alert_'+ a.alarma.id +'_'+ a.fecha.time}">
+            <span th:text="${a.alarma.sensor == 'TEMPERATURA' ? 'Umbral de temperatura superado' :
+                             a.alarma.sensor == 'HUMEDAD' ? 'Umbral de humedad superado' :
+                             a.alarma.sensor == 'VELOCIDAD_VIENTO' ? 'Umbral de velocidad de viento superado' :
+                             a.alarma.sensor == 'PRECIPITACION' ? 'Umbral de precipitación superado' :
+                             a.alarma.sensor == 'PRESION' ? 'Umbral de presión superado' :
                              'Umbral de humedad del suelo superado'}">Alerta</span>
             <button type="button" class="close-alert">&times;</button>
         </div>
@@ -101,13 +101,13 @@
     setInterval(checkEstados, 12000);
 
     function mensajeAlerta(a) {
-        switch(a.alerta.nombre) {
-            case 'Temperatura': return 'Umbral de temperatura superado';
-            case 'Humedad': return 'Umbral de humedad superado';
-            case 'VelocidadViento': return 'Umbral de velocidad de viento superado';
-            case 'Precipitacion': return 'Umbral de precipitación superado';
-            case 'Presion': return 'Umbral de presión superado';
-            case 'HumedadSuelo': return 'Umbral de humedad del suelo superado';
+        switch(a.alarma.sensor) {
+            case 'TEMPERATURA': return 'Umbral de temperatura superado';
+            case 'HUMEDAD': return 'Umbral de humedad superado';
+            case 'VELOCIDAD_VIENTO': return 'Umbral de velocidad de viento superado';
+            case 'PRECIPITACION': return 'Umbral de precipitación superado';
+            case 'PRESION': return 'Umbral de presión superado';
+            case 'HUMEDAD_SUELO': return 'Umbral de humedad del suelo superado';
             default: return 'Umbral superado';
         }
     }
@@ -122,7 +122,7 @@
             if (estadoCont) root.insertBefore(cont, estadoCont); else root.appendChild(cont);
         }
 
-        var key = 'alert_' + a.alerta.id + '_' + new Date(a.fecha).getTime();
+        var key = 'alert_' + a.alarma.id + '_' + new Date(a.fecha).getTime();
         if (localStorage.getItem(key) || cont.querySelector('[data-key="' + key + '"]')) {
             return;
         }
@@ -150,7 +150,7 @@
         var cont = root.querySelector('#alertContainer');
         var keys = [];
         lista.forEach(function(a){
-            var key = 'alert_' + a.alerta.id + '_' + new Date(a.fecha).getTime();
+            var key = 'alert_' + a.alarma.id + '_' + new Date(a.fecha).getTime();
             keys.push(key);
             agregarAlerta(a);
         });
@@ -166,10 +166,10 @@
     var socketA = new SockJS('/ws');
     var stompA = Stomp.over(socketA);
     stompA.connect({}, function(){
-        stompA.subscribe('/topic/alertas', function(msg){
+        stompA.subscribe('/topic/alarmas', function(msg){
             actualizarAlertas(JSON.parse(msg.body));
         });
-        stompA.send('/app/alertas/solicitar', {}, '');
+        stompA.send('/app/alarmas/solicitar', {}, '');
     });
     /*]]>*/
     </script>

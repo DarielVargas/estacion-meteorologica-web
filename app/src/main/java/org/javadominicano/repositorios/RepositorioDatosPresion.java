@@ -22,4 +22,6 @@ public interface RepositorioDatosPresion extends JpaRepository<DatosPresion, Int
 
     @Query("SELECT MAX(d.fecha) FROM DatosPresion d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
+
+    DatosPresion findFirstByEstacionIdOrderByFechaDesc(String estacionId);
 }

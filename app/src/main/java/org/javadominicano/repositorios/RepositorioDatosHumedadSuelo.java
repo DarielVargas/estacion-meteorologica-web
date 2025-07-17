@@ -22,4 +22,6 @@ public interface RepositorioDatosHumedadSuelo extends JpaRepository<DatosHumedad
 
     @Query("SELECT MAX(d.fecha) FROM DatosHumedadSuelo d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
+
+    DatosHumedadSuelo findFirstByEstacionIdOrderByFechaDesc(String estacionId);
 }

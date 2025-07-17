@@ -29,4 +29,6 @@ public interface RepositorioDatosVelocidad extends JpaRepository<DatosVelocidad,
 
     @Query("SELECT MAX(d.fecha) FROM DatosVelocidad d WHERE d.estacionId = :estacionId")
     Timestamp findUltimaFechaByEstacion(@Param("estacionId") String estacionId);
+
+    DatosVelocidad findFirstByEstacionIdOrderByFechaDesc(String estacionId);
 }
