@@ -100,11 +100,8 @@ public class AlertasService {
         if (alerta == null || valor == null || !alerta.isActiva()) {
             return false;
         }
-        if (">".equals(alerta.getOperador())) {
-            return valor > alerta.getUmbral();
-        } else {
-            return valor < alerta.getUmbral();
-        }
+        String op = alerta.getOperador();
+        return ">".equals(op) ? valor > alerta.getUmbral() : valor < alerta.getUmbral();
     }
 
     private String formatoAlerta(Alerta a) {
