@@ -55,7 +55,7 @@ public class SeguridadConfig {
         UserDetails scarlet = User.builder()
             .username("scarlet")
             .password(encodedScarlet)
-            .roles("USER")
+            .roles("ADMIN")
             .build();
 
         // DEBUG
