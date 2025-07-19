@@ -142,7 +142,7 @@
                 <p><strong>Ver Actividad:</strong> Muestra las actividades registradas para la estación y fecha seleccionadas.</p>
                 <p><strong>Generar Reporte:</strong> Crea un reporte meteorológico con los filtros seleccionados.</p>
             </div>
-            <form method="post" th:action="@{/reportes}">
+            <form method="post" th:action="@{/reportes}" id="reporteForm">
                 <div class="field">
                     <label for="fecha">Fecha:</label>
                     <input type="date" id="fecha" name="fecha" th:value="${fecha}" />
@@ -172,7 +172,7 @@
                 <div class="full-width">
                     <button type="submit" th:formaction="@{/reportes/limpiar}" formmethod="post">Limpiar Historial</button>
                     <button type="submit" th:formaction="@{/actividad}" formmethod="get">Ver Actividad</button>
-                    <button type="submit">Generar Reporte</button>
+                    <button type="submit" id="generarReporteBtn">Generar Reporte</button>
                 </div>
             </form>
         </div>
@@ -198,6 +198,15 @@
     if (helpIcon) {
         helpIcon.addEventListener('click', () => {
             helpTooltip.classList.toggle('show');
+        });
+    }
+    const generarBtn = document.getElementById('generarReporteBtn');
+    const fechaInput = document.getElementById('fecha');
+    if (generarBtn) {
+        generarBtn.addEventListener('click', (e) => {
+            if (fechaInput && fechaInput.value.trim() === '') {
+                e.preventDefault();
+            }
         });
     }
 </script>
