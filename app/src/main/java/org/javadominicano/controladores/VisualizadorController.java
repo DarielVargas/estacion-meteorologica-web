@@ -312,7 +312,11 @@ public class VisualizadorController {
     // Guardar estación editada
     @PostMapping("/estaciones/editar")
     public String guardarEstacionEditada(@ModelAttribute EstacionMeteorologica estacion) {
-        repositorioEstacion.save(estacion);
+        repositorioEstacion.findById(estacion.getId()).ifPresent(existing -> {
+            existing.setNombre(estacion.getNombre());
+            existing.setUbicacion(estacion.getUbicacion());
+            repositorioEstacion.save(existing);
+        });
         return "redirect:/estaciones";
     }
 
