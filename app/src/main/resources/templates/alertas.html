@@ -296,6 +296,7 @@
         </ul>
     </nav>
     <form class="logout-form" th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit">Cerrar sesión</button>
     </form>
 </div>
@@ -311,6 +312,7 @@
         <div class="configured-alerts-header">
             <h2>Alertas Configuradas (<span th:text="${alertas.size()}"></span>)</h2>
             <form th:action="@{/alertas/eliminar-configuradas}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" class="btn-delete-all">Eliminar todas</button>
             </form>
         </div>
@@ -326,6 +328,7 @@
                 <div class="fecha" th:text="${#temporals.format(a.fechaCreacion.toInstant(), 'dd/MM/yyyy HH:mm')}"></div>
             </div>
             <form class="acciones" th:action="@{/alertas/eliminar}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" name="id" th:value="${a.id}" />
                 <button type="submit" class="btn-toggle">Eliminar</button>
             </form>
@@ -344,6 +347,7 @@
         <div class="modal">
             <h2>Nueva Alarma</h2>
             <form th:action="@{/alertas/guardar}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <label for="alert-estacion">Estación</label>
                 <select id="alert-estacion" name="estacion">
                     <option th:each="e : ${estaciones}" th:value="${e.id}" th:text="${e.nombre}"></option>

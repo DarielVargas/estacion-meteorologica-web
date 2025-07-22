@@ -137,6 +137,7 @@
     <div th:replace="fragments/alertasActivas :: alertas"></div>
     <p class="subtitle">Modifica la información de la estación</p>
     <form th:action="@{/estaciones/editar}" th:object="${estacion}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <label>ID</label>
         <input type="text" th:field="*{id}" readonly />
 
