@@ -172,7 +172,7 @@
                 <div class="full-width">
                     <button type="submit" th:formaction="@{/reportes/limpiar}" formmethod="post">Limpiar Historial</button>
                     <button type="submit" th:formaction="@{/actividad}" formmethod="get">Ver Actividad</button>
-                    <button type="submit">Generar Reporte</button>
+                    <button type="submit" id="generarReporteBtn">Generar Reporte</button>
                 </div>
             </form>
         </div>
@@ -198,6 +198,15 @@
     if (helpIcon) {
         helpIcon.addEventListener('click', () => {
             helpTooltip.classList.toggle('show');
+        });
+    }
+    const generarReporteBtn = document.getElementById('generarReporteBtn');
+    if (generarReporteBtn) {
+        generarReporteBtn.addEventListener('click', (e) => {
+            const fecha = document.getElementById('fecha');
+            if (!fecha.value) {
+                e.preventDefault();
+            }
         });
     }
 </script>
