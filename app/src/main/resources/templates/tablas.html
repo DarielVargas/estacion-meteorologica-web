@@ -71,7 +71,7 @@
               <td th:text="${v.id}"></td>
               <td th:text="${v.estacionId}"></td>
               <td th:text="${v.velocidad}"></td>
-              <td th:text="${v.fecha}"></td>
+              <td th:text="${#dates.format(v.fecha, 'dd/MM/yyyy HH:mm:ss')}"></td>
             </tr>
           </tbody>
         </table>
