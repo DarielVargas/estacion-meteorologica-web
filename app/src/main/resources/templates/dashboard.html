@@ -676,39 +676,66 @@ updateCharts();
     const stomp = Stomp.over(socket);
     stomp.connect({}, () => {
         stomp.subscribe('/topic/mediciones', (msg) => {
-            const data = JSON.parse(msg.body);
-            document.getElementById('tempValue').textContent = data.temperatura.toFixed(2) + '°C';
-            document.getElementById('humValue').textContent = data.humedad.toFixed(2) + '%';
-            document.getElementById('windSpeedValue').textContent = data.velocidadViento.toFixed(2) + ' Km/h';
-            document.getElementById('windDirValue').textContent = data.direccionViento;
-            document.getElementById('rainValue').textContent = data.precipitacion.toFixed(1) + 'mm';
-            document.getElementById('pressValue').textContent = data.presion + ' hPa';
-            document.getElementById('soilHumValue').textContent = data.humedadSuelo + '%';
+            try {
+                const data = JSON.parse(msg.body);
+                if (data.temperatura != null) {
+                    document.getElementById('tempValue').textContent = Number(data.temperatura).toFixed(2) + '°C';
+                }
+                if (data.humedad != null) {
+                    document.getElementById('humValue').textContent = Number(data.humedad).toFixed(2) + '%';
+                }
+                if (data.velocidadViento != null) {
+                    document.getElementById('windSpeedValue').textContent = Number(data.velocidadViento).toFixed(2) + ' Km/h';
+                }
+                if (data.direccionViento != null) {
+                    document.getElementById('windDirValue').textContent = data.direccionViento;
+                }
+                if (data.precipitacion != null) {
+                    document.getElementById('rainValue').textContent = Number(data.precipitacion).toFixed(1) + 'mm';
+                }
+                if (data.presion != null) {
+                    document.getElementById('pressValue').textContent = data.presion + ' hPa';
+                }
+                if (data.humedadSuelo != null) {
+                    document.getElementById('soilHumValue').textContent = data.humedadSuelo + '%';
+                }
+            } catch (e) {
+                console.error('Error procesando mediciones:', e, msg.body);
+            }
         });
 
         stomp.subscribe('/topic/estadoEstaciones', (msg) => {
-            const data = JSON.parse(msg.body);
-            const nums = document.querySelectorAll('.info-bar .section .number');
-            if (nums.length >= 3) {
-                nums[0].textContent = data.total;
-                nums[1].textContent = data.activas;
-                nums[2].textContent = data.inactivas;
-            }
-            const msgDiv = document.getElementById('estadoMensaje');
-            const textEl = document.getElementById('estadoTexto');
-            const checkEl = document.getElementById('estadoCheck');
-            if (msgDiv && textEl) {
-                if (data.inactivas === 0) {
-                    msgDiv.classList.remove('inactive');
-                    msgDiv.classList.add('success');
-                    textEl.textContent = 'Todas las estaciones están comunicando';
-                    if (checkEl) checkEl.style.display = 'inline';
-                } else {
-                    msgDiv.classList.remove('success');
-                    msgDiv.classList.add('inactive');
-                    textEl.textContent = 'Hay una estación que no está comunicando (' + data.primeraInactivaId + ')';
-                    if (checkEl) checkEl.style.display = 'none';
+            try {
+                const data = JSON.parse(msg.body);
+                data.total = Number(data.total);
+                data.activas = Number(data.activas);
+                data.inactivas = Number(data.inactivas);
+
+                const nums = document.querySelectorAll('.info-bar .section .number');
+                if (nums.length >= 3) {
+                    nums[0].textContent = data.total;
+                    nums[1].textContent = data.activas;
+                    nums[2].textContent = data.inactivas;
                 }
+
+                const msgDiv = document.getElementById('estadoMensaje');
+                const textEl = document.getElementById('estadoTexto');
+                const checkEl = document.getElementById('estadoCheck');
+                if (msgDiv && textEl) {
+                    if (data.inactivas === 0) {
+                        msgDiv.classList.remove('inactive');
+                        msgDiv.classList.add('success');
+                        textEl.textContent = 'Todas las estaciones están comunicando';
+                        if (checkEl) checkEl.style.display = 'inline';
+                    } else {
+                        msgDiv.classList.remove('success');
+                        msgDiv.classList.add('inactive');
+                        textEl.textContent = 'Hay una estación que no está comunicando (' + data.primeraInactivaId + ')';
+                        if (checkEl) checkEl.style.display = 'none';
+                    }
+                }
+            } catch (e) {
+                console.error('Error procesando estado de estaciones:', e, msg.body);
             }
         });
     });
