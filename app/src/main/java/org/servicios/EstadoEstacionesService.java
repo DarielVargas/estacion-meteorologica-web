@@ -35,7 +35,8 @@ public class EstadoEstacionesService {
 
     public List<EstadoEstacionDTO> obtenerEstados() {
         Date ahora = new Date();
-        Date limite = new Date(ahora.getTime() - 12_000L);
+        // Considerar la estación como activa si reportó en los últimos 20 segundos
+        Date limite = new Date(ahora.getTime() - 20_000L);
         List<EstadoEstacionDTO> lista = new ArrayList<>();
         for (EstacionMeteorologica e : repoEstacion.findAll()) {
             Date ultima = obtenerUltimaFechaEstacion(e.getId());
