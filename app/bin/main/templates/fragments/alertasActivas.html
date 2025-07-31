@@ -56,7 +56,7 @@
         if (btn) {
             btn.addEventListener('click', markAsShown);
         }
-        setTimeout(markAsShown, 7000);
+        setTimeout(markAsShown, 12000);
     });
 
     function mostrarAlertaEstado(nombre, activa) {
@@ -77,7 +77,7 @@
         cont.appendChild(card);
         var remove = function() { card.remove(); };
         btn.addEventListener('click', remove);
-        setTimeout(remove, 7000);
+        setTimeout(remove, 12000);
     }
 
     function checkEstados() {
@@ -142,7 +142,7 @@
 
         var remove = function() { card.remove(); };
         btn.addEventListener('click', function(){ localStorage.setItem(key, 'shown'); remove(); });
-        setTimeout(function(){ localStorage.setItem(key, 'shown'); remove(); }, 7000);
+        setTimeout(function(){ localStorage.setItem(key, 'shown'); remove(); }, 12000);
     }
 
     function actualizarAlertas(lista) {
